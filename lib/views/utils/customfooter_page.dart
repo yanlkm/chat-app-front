@@ -12,7 +12,7 @@ class CustomFooter extends StatelessWidget {
           label: 'Profile',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.room),
+          icon: Icon(Icons.chat_bubble),
           label: 'Rooms',
         ),
         BottomNavigationBarItem(

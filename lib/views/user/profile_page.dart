@@ -10,122 +10,143 @@ import '../../controllers/user/profile_controller.dart';
 import '../../models/room.dart';
 import '../../models/user.dart';
 
-
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   final ProfileController profileController;
   final UserRoomsController userRoomsController;
   final LogoutController logoutController;
 
+  const ProfilePage({
+    super.key,
+    required this.profileController,
+    required this.userRoomsController,
+    required this.logoutController,
+  });
 
-  const ProfilePage({super.key, required this.profileController, required this.userRoomsController, required this.logoutController,});
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late Future<User?> userFuture;
+  late Future<List<Room?>?> roomsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    const secureStorage = FlutterSecureStorage();
+    userFuture = secureStorage.read(key: 'token').then((token) {
+      if (token == null) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage()));
+        return null;
+      } else {
+        return widget.profileController.getProfile(context);
+      }
+    });
+    roomsFuture = widget.userRoomsController.getUserRooms(context);
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _loadUserData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Check if a token is present in secureStorage
-    const secureStorage = FlutterSecureStorage();
-    Future<User?> userFuture = secureStorage.read(key: 'token').then((token) {
-      if (token == null) {
-        // If no token is found, navigate to WelcomePage
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage()));
-        return null; // Return null to avoid loading profile data
-      } else {
-        return profileController.getProfile(context);
-      }
-    });
-
     return BasePage(
       showFooter: true,
-      logoutController: logoutController,
+      logoutController: widget.logoutController,
       child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-      ),
-      body: Center(
-        child: FutureBuilder<User?>(
-          future: userFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // Placeholder for loading state
-            } else if (snapshot.hasError) {
-              ErrorDisplayIsolate.showErrorDialog(context, '${snapshot.error}');
-              return const Text('An error occurred'); // Placeholder for error state
-            } else if (snapshot.hasData) {
-              User? user = snapshot.data;
-              return FutureBuilder<List<Room?>?>(
-                future: userRoomsController.getUserRooms(context),
-                builder: (context, roomsSnapshot) {
-                  if (roomsSnapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Placeholder for loading state
-                  } else if (roomsSnapshot.hasError) {
-                    ErrorDisplayIsolate.showErrorDialog(context, '${roomsSnapshot.error}');
-                    return const Text('An error occurred'); // Placeholder for error state
-                  } else if (roomsSnapshot.hasData) {
-                    List<Room?>? rooms = roomsSnapshot.data;
-                    DateFormat dateFormat = DateFormat('MMMM dd, yyyy - HH:mm:ss');
-                    String createdAtFormatted = dateFormat.format(user?.createdAt ?? DateTime.now());
-                    String updatedAtFormatted = dateFormat.format(user?.updatedAt ?? DateTime.now());
-                    return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome back, ${user?.username ?? ''}!',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Your Rooms',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 10),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: rooms?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  child: ListTile(
-                                    title: Text(rooms?[index]?.name ?? ''),
-                                    // TODO : add onTap functionality to navigate to specific room if needed
-                                  ),
-                                );
-                              },
+        body: RefreshIndicator(
+          onRefresh: _refreshData,
+          child: FutureBuilder<User?>(
+            future: userFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                ErrorDisplayIsolate.showErrorDialog(context, '${snapshot.error}');
+                return const Center(child: Text('An error occurred'));
+              } else if (snapshot.hasData) {
+                User? user = snapshot.data;
+                return FutureBuilder<List<Room?>?>(
+                  future: roomsFuture,
+                  builder: (context, roomsSnapshot) {
+                    if (roomsSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (roomsSnapshot.hasError) {
+                      ErrorDisplayIsolate.showErrorDialog(context, '${roomsSnapshot.error}');
+                      return const Center(child: Text('An error occurred'));
+                    } else if (roomsSnapshot.hasData) {
+                      List<Room?>? rooms = roomsSnapshot.data;
+                      DateFormat dateFormat = DateFormat('MMMM dd, yyyy - HH:mm:ss');
+                      String createdAtFormatted = dateFormat.format(user?.createdAt ?? DateTime.now());
+                      String updatedAtFormatted = dateFormat.format(user?.updatedAt ?? DateTime.now());
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome back, ${user?.username ?? ''}!',
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Profile Information',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 10),
-                          Card(
-                            child: ListTile(
-                              title: const Text('Profile created at :'),
-                              subtitle: Text(createdAtFormatted),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Your Rooms',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                          ),
-                          Card(
-                            child: ListTile(
-                              title: const Text('Last profile update :'),
-                              subtitle: Text(updatedAtFormatted),
+                            const SizedBox(height: 10),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: rooms?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: ListTile(
+                                      title: Text(rooms?[index]?.name ?? ''),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const Text('No data available'); // Placeholder for empty data state
-                  }
-                },
-              );
-            } else {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage()));
-              return const Text('No data available'); // Placeholder for empty data state
-            }
-          },
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Profile Information',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 10),
+                            Card(
+                              child: ListTile(
+                                title: const Text('Profile created at :'),
+                                subtitle: Text(createdAtFormatted),
+                              ),
+                            ),
+                            Card(
+                              child: ListTile(
+                                title: const Text('Last profile update :'),
+                                subtitle: Text(updatedAtFormatted),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const Center(child: Text('No data available'));
+                    }
+                  },
+                );
+              } else {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage()));
+                return const Center(child: Text('No data available'));
+              }
+            },
+          ),
         ),
       ),
-    ),
     );
   }
 }
