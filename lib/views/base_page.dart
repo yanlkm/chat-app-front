@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/views/utils/customfooter_page.dart';
 import 'package:my_app/views/welcome_page.dart';
 
 import '../controllers/authentification/logout_controller.dart';
@@ -21,6 +20,7 @@ class BasePage extends StatelessWidget {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
+
           strutStyle: StrutStyle(
             height: 1.5,
           ),
@@ -40,9 +40,9 @@ class BasePage extends StatelessWidget {
             },
           ),
         ],
+        automaticallyImplyLeading : false,
       ),
-      body: child,
-      bottomNavigationBar: showFooter ? const CustomFooter() : null,
+      body: child
     );
   }
 }

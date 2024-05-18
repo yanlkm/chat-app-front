@@ -4,18 +4,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/services/authentification/login_service.dart';
 import 'package:my_app/services/authentification/logout_service.dart';
 import 'package:my_app/services/authentification/register_service.dart';
+import 'package:my_app/services/room/room_service.dart';
 import 'package:my_app/services/user/profile_service.dart';
 import 'package:my_app/services/user/user_rooms_service.dart';
 import 'package:my_app/views/authentification/login_page.dart';
 import 'package:my_app/views/authentification/register_page.dart';
-import 'package:my_app/views/user/profile_page.dart';
 import 'package:my_app/views/welcome_page.dart';
+import 'package:my_app/views/home_page.dart';
 import 'controllers/authentification/login_controller.dart';
 import 'controllers/authentification/logout_controller.dart';
 import 'controllers/authentification/register_controller.dart';
 import 'controllers/user/profile_controller.dart';
-import 'controllers/user/user_rooms_controller.dart';
-
+import 'controllers/room/room_controller.dart';
 Future main() async {
   // Load env file
   await dotenv.load(fileName: ".env");
@@ -26,10 +26,8 @@ Future main() async {
   // Check if a token is present in secureStorage
   String? token = await secureStorage.read(key: 'token');
 
-  // Run the app and decide the initial route based on the token presence
-  runApp(MyApp(initialRoute: token == null ? '/welcome' : '/profile'  ));
+  runApp(MyApp(initialRoute: token == null ? '/welcome' : '/home'));
 }
-
 
 class MyApp extends StatelessWidget {
   final RegisterService registerService = RegisterService();
@@ -41,7 +39,7 @@ class MyApp extends StatelessWidget {
   final LoginController loginController = LoginController(loginService: LoginService());
   final LogoutController logoutController = LogoutController(logoutService: LogoutService());
   final ProfileController profileController = ProfileController(profileService: ProfileService());
-  final UserRoomsController userRoomsController = UserRoomsController(userRoomsService: UserRoomsService());
+  final RoomController roomController = RoomController(roomService: RoomService());
   final String initialRoute;
 
   MyApp({super.key, required this.initialRoute});
@@ -57,8 +55,12 @@ class MyApp extends StatelessWidget {
       routes: {
         '/signup': (context) => RegisterPage(registerController: registerController),
         '/signing': (context) => LoginPage(loginController: loginController),
-        '/profile': (context) => ProfilePage(profileController: profileController, userRoomsController: userRoomsController, logoutController: logoutController),
         '/welcome': (context) => const WelcomePage(),
+        '/home': (context) => HomePage(
+          profileController: profileController,
+          roomController: roomController,
+          logoutController: logoutController, userRoomsService: userRoomsService,
+        ),
       },
     );
   }
