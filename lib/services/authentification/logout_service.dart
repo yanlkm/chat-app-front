@@ -11,6 +11,7 @@ class LogoutService {
     // get token from secure storage
 
     String? token = await secureStorage.read(key: 'token');
+    print("token: $token");
 
     // load .env file
     await dotenv.load(fileName: ".env");

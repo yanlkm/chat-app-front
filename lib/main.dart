@@ -16,6 +16,7 @@ import 'controllers/authentification/logout_controller.dart';
 import 'controllers/authentification/register_controller.dart';
 import 'controllers/user/profile_controller.dart';
 import 'controllers/room/room_controller.dart';
+import 'controllers/user/user_rooms_controller.dart';
 Future main() async {
   // Load env file
   await dotenv.load(fileName: ".env");
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
   final LogoutController logoutController = LogoutController(logoutService: LogoutService());
   final ProfileController profileController = ProfileController(profileService: ProfileService());
   final RoomController roomController = RoomController(roomService: RoomService());
+  final UserRoomsController userRoomsController = UserRoomsController(userRoomsService: UserRoomsService());
   final String initialRoute;
 
   MyApp({super.key, required this.initialRoute});
@@ -59,7 +61,9 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(
           profileController: profileController,
           roomController: roomController,
-          logoutController: logoutController, userRoomsService: userRoomsService,
+          logoutController: logoutController,
+          userRoomsService: userRoomsService,
+          userRoomsController: userRoomsController,
         ),
       },
     );

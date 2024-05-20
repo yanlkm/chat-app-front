@@ -1,4 +1,4 @@
-class Room {
+class Room extends Object{
   String roomID;
   String? name;
   String? description;
