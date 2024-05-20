@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -11,7 +10,6 @@ class LogoutService {
     // get token from secure storage
 
     String? token = await secureStorage.read(key: 'token');
-    print("token: $token");
 
     // load .env file
     await dotenv.load(fileName: ".env");

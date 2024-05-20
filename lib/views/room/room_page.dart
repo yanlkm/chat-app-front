@@ -8,6 +8,7 @@ import 'package:my_app/views/base_page.dart';
 import 'package:my_app/views/utils/error_popup.dart';
 import '../../controllers/authentification/logout_controller.dart';
 import '../../controllers/room/room_controller.dart';
+import '../chat_page.dart';
 
 class RoomPage extends StatefulWidget {
   final RoomController roomController;
@@ -52,6 +53,15 @@ class _RoomPageState extends State<RoomPage> {
     });
     widget.updateRoomsCallback(newRooms);
     widget.roomsNotifier.value = (newRooms as List<Room>);
+  }
+
+  void _enterRoom(Room room) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(room: room),
+      ),
+    );
   }
 
   @override
@@ -113,6 +123,10 @@ class _RoomPageState extends State<RoomPage> {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => _enterRoom(room),
+                              child: Text('Entrer'),
                             ),
                             const SizedBox(height: 8),
                             AnimatedCrossFade(
@@ -195,6 +209,7 @@ class _RoomPageState extends State<RoomPage> {
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
+                                    // TODO : If user is already in the room, disable the button
                                     child: const Text("Leave", style: TextStyle(color: Colors.white)),
                                   ),
                                 ),
