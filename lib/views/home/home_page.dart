@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:my_app/views/room/room_page.dart';
 import 'package:my_app/views/user/profile_page.dart';
 
-import '../controllers/authentification/logout_controller.dart';
-import '../controllers/room/room_controller.dart';
-import '../controllers/user/profile_controller.dart';
-import '../controllers/user/user_rooms_controller.dart';
-import '../models/room.dart';
-import '../services/user/user_rooms_service.dart';
+import '../../controllers/authentification/logout_controller.dart';
+import '../../controllers/room/room_controller.dart';
+import '../../controllers/user/profile_controller.dart';
+import '../../controllers/user/user_rooms_controller.dart';
+import '../../models/room.dart';
+import '../../services/user/user_rooms_service.dart';
 
 class HomePage extends StatefulWidget {
   final ProfileController profileController;
@@ -72,7 +72,6 @@ class _HomePageState extends State<HomePage> {
         children: [
           _profilePage,
           _roomPage,
-          // Ajoutez d'autres pages si nécessaire
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

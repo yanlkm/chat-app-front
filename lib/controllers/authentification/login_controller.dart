@@ -37,7 +37,7 @@ class LoginController {
         // store the username in secure storage
         await secureStorage.write(key : 'username', value:  jwt['Username']);
         // redirect to home page
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/home');
 
       } else {
         ErrorDisplayIsolate.showErrorDialog(context, response.error);

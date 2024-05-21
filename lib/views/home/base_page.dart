@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/views/welcome_page.dart';
+import 'package:my_app/views/home/welcome_page.dart';
 
-import '../controllers/authentification/logout_controller.dart';
+import '../../controllers/authentification/logout_controller.dart';
 
 
 class BasePage extends StatelessWidget {

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_app/controllers/user/user_rooms_controller.dart';
 import 'package:my_app/models/room.dart';
-import 'package:my_app/views/base_page.dart';
+import 'package:my_app/views/home/base_page.dart';
 import 'package:my_app/views/utils/error_popup.dart';
 import '../../controllers/authentification/logout_controller.dart';
 import '../../controllers/room/room_controller.dart';
-import '../chat_page.dart';
+import '../chat/chat_page.dart';
 
 class RoomPage extends StatefulWidget {
   final RoomController roomController;
