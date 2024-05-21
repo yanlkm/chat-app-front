@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:my_app/controllers/user/user_rooms_controller.dart';
 import 'package:my_app/models/room.dart';
@@ -33,16 +34,22 @@ class RoomPage extends StatefulWidget {
 class _RoomPageState extends State<RoomPage> {
   late Future<List<Room>> roomsFuture;
   List<bool> isExpandedList = [];
+  String? userId;
 
   @override
   void initState() {
     super.initState();
+    _loadUserId();
     roomsFuture = widget.roomController.getRooms(context);
     roomsFuture.then((rooms) {
       setState(() {
         isExpandedList = List.filled(rooms.length, false);
       });
     });
+  }
+
+  Future<void> _loadUserId() async {
+    userId = await const FlutterSecureStorage().read(key: 'userId');
   }
 
   Future<void> _refreshRooms() async {
@@ -78,7 +85,8 @@ class _RoomPageState extends State<RoomPage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                ErrorDisplayIsolate.showErrorDialog(context, '${snapshot.error}');
+                ErrorDisplayIsolate.showErrorDialog(
+                    context, '${snapshot.error}');
                 return const Center(child: Text('Failed to load rooms'));
               } else if (snapshot.hasData) {
                 List<Room> rooms = snapshot.data!;
@@ -90,6 +98,9 @@ class _RoomPageState extends State<RoomPage> {
                   itemBuilder: (context, index) {
                     Room room = rooms[index];
                     bool isExpanded = isExpandedList[index];
+
+                    final bool isMember = room.members?.contains(userId) as bool;
+
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -97,9 +108,9 @@ class _RoomPageState extends State<RoomPage> {
                         });
                       },
                       child: AnimatedContainer(
-                        duration: const  Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        margin: const  EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.blueAccent.shade100.withOpacity(0.8),
@@ -124,10 +135,7 @@ class _RoomPageState extends State<RoomPage> {
                                 color: Colors.black87,
                               ),
                             ),
-                            ElevatedButton(
-                              onPressed: () => _enterRoom(room),
-                              child: Text('Entrer'),
-                            ),
+
                             const SizedBox(height: 8),
                             AnimatedCrossFade(
                               firstChild: const SizedBox.shrink(),
@@ -160,11 +168,11 @@ class _RoomPageState extends State<RoomPage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    "Created At: ${DateFormat('MMMM dd, yyyy - HH:mm:ss').format(room.createdAt ?? DateTime.now()).substring(0,13)}",
+                                    "Created At: ${DateFormat('MMMM dd, yyyy - HH:mm:ss').format(room.createdAt ?? DateTime.now()).substring(0, 13)}",
                                     style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black45,
-                                      fontWeight: FontWeight.bold
+                                        fontSize: 12,
+                                        color: Colors.black45,
+                                        fontWeight: FontWeight.bold
                                     ),
                                   ),
                                 ],
@@ -178,25 +186,32 @@ class _RoomPageState extends State<RoomPage> {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () async {
-                                      String? response = await widget.roomController.addMemberToRoom(context, room.roomID);
-                                      if (response != null) {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response), duration: const Duration(seconds: 2)));
+                                      if (isMember) {
+                                        _enterRoom(room);
+                                      } else {
+                                        String? response = await widget.roomController.addMemberToRoom(context, room.roomID);
+                                        if (response != null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response), duration: const Duration(seconds: 2)));
+                                        }
+                                        _refreshRooms();
                                       }
-                                      _refreshRooms();
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.greenAccent,
+                                      backgroundColor: isMember ? Colors.blue : Colors.greenAccent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-                                    child: const Text("Join", style: TextStyle(color: Colors.white)),
+                                    child: Text(isMember ? "Enter" : "Join", style: const TextStyle(color: Colors.white)),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () async {
+                                      if (!isMember) {
+                                        return;
+                                      }
                                       String? response = await widget.roomController.removeMemberFromRoom(context, room.roomID);
                                       if (response != null) {
                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response), duration: const Duration(seconds: 2)));
@@ -204,13 +219,12 @@ class _RoomPageState extends State<RoomPage> {
                                       _refreshRooms();
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.redAccent,
+                                      backgroundColor: isMember ? Colors.redAccent : Colors.grey,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-                                    // TODO : If user is already in the room, disable the button
-                                    child: const Text("Leave", style: TextStyle(color: Colors.white)),
+                                    child: Text(isMember ? "Leave" : "Not a Member", style: const TextStyle(color: Colors.white)),
                                   ),
                                 ),
                               ],
