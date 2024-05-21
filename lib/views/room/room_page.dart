@@ -34,6 +34,7 @@ class RoomPage extends StatefulWidget {
 class _RoomPageState extends State<RoomPage> {
   late Future<List<Room>> roomsFuture;
   List<bool> isExpandedList = [];
+  List<bool> isLoadingList = [];
   String? userId;
 
   @override
@@ -44,6 +45,8 @@ class _RoomPageState extends State<RoomPage> {
     roomsFuture.then((rooms) {
       setState(() {
         isExpandedList = List.filled(rooms.length, false);
+        isLoadingList = List.filled(rooms.length, false);
+        widget.roomsNotifier.value = rooms;
       });
     });
   }
@@ -52,14 +55,24 @@ class _RoomPageState extends State<RoomPage> {
     userId = await const FlutterSecureStorage().read(key: 'userId');
   }
 
-  Future<void> _refreshRooms() async {
-    final newRooms = await widget.userRoomsController.getUserRooms(context);
+  Future<void> _refreshRoom(int index, Room updatedRoom) async {
     setState(() {
-      roomsFuture = widget.roomController.getRooms(context);
-      isExpandedList = List.filled(newRooms!.length, false);
+      isLoadingList[index] = true;
     });
-    widget.updateRoomsCallback(newRooms);
-    widget.roomsNotifier.value = (newRooms as List<Room>);
+
+    final newRooms = await widget.userRoomsController.getUserRooms(context);
+
+    if (mounted) {
+      setState(() {
+        if (index < widget.roomsNotifier.value.length) {
+          widget.roomsNotifier.value[index] = updatedRoom;
+          isLoadingList[index] = false;
+        }
+      });
+
+      widget.updateRoomsCallback(newRooms);
+      widget.roomsNotifier.value = (newRooms as List<Room>);
+    }
   }
 
   void _enterRoom(Room room) {
@@ -78,7 +91,10 @@ class _RoomPageState extends State<RoomPage> {
       logoutController: widget.logoutController,
       child: Scaffold(
         body: RefreshIndicator(
-          onRefresh: _refreshRooms,
+          onRefresh: () async {
+            roomsFuture = widget.roomController.getRooms(context);
+            setState(() {});
+          },
           child: FutureBuilder<List<Room>>(
             future: roomsFuture,
             builder: (context, snapshot) {
@@ -92,14 +108,17 @@ class _RoomPageState extends State<RoomPage> {
                 List<Room> rooms = snapshot.data!;
                 if (isExpandedList.length != rooms.length) {
                   isExpandedList = List.filled(rooms.length, false);
+                  isLoadingList = List.filled(rooms.length, false);
+                  widget.roomsNotifier.value = rooms;
                 }
                 return ListView.builder(
                   itemCount: rooms.length,
                   itemBuilder: (context, index) {
                     Room room = rooms[index];
                     bool isExpanded = isExpandedList[index];
+                    bool isLoading = isLoadingList[index];
 
-                    final bool isMember = room.members?.contains(userId) as bool;
+                    final bool isMember = room.members?.contains(userId) ?? false;
 
                     return GestureDetector(
                       onTap: () {
@@ -186,6 +205,9 @@ class _RoomPageState extends State<RoomPage> {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () async {
+                                      setState(() {
+                                        isLoadingList[index] = true;
+                                      });
                                       if (isMember) {
                                         _enterRoom(room);
                                       } else {
@@ -193,8 +215,10 @@ class _RoomPageState extends State<RoomPage> {
                                         if (response != null) {
                                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response), duration: const Duration(seconds: 2)));
                                         }
-                                        _refreshRooms();
+                                        // Update the local room data after joining
+                                        room.members?.add(userId!);
                                       }
+                                      await _refreshRoom(index, room);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: isMember ? Colors.blue : Colors.greenAccent,
@@ -202,6 +226,7 @@ class _RoomPageState extends State<RoomPage> {
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
+
                                     child: Text(isMember ? "Enter" : "Join", style: const TextStyle(color: Colors.white)),
                                   ),
                                 ),
@@ -212,11 +237,16 @@ class _RoomPageState extends State<RoomPage> {
                                       if (!isMember) {
                                         return;
                                       }
+                                      setState(() {
+
+                                      });
                                       String? response = await widget.roomController.removeMemberFromRoom(context, room.roomID);
                                       if (response != null) {
                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response), duration: const Duration(seconds: 2)));
                                       }
-                                      _refreshRooms();
+                                      // Update the local room data after leaving
+                                      room.members?.remove(userId);
+                                      await _refreshRoom(index, room);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: isMember ? Colors.redAccent : Colors.grey,
