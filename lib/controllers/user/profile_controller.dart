@@ -35,4 +35,12 @@ class ProfileController {
 
     }
   }
+  Future<String> updateUsername(String username) async {
+    try {
+      final response = await profileService.updateUsername(username);
+      return response as String;
+    } catch (e) {
+      return 'Failed to update username $e';
+    }
+  }
 }

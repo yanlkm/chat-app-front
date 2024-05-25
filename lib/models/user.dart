@@ -3,6 +3,8 @@ class User {
    String? username;
    final DateTime? createdAt;
    DateTime? updatedAt;
+   String? validity;
+   String? role;
    List<String>? rooms = [];
 
   User({
@@ -10,6 +12,8 @@ class User {
     this.username,
     this.createdAt,
     this.updatedAt,
+    this.validity,
+    this.role,
     this.rooms,
   });
 
@@ -18,6 +22,8 @@ class User {
       username: json['username'],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      validity: json['validity'],
+      role: json['role'],
       rooms: json['joinedSalons'] != null ? List<String>.from(json['joinedSalons']) : [],
       userID: json['_id'],
     );

@@ -36,6 +36,8 @@ class LoginController {
         await secureStorage.write(key : 'userId', value : jwt['_id']);
         // store the username in secure storage
         await secureStorage.write(key : 'username', value:  jwt['Username']);
+        // store the user role in secure storage
+        await secureStorage.write(key : 'role', value: jwt['Role']);
         // redirect to home page
         Navigator.pushNamed(context, '/home');
 

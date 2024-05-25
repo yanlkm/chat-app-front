@@ -24,6 +24,7 @@ class _ChatPageState extends State<ChatPage> {
   final List<Message> _messages = [];
   final ScrollController _scrollController = ScrollController();
   String? _username;
+  String? _userId;
   bool _isConnected = false;
 
   @override
@@ -37,6 +38,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _loadUsername() async {
     _username = await const FlutterSecureStorage().read(key: 'username');
+    _userId = await const FlutterSecureStorage().read(key: 'userId');
   }
 
   Future<void> _fetchMessages() async {
@@ -63,6 +65,7 @@ class _ChatPageState extends State<ChatPage> {
             messageID: message.roomId,
             roomID: message.roomId,
             username: message.username,
+            userId: message.userId,
             content: message.message,
             createdAt: DateTime.now(),
           ));
@@ -88,6 +91,7 @@ class _ChatPageState extends State<ChatPage> {
         roomId: widget.room.roomID,
         username: _username!,
         message: _messageControllerInput.text,
+        userId: _userId!,
       );
       _socketController.sendMessage(message);
       _messageControllerInput.clear();
@@ -145,7 +149,7 @@ class _ChatPageState extends State<ChatPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           child: Row(
-            mainAxisAlignment: msg.username == _username
+            mainAxisAlignment: msg.userId == _userId
                 ? MainAxisAlignment.end
                 : MainAxisAlignment.start,
             children: [
@@ -156,11 +160,11 @@ class _ChatPageState extends State<ChatPage> {
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: msg.username == _username
+                    color: msg.userId == _userId
                         ? Colors.blue[100]
                         : Colors.white,
                     borderRadius: BorderRadius.circular(8.0),
-                    border: msg.username != _username
+                    border: msg.userId != _userId
                         ? Border.all(color: Colors.black)
                         : null,
                   ),

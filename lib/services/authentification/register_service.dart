@@ -18,6 +18,8 @@ class RegisterService {
           data: {
             'username': username,
             'password': password,
+            'validity': 'valid',
+            'role': 'user',
             'code': code,
           },
           options: Options(

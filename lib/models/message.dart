@@ -3,6 +3,7 @@ class Message {
    String? content;
    String? roomID;
    String? username;
+   String? userId;
    DateTime? createdAt;
 
   Message({
@@ -10,6 +11,7 @@ class Message {
      this.content,
      this.roomID,
      this.username,
+     this.userId,
      this.createdAt,
   });
 
@@ -19,6 +21,7 @@ class Message {
       content: json['content'] ?? '',
       roomID: json['room'] ?? '',
       username: json['username'] ?? '',
+      userId: json['userId'] ?? '',
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
   }
@@ -29,6 +32,7 @@ class Message {
       'content': content,
       'roomID': roomID,
       'username': username,
+      'userId': userId,
       'createdAt': createdAt,
     };
   }
