@@ -17,6 +17,7 @@ class RoomPage extends StatefulWidget {
   final UserRoomsController userRoomsController;
   final void Function(List<Room?>?) updateRoomsCallback;
   final ValueNotifier<List<Room>> roomsNotifier;
+  final Room? initialRoom;
 
   const RoomPage({
     Key? key,
@@ -25,6 +26,7 @@ class RoomPage extends StatefulWidget {
     required this.updateRoomsCallback,
     required this.userRoomsController,
     required this.roomsNotifier,
+    this.initialRoom,
   }) : super(key: key);
 
   @override
@@ -47,6 +49,14 @@ class _RoomPageState extends State<RoomPage> {
         isExpandedList = List.filled(rooms.length, false);
         isLoadingList = List.filled(rooms.length, false);
         widget.roomsNotifier.value = rooms;
+
+        // Expand the initial room if provided
+        if (widget.initialRoom != null) {
+          int index = rooms.indexWhere((room) => room.roomID == widget.initialRoom!.roomID);
+          if (index != -1) {
+            isExpandedList[index] = true;
+          }
+        }
       });
     });
   }
@@ -116,7 +126,6 @@ class _RoomPageState extends State<RoomPage> {
                   itemBuilder: (context, index) {
                     Room room = rooms[index];
                     bool isExpanded = isExpandedList[index];
-                    bool isLoading = isLoadingList[index];
 
                     final bool isMember = room.members?.contains(userId) ?? false;
 
@@ -154,7 +163,6 @@ class _RoomPageState extends State<RoomPage> {
                                 color: Colors.black87,
                               ),
                             ),
-
                             const SizedBox(height: 8),
                             AnimatedCrossFade(
                               firstChild: const SizedBox.shrink(),
@@ -189,9 +197,9 @@ class _RoomPageState extends State<RoomPage> {
                                   Text(
                                     "Created At: ${DateFormat('MMMM dd, yyyy - HH:mm:ss').format(room.createdAt ?? DateTime.now()).substring(0, 13)}",
                                     style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black45,
-                                        fontWeight: FontWeight.bold
+                                      fontSize: 12,
+                                      color: Colors.black45,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
@@ -226,7 +234,6 @@ class _RoomPageState extends State<RoomPage> {
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-
                                     child: Text(isMember ? "Enter" : "Join", style: const TextStyle(color: Colors.white)),
                                   ),
                                 ),
@@ -237,9 +244,6 @@ class _RoomPageState extends State<RoomPage> {
                                       if (!isMember) {
                                         return;
                                       }
-                                      setState(() {
-
-                                      });
                                       String? response = await widget.roomController.removeMemberFromRoom(context, room.roomID);
                                       if (response != null) {
                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response), duration: const Duration(seconds: 2)));

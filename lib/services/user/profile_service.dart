@@ -22,7 +22,7 @@ class ProfileService {
         options: Options(
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization' : token,
+            'Authorization': token,
           },
           followRedirects: true, // enabler redirection
           validateStatus: (status) {
@@ -35,7 +35,6 @@ class ProfileService {
         // debug mode
         if (kDebugMode) {
           print(response.data);
-
         }
         return User.fromJson(response.data);
       } else {
@@ -80,13 +79,53 @@ class ProfileService {
         ),
       );
       if (response.statusCode == 200) {
-        return response.data['message']?? 'Username updated successfully';
+        return response.data['message'] ?? 'Username updated successfully';
       } else {
-        return response.data['error']?? 'Failed to update username';
+        return response.data['error'] ?? 'Failed to update username';
       }
     } catch (e) {
       print('Failed to update username: $e');
       throw Exception('Failed to update username');
+    }
+  }
+
+  // update user password
+  Future<String> updatePassword(String oldPassword, String newPassword) async {
+    // load secure storage
+    const secureStorage = FlutterSecureStorage();
+    // get token from secure storage
+    String? token = await secureStorage.read(key: 'token');
+    // get user id from secure storage
+    String? userId = await secureStorage.read(key: 'userId');
+    // load .env file
+    await dotenv.load(fileName: ".env");
+    String? baseUrl = dotenv.env['BASE_URL'];
+    try {
+      final dio = Dio();
+      final response = await dio.put(
+        '${baseUrl!}/users/$userId/password',
+        data: {
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': token,
+          },
+          followRedirects: true,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data['message'] ?? 'Password updated successfully';
+      } else {
+        return response.data['error'] ?? 'Failed to update password';
+      }
+    } catch (e) {
+      throw Exception('Failed to update password');
     }
   }
 }

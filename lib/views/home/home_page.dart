@@ -8,6 +8,7 @@ import '../../controllers/user/profile_controller.dart';
 import '../../controllers/user/user_rooms_controller.dart';
 import '../../models/room.dart';
 import '../../services/user/user_rooms_service.dart';
+import '../room/search_page.dart';
 
 class HomePage extends StatefulWidget {
   final ProfileController profileController;
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   late ProfilePage _profilePage;
   late RoomPage _roomPage;
+  late SearchPage _searchPage;
   late ValueNotifier<List<Room>> roomsNotifier;
 
   @override
@@ -50,6 +52,10 @@ class _HomePageState extends State<HomePage> {
       logoutController: widget.logoutController,
       updateRoomsCallback: _updateRooms,
       userRoomsController: widget.userRoomsController,
+      roomsNotifier: roomsNotifier,
+    );
+    _searchPage = SearchPage(
+      roomController: widget.roomController,
       roomsNotifier: roomsNotifier,
     );
   }
@@ -72,6 +78,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           _profilePage,
           _roomPage,
+          _searchPage,
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

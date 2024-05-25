@@ -43,4 +43,13 @@ class ProfileController {
       return 'Failed to update username $e';
     }
   }
+
+  Future<String> updatePassword(String oldPassword, String newPassword) async {
+    try {
+      final response = await profileService.updatePassword(oldPassword, newPassword);
+      return response;
+    } catch (e) {
+      return 'Failed to update password';
+    }
+  }
 }
