@@ -45,11 +45,14 @@ class UserRoomsService {
           if (kDebugMode) {
             print(rooms);
           }
+          // Return the list of rooms
           return rooms;
         } else {
+          // Return an empty list if the rooms key is null
           return [];
         }
       } else {
+        // Return an error object from the response
         throw Exception('Failed to load user rooms 1');
       }
     } catch (e) {

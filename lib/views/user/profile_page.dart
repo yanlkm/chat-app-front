@@ -12,11 +12,13 @@ import '../../models/user.dart';
 import 'dart:math';
 
 class ProfilePage extends StatefulWidget {
+  // Add the profileController, userRoomsController, logoutController, and roomsNotifier properties
   final ProfileController profileController;
   final UserRoomsController userRoomsController;
   final LogoutController logoutController;
   final ValueNotifier<List<Room>> roomsNotifier;
 
+  // Add the profileController, userRoomsController, logoutController, and roomsNotifier to the constructor
   const ProfilePage({
     super.key,
     required this.profileController,
@@ -29,7 +31,9 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
+// Add the _ProfilePageState class
 class _ProfilePageState extends State<ProfilePage> {
+  // Add the userFuture, currentUser, showRooms, showPasswords, isEditingUsername, usernameController, oldPasswordController, and newPasswordController properties
   late Future<User?> userFuture;
   User? currentUser;
   bool showRooms = false;
@@ -39,13 +43,15 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
 
+  // Add the initState method
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
-
+  // Add the _loadUserData method to load the user data
   void _loadUserData() {
+    // load the user data from secure storage
     const secureStorage = FlutterSecureStorage();
     userFuture = secureStorage.read(key: 'token').then((token) {
       if (token == null) {
@@ -53,16 +59,19 @@ class _ProfilePageState extends State<ProfilePage> {
             MaterialPageRoute(builder: (context) => const WelcomePage()));
         return null;
       } else {
+        // load the user data from the server
         return widget.profileController.getProfile(context);
       }
     }).then((user) {
       setState(() {
+        // set the currentUser to the user data
         currentUser = user as User;
       });
       return user;
     });
   }
 
+  // Add the _refreshRooms method to refresh the user rooms
   Future<void> _refreshRooms() async {
     setState(() {
       widget.roomsNotifier.value = [];
@@ -71,6 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
     widget.roomsNotifier.value = rooms as List<Room>;
   }
 
+  // Add the _toggleShowRooms method to toggle the display of rooms
   void _toggleShowRooms() {
     setState(() {
       showRooms = !showRooms;
@@ -80,12 +90,14 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  // Add the _toggleShowPasswords method to toggle the display of password update fields
   void _toggleShowPasswords() {
     setState(() {
       showPasswords = !showPasswords;
     });
   }
 
+  // Add the _toggleEditUsername method to toggle the editing of the username
   void _toggleEditUsername() {
     setState(() {
       isEditingUsername = !isEditingUsername;
@@ -95,8 +107,11 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  // Add the _updateUsername method to update the username
   Future<void> _updateUsername() async {
+    // update the username if it is not empty
     if (usernameController.text.isNotEmpty) {
+      // update the username by calling the updateUsername method from the profileController
       String result = await widget.profileController
           .updateUsername(usernameController.text);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -105,6 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
           duration: const Duration(seconds: 3),
         ),
       );
+      // update the username in the currentUser if the update is successful
       setState(() {
         isEditingUsername = false;
         if (result == 'Username updated successfully') {
@@ -114,9 +130,12 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Add the _updatePassword method to update the password
   Future<void> _updatePassword() async {
+    // update the password if the old password and new password are not empty
     if (oldPasswordController.text.isNotEmpty &&
         newPasswordController.text.isNotEmpty) {
+      // update the password by calling the updatePassword method from the profileController
       String result = await widget.profileController.updatePassword(
           oldPasswordController.text, newPasswordController.text);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -125,7 +144,9 @@ class _ProfilePageState extends State<ProfilePage> {
           duration: const Duration(seconds: 3),
         ),
       );
+      // clear the password fields if the update is successful
       if (result == 'Password updated successfully') {
+        // clear the password fields
         oldPasswordController.clear();
         newPasswordController.clear();
         setState(() {
@@ -135,6 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // Add the _getRandomColor method to generate a random color
   Color _getRandomColor() {
     final random = Random();
     return Color.fromARGB(
@@ -145,6 +167,8 @@ class _ProfilePageState extends State<ProfilePage> {
     ).withOpacity(0.5);
   }
 
+
+  // Add the build method
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -153,17 +177,22 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: _refreshRooms,
+          // Add the FutureBuilder widget
           child: FutureBuilder<User?>(
             future: userFuture,
             builder: (context, snapshot) {
+              // check the connection state
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
+                // show an error dialog if the snapshot has an error
                 ErrorDisplayIsolate.showErrorDialog(
                     context, '${snapshot.error}');
                 return const Center(child: Text('An error occurred'));
               } else if (snapshot.hasData || currentUser != null) {
+                // get the user data from the snapshot or the currentUser
                 User? user = snapshot.data ?? currentUser;
+                // format the createdAt and updatedAt dates
                 DateFormat dateFormat = DateFormat('MMMM dd, yyyy');
                 String createdAtFormatted = dateFormat
                     .format(user?.createdAt ?? DateTime.now());
@@ -177,6 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Card(
+                          // Add the Card widget to display the user data
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -198,6 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   title: isEditingUsername
                                       ? Row(
                                     children: [
+                                      // Add the TextField widget to edit the username
                                       Expanded(
                                         child: TextField(
                                           controller: usernameController,
@@ -214,6 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ),
                                       ),
                                       IconButton(
+                                        // Add the IconButton widget to update the username
                                         icon: const Icon(Icons.check),
                                         onPressed: _updateUsername,
                                       ),
@@ -221,6 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   )
                                       : Row(
                                     children: [
+                                      // Add the username, edit, and show password icons
                                       Expanded(
                                         child: Text(
                                           user?.username ?? '',
@@ -262,6 +295,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 if (showPasswords) ...[
+                                  // Add the password fields to update the password
                                   const SizedBox(height: 16),
                                   const Text(
                                     'Change your password',
@@ -329,12 +363,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           child: Text(
+                            // Add the Display rooms button
                             showRooms ? 'Hide rooms' : 'Display rooms',
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 15),
                           ),
                         ),
                         const SizedBox(height: 10),
+                        // Add the ValueListenableBuilder widget to display the rooms of the user
                         ValueListenableBuilder<List<Room>>(
                           valueListenable: widget.roomsNotifier,
                           builder: (context, rooms, child) {
@@ -391,6 +427,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ],
                               );
                             }
+                            // return an empty SizedBox if showRooms is false
                             return const SizedBox.shrink();
                           },
                         ),
@@ -399,6 +436,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 );
               } else {
+                // navigate to the WelcomePage if there is no user data
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const WelcomePage()));
                 return const Center(child: Text('No data available'));

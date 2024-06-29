@@ -1,4 +1,6 @@
+// This file contains the model for the user object
 class User {
+  // Properties
   final String? userID;
    String? username;
    final DateTime? createdAt;
@@ -7,6 +9,7 @@ class User {
    String? role;
    List<String>? rooms = [];
 
+  // Constructor
   User({
     this.userID,
     this.username,
@@ -17,6 +20,7 @@ class User {
     this.rooms,
   });
 
+  // Convert User to JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       username: json['username'],

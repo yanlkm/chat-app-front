@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ErrorDisplayIsolate {
+  // Add the showErrorDialog method
   static void showErrorDialog(BuildContext context, String message) {
 
+    // Add the AlertDialog widget
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        // Add the title and content
         title: const Text(
           'Error Message',
           style: TextStyle(color: Colors.red, fontSize: 20, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
@@ -15,6 +18,7 @@ class ErrorDisplayIsolate {
         ),
         actions: <Widget>[
           ElevatedButton(
+            // Add the onPressed method to close the dialog
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -32,6 +36,7 @@ class ErrorDisplayIsolate {
     );
   }
 
+  // Add the showErrorSnackBar method to display a SnackBar
   static void showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

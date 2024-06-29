@@ -1,3 +1,4 @@
+// This file contains the model for the Room object
 class Room extends Object{
   String roomID;
   String? name;
@@ -9,6 +10,7 @@ class Room extends Object{
   List<String>? messages;
   List<String>? hashtags;
 
+  // Constructor
   Room({
     required this.roomID,
     this.name,
@@ -21,6 +23,7 @@ class Room extends Object{
     this.hashtags,
   });
 
+  // Convert Room to JSON
   factory Room.fromJson(Map<String, dynamic> json) {
     return Room(
       roomID: json['_id'] ?? '',

@@ -17,6 +17,7 @@ class LogoutService {
 
     final dio = Dio();
     try {
+      // send a request to the server with dio
       final response = await dio.get(
         '${baseUrl!}/auth/logout',
         options: Options(
@@ -30,12 +31,15 @@ class LogoutService {
           },
         ),
       );
+      // Check the response
       if (response.statusCode == 200) {
         return 'Logout successful';
       } else {
+        // Return an error object from the response
         throw Exception('Failed to logout');
       }
     } catch (e) {
+      // Return a generic error object
       throw Exception('Failed to logout: $e');
     }
   }

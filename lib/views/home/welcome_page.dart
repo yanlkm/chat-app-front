@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 
+// Import the WelcomePage widget
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
+  // Add the build method
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Add the AppBar widget
       appBar: AppBar(
         title: const Text('Welcome to Chat App'),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
         elevation: 0, // No shadow
       ),
+      // Add the body : SingleChildScrollView, Center, Padding, Column, Image, Text, ElevatedButton, OutlinedButton
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -21,6 +25,7 @@ class WelcomePage extends StatelessWidget {
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.2), // Add space at the top
                 Image.asset(
+                  // Add the image asset
                   'images/chat-icon.png', // Image
                   height: 200,
                 ),
@@ -38,6 +43,7 @@ class WelcomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 50),
                 ElevatedButton(
+                  // Add the onPressed method to navigate to the signup page
                   onPressed: () {
                     Navigator.pushNamed(context, '/signup');
                   },
@@ -59,6 +65,7 @@ class WelcomePage extends StatelessWidget {
                 const SizedBox(height: 20),
                 OutlinedButton(
                   onPressed: () {
+                    // Navigate to the signing page
                     Navigator.pushNamed(context, '/signing');
                   },
                   style: OutlinedButton.styleFrom(

@@ -1,4 +1,6 @@
+// This file contains the model for the message object
 class Message {
+  // Properties
    final String? messageID;
    String? content;
    String? roomID;
@@ -6,6 +8,7 @@ class Message {
    String? userId;
    DateTime? createdAt;
 
+  // Constructor
   Message({
      required this.messageID,
      this.content,
@@ -15,6 +18,7 @@ class Message {
      this.createdAt,
   });
 
+  // Convert JSON to Message
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       messageID: json['_id'] ?? '',
@@ -26,6 +30,7 @@ class Message {
     );
   }
 
+  // Convert Message to JSON
   Map<String, dynamic> toJson() {
     return {
       'messageID': messageID,

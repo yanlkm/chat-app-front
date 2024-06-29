@@ -6,11 +6,12 @@ import '../../models/user.dart';
 
 class ProfileController {
   final ProfileService profileService;
-
+  // Constructor
   ProfileController({required this.profileService});
-
+  // Get user profile
   Future<User?> getProfile(BuildContext context) async {
     try {
+      // Call the get user profile service
       final response = await profileService.getUserProfile();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -24,6 +25,7 @@ class ProfileController {
       if (kDebugMode) {
         print('Failed to load user profile: $e');
       }
+      // Display error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Connexion error. Please try again.'),
@@ -37,18 +39,23 @@ class ProfileController {
   }
   Future<String> updateUsername(String username) async {
     try {
+      // Call the update username service
       final response = await profileService.updateUsername(username);
-      return response as String;
+      // return the response
+      return response;
     } catch (e) {
       return 'Failed to update username $e';
     }
   }
 
+  // Update password
   Future<String> updatePassword(String oldPassword, String newPassword) async {
     try {
+      // Call the update password service
       final response = await profileService.updatePassword(oldPassword, newPassword);
       return response;
     } catch (e) {
+      // return the error message
       return 'Failed to update password';
     }
   }

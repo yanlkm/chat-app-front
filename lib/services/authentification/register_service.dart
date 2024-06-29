@@ -10,9 +10,9 @@ class RegisterService {
       String? baseUrl = dotenv.env['BASE_URL'];
 
       try {
-        // Création d'une instance de Dio
+        // Create a Dio instance
         final dio = Dio();
-
+        // send a request to the server with dio
         final response = await dio.post(
           '${baseUrl!}/users',
           data: {

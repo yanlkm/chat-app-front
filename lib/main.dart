@@ -30,7 +30,9 @@ Future main() async {
   runApp(MyApp(initialRoute: token == null ? '/welcome' : '/home'));
 }
 
+// Add the MyApp class
 class MyApp extends StatelessWidget {
+  // Add the properties
   final RegisterService registerService = RegisterService();
   final LoginService loginService = LoginService();
   final LogoutService logoutService = LogoutService();
@@ -44,16 +46,20 @@ class MyApp extends StatelessWidget {
   final UserRoomsController userRoomsController = UserRoomsController(userRoomsService: UserRoomsService());
   final String initialRoute;
 
+  // Add the initialRoute to the constructor
   MyApp({super.key, required this.initialRoute});
 
+  // Add the build method
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mon Application',
+      // Add the title
+      title: 'Chat-app',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       initialRoute: initialRoute,
+      // Add the routes
       routes: {
         '/signup': (context) => RegisterPage(registerController: registerController),
         '/signing': (context) => LoginPage(loginController: loginController),

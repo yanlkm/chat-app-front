@@ -11,12 +11,14 @@ import '../../controllers/room/room_controller.dart';
 import '../chat/chat_page.dart';
 
 class RoomPage extends StatefulWidget {
+  // Add the roomController, logoutController, userRoomsController, updateRoomsCallback, and roomsNotifier properties
   final RoomController roomController;
   final LogoutController logoutController;
   final UserRoomsController userRoomsController;
   final void Function(List<Room?>?) updateRoomsCallback;
   final ValueNotifier<List<Room>> roomsNotifier;
 
+  // Add the roomController, logoutController, userRoomsController, updateRoomsCallback, and roomsNotifier to the constructor
   const RoomPage({
     super.key,
     required this.roomController,
@@ -30,21 +32,26 @@ class RoomPage extends StatefulWidget {
   _RoomPageState createState() => _RoomPageState();
 }
 
+// Add the _RoomPageState class
 class _RoomPageState extends State<RoomPage> {
+  // Add the roomsFuture, isExpandedList, isLoadingList, userId, searchController, allRooms, searchResultsNotifier, and sortBy properties
   late Future<List<Room>> roomsFuture;
   List<bool> isExpandedList = [];
   List<bool> isLoadingList = [];
   String? userId;
   TextEditingController searchController = TextEditingController();
-  List<Room> allRooms = [];
+  List<Room> allRooms = []; // All rooms
   ValueNotifier<List<Room>> searchResultsNotifier = ValueNotifier([]);
   String sortBy = 'name'; // Default sort by name
 
   @override
+  // Add the initState method
   void initState() {
     super.initState();
     _loadUserId();
+    // Add the roomsFuture for fetching rooms
     roomsFuture = widget.roomController.getRooms(context);
+    // Add the roomsFuture.then method to update the roomsNotifier and allRooms
     roomsFuture.then((rooms) {
       setState(() {
         isExpandedList = List.filled(rooms.length, false);
@@ -53,28 +60,33 @@ class _RoomPageState extends State<RoomPage> {
         allRooms = rooms;
       });
     });
+    // Add the searchController listener
     searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
+    // Add the searchController dispose method
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
     super.dispose();
   }
 
+  // Add the _loadUserId method to load the userId
   Future<void> _loadUserId() async {
     userId = await const FlutterSecureStorage().read(key: 'userId');
   }
 
+  // Add the _refreshRoom method to refresh the room
   Future<void> _refreshRoom(int index, Room updatedRoom) async {
     setState(() {
       isLoadingList[index] = true;
       isExpandedList[index] = updatedRoom.members!.contains(userId);
     });
-
+    // Add the newRooms to update the roomsNotifier
     final newRooms = await widget.userRoomsController.getUserRooms(context);
 
+    // Update the room data
     if (mounted) {
       setState(() {
         if (index < widget.roomsNotifier.value.length) {
@@ -82,21 +94,24 @@ class _RoomPageState extends State<RoomPage> {
           isLoadingList[index] = false;
         }
       });
-
+      // Update the roomsNotifier
       widget.updateRoomsCallback(newRooms);
       widget.roomsNotifier.value = (newRooms as List<Room>);
     }
   }
 
+  // Add the _enterRoom method to enter the room
   void _enterRoom(Room room) {
     Navigator.push(
       context,
+        // Add the ChatPage with the room
       MaterialPageRoute(
         builder: (context) => ChatPage(room: room),
       ),
     );
   }
 
+  // Add the _onSearchChanged method to perform the search
   void _onSearchChanged() {
     _performSearch(searchController.text);
   }
@@ -104,6 +119,7 @@ class _RoomPageState extends State<RoomPage> {
   void _performSearch(String query) {
     // Filter rooms based on query
     List<Room> filteredRooms = allRooms.where((room) {
+      // Check if the room name, description or hashtags contain the query
       return room.name!.toLowerCase().contains(query.toLowerCase()) ||
           room.description!.toLowerCase().contains(query.toLowerCase()) ||
           room.hashtags!
@@ -118,14 +134,19 @@ class _RoomPageState extends State<RoomPage> {
 
   // sort rooms by name, description or hashtags
   void _sortRooms(String sortBy) {
+    // Sort the rooms based on the sortBy value
     List<Room> sortedRooms = searchResultsNotifier.value.isNotEmpty ? searchResultsNotifier.value : allRooms;
     if (sortBy == 'name') {
+      // Sort the rooms by name
       sortedRooms.sort((a, b) => a.name!.compareTo(b.name!));
     } else if (sortBy == 'description') {
+      // Sort the rooms by description
       sortedRooms.sort((a, b) => a.description!.compareTo(b.description!));
     } else if (sortBy == 'hashtags') {
+      //  Sort the rooms by hashtags
       sortedRooms.sort((a, b) => a.hashtags!.join().compareTo(b.hashtags!.join()));
     }
+    // Update the search results
     setState(() {
       searchResultsNotifier.value = sortedRooms;
     });
@@ -138,9 +159,11 @@ class _RoomPageState extends State<RoomPage> {
         sortBy = value;
       }
     });
+    // Sort the rooms
     _sortRooms(value!);
   }
 
+  // Add the build method
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -148,9 +171,12 @@ class _RoomPageState extends State<RoomPage> {
       logoutController: widget.logoutController,
       child: Scaffold(
         body: RefreshIndicator(
+          // Add the onRefresh method to refresh the rooms
           onRefresh: () async {
+            // Refresh the rooms
             roomsFuture = widget.roomController.getRooms(context) ;
             await roomsFuture.then((rooms) {
+              // Update the roomsNotifier and allRooms
               setState(() {
                 isExpandedList = List.filled(rooms.length, false);
                 isLoadingList = List.filled(rooms.length, false);
@@ -159,23 +185,30 @@ class _RoomPageState extends State<RoomPage> {
                 allRooms = rooms;
               });
             });
+            // end the refresh
             setState(() {});
           },
           child: FutureBuilder<List<Room>>(
+            // Add the future property
             future: roomsFuture,
             builder: (context, snapshot) {
+              // Add the snapshot connectionState, error, and data
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
+                // Show an error dialog if the rooms fail to load
                 ErrorDisplayIsolate.showErrorDialog(
                     context, '${snapshot.error}');
                 return const Center(child: Text('Failed to load rooms'));
               } else if (snapshot.hasData ||
                   searchResultsNotifier.value.isNotEmpty) {
+                // Add the rooms list if the snapshot has data
                 List<Room> rooms = searchResultsNotifier.value.isNotEmpty ? searchResultsNotifier.value : (snapshot.data ?? []);
 
+                // Show the rooms
                 return Column(
                   children: [
+                    // Add the search bar
                     TextField(
                       controller: searchController,
                       decoration: const InputDecoration(
@@ -185,6 +218,7 @@ class _RoomPageState extends State<RoomPage> {
                     ),
                     const SizedBox(height: 10),
                     Row(
+                      // Add the sort by dropdown
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
@@ -213,7 +247,7 @@ class _RoomPageState extends State<RoomPage> {
                         ),
                       ],
                     ),
-
+                    // Add the rooms list
                     Expanded(
                       child: ListView.builder(
                         itemCount: rooms.length,
@@ -225,11 +259,13 @@ class _RoomPageState extends State<RoomPage> {
                           final bool isCreator = room.creator == userId;
 
                           return GestureDetector(
+                            // Add the onTap method to expand the room
                             onTap: () {
                               setState(() {
                                 isExpandedList[index] = !isExpandedList[index];
                               });
                             },
+                            // Add the AnimatedContainer to animate the room expansion
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
@@ -252,6 +288,7 @@ class _RoomPageState extends State<RoomPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  // Add the room name, description, hashtags, and created at
                                   Text(
                                     room.name ?? "",
                                     style: const TextStyle(
@@ -304,6 +341,7 @@ class _RoomPageState extends State<RoomPage> {
                                         ),
                                       ],
                                     ),
+                                    // Add the crossFadeState to show the room details
                                     crossFadeState: isExpanded
                                         ? CrossFadeState.showSecond
                                         : CrossFadeState.showFirst,
@@ -311,21 +349,27 @@ class _RoomPageState extends State<RoomPage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
+                                    // Add the join and leave buttons
                                     children: [
                                       Expanded(
                                         child: ElevatedButton(
+                                          // Add the onPressed method to join or enter the room
                                           onPressed: () async {
                                             setState(() {
                                               isLoadingList[index] = true;
                                             });
+                                            // Check if the user is a member
                                             if (isMember) {
+                                              // Enter the room if the user is a member
                                               _enterRoom(room);
                                             } else {
+                                              // Join the room if the user is not a member
                                               String? response = await widget
                                                   .roomController
                                                   .addMemberToRoom(
                                                   context, room.roomID);
                                               if (response != null) {
+                                                // Show a snackbar if there is an error
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(SnackBar(
                                                     content: Text(response),
@@ -336,6 +380,7 @@ class _RoomPageState extends State<RoomPage> {
                                               // Update the local room data after joining
                                               room.members?.add(userId!);
                                             }
+                                            // Refresh the room dynamically
                                             await _refreshRoom(index, room);
                                           },
                                           style: ElevatedButton.styleFrom(
@@ -355,19 +400,24 @@ class _RoomPageState extends State<RoomPage> {
                                       ),
                                       const SizedBox(width: 8),
                                       Expanded(
+                                        // Add the leave button
                                         child: ElevatedButton(
                                           onPressed: () async {
+                                            // Check if the user is a member or creator
                                             if (!isMember) {
                                               return;
                                             }
+                                            // Check if the user is the creator
                                             if (isCreator) {
                                               return;
                                             }
+                                            // Remove the user from the room
                                             String? response = await widget
                                                 .roomController
                                                 .removeMemberFromRoom(
                                                 context, room.roomID);
                                             if (response != null) {
+                                              // Show a snackbar if there is an error
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(SnackBar(
                                                   content: Text(response),
@@ -388,6 +438,7 @@ class _RoomPageState extends State<RoomPage> {
                                             ),
                                           ),
                                           child: Text(
+                                            // Change the button text based on the user's membership status
                                               isMember
                                                   ? (isCreator ? "Creator" : "Leave")
                                                   : "Not a Member",
@@ -407,6 +458,7 @@ class _RoomPageState extends State<RoomPage> {
                   ],
                 );
               } else {
+                // Show a message if there are no rooms available
                 return const Center(child: Text('No rooms available'));
               }
             },

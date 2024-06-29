@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+// Add the CustomFooter class
 class CustomFooter extends StatelessWidget {
   const CustomFooter({super.key});
 
+  // Add the build method
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(

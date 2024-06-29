@@ -36,6 +36,7 @@ class ProfileService {
         if (kDebugMode) {
           print(response.data);
         }
+        // return user instance converted from the json response
         return User.fromJson(response.data);
       } else {
         throw Exception('Failed to load user profile');
@@ -78,6 +79,8 @@ class ProfileService {
           },
         ),
       );
+
+      // return the response message
       if (response.statusCode == 200) {
         return response.data['message'] ?? 'Username updated successfully';
       } else {
@@ -85,6 +88,7 @@ class ProfileService {
       }
     } catch (e) {
       print('Failed to update username: $e');
+      // throw an exception
       throw Exception('Failed to update username');
     }
   }
@@ -119,6 +123,7 @@ class ProfileService {
           },
         ),
       );
+      // return the response message
       if (response.statusCode == 200) {
         return response.data['message'] ?? 'Password updated successfully';
       } else {

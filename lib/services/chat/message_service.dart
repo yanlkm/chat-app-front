@@ -5,11 +5,15 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../models/message.dart';
 
 class MessageService {
+  // load .env file
   final String baseUrl = dotenv.env['BASE_URL']!;
 
   Future<List<Message>> fetchMessages(String roomId) async {
+    // load secure storage
     const secureStorage = FlutterSecureStorage();
+    // get token from secure storage
     String? token = await secureStorage.read(key: 'token');
+    // load .env file
     await dotenv.load(fileName: ".env");
     String? baseUrl = dotenv.env['BASE_URL'];
     try {
