@@ -29,7 +29,12 @@ class MessageService {
       );
 
       if (response.statusCode == 200) {
-
+        // if the server returns a 200 OK response
+        // if the message data is null, return an empty list
+        if (response.data == null) {
+          return [];
+        }
+        // if the message data is not null, return a list of messages
         return (response.data as List<dynamic>)
             .map<Message>((message) => Message.fromJson(message))
             .toList();

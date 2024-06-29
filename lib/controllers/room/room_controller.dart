@@ -12,7 +12,6 @@ class RoomController {
     try {
       return await roomService.getRooms();
     } catch (e) {
-      ErrorDisplayIsolate.showErrorDialog(context, 'Failed to load rooms error: $e');
       return [];
     }
   }
