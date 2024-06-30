@@ -200,132 +200,229 @@ class _ProfilePageState extends State<ProfilePage> {
                     .format(user?.updatedAt ?? DateTime.now());
 
                 return Padding(
+                  // Add the profile page content
                   padding: const EdgeInsets.all(16.0),
                   child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Card(
-                          // Add the Card widget to display the user data
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        // create a stack to fix the profile title
+                         Text(
+                          'Welcome back, ${user?.username ?? ''} !',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
-                          elevation: 4,
+
+                        ),
+                        const SizedBox(height: 10),
+                        Card(
+                          // Add the user profile card
+                          color: Colors.white,
+                          elevation: 5,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(20.0),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: CircleAvatar(
-                                    backgroundColor: Colors.grey.shade200,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.grey.shade800,
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 80,
+                                      color: Colors.transparent,
+
                                     ),
-                                  ),
-                                  title: isEditingUsername
-                                      ? Row(
-                                    children: [
-                                      // Add the TextField widget to edit the username
-                                      Expanded(
-                                        child: TextField(
-                                          controller: usernameController,
-                                          decoration:
-                                          const InputDecoration(
-                                            hintText: 'Enter new username',
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                              BorderRadius.all(
-                                                Radius.circular(10),
+                                    Positioned(
+                                      top: 0,
+                                      child: CircleAvatar(
+                                        radius: 40,
+                                        backgroundColor: Colors.grey.shade300,
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.grey.shade800,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Column(
+                                  children: [
+                                    // Add the username field to display the username
+                                    isEditingUsername
+                                        ? Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child:
+                                          SizedBox(
+                                            width: 250,
+                                            child: TextField(
+                                              controller: usernameController,
+                                              decoration: InputDecoration(
+                                                labelText: 'Enter new username',
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(15),
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        // Add the IconButton widget to update the username
-                                        icon: const Icon(Icons.check),
-                                        onPressed: _updateUsername,
-                                      ),
-                                    ],
-                                  )
-                                      : Row(
-                                    children: [
-                                      // Add the username, edit, and show password icons
-                                      Expanded(
-                                        child: Text(
+                                        IconButton(
+                                          icon:const Icon(Icons.check, color: Colors.blueGrey),
+                                          onPressed: _updateUsername,
+                                        ),
+                                      ],
+                                    )
+                                        :
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        //  edit it if needed the username
+                                        Text(
                                           user?.username ?? '',
                                           style: const TextStyle(
                                             fontSize: 24,
                                             fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
                                           ),
                                         ),
+                                        const SizedBox(width: 20),
+                                        IconButton(
+                                          icon:const Icon(Icons.edit, color: Colors.blue),
+                                          onPressed: () {
+                                            usernameController.text = user?.username ?? '';
+                                            _toggleEditUsername();
+                                          },
+                                        ),
+                                        // Add the IconButton widget to display the password fields to update the password
+                                        IconButton(
+                                          icon:const Icon(Icons.key, color: Colors.blue),
+                                          onPressed: _toggleShowPasswords,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                const Divider(
+                                  height: 20,
+                                  thickness: 2,
+                                  indent: 20,
+                                  endIndent: 20,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(height: 10),
+                               Column(
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Member since ',
+                                          style:
+                                          TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black54),
+                                        ),
+
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    // Add the createdAtFormatted date and updatedAtFormatted date
+                                    Row (
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.calendar_today, color: Colors.black, size: 16),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          createdAtFormatted,
+                                          style:const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'Last update on ',
+                                          style: TextStyle(color: Colors.black54),
+                                        ),
+                                      ],
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.edit),
-                                        onPressed: () {
-                                          usernameController.text =
-                                              user?.username ?? '';
-                                          _toggleEditUsername();
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.key),
-                                        onPressed: _toggleShowPasswords,
-                                      ),
-                                    ],
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 8),
-                                      const Text('Since '),
-                                      Text(createdAtFormatted,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 4),
-                                      const Text('Last update on '),
-                                      Text(updatedAtFormatted,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                    ],
-                                  ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.update, color: Colors.black, size: 20),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              updatedAtFormatted,
+                                              style:const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                    ),
+                                  ],
                                 ),
                                 if (showPasswords) ...[
-                                  // Add the password fields to update the password
                                   const SizedBox(height: 16),
+                                  const Divider(
+                                    height: 10,
+                                    thickness: 1,
+                                    indent: 20,
+                                    endIndent: 20,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(height: 10),
                                   const Text(
                                     'Change your password',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
+                                      fontFamily : 'Roboto',
                                       fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
                                     ),
                                   ),
-                                  const SizedBox(height: 16),
-                                  TextField(
-                                    controller: oldPasswordController,
-                                    obscureText: true,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Old Password',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
+                                  const SizedBox(height: 10),
+                                   SizedBox(
+                                    width: 300, // Adjust the width as needed
+                                    child: TextField(
+                                      controller: oldPasswordController,
+                                      obscureText: true,
+                                      decoration: InputDecoration(
+                                        labelText: 'Old Password',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(15),
                                         ),
                                       ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-                                  TextField(
-                                    controller: newPasswordController,
-                                    obscureText: true,
-                                    decoration: const InputDecoration(
-                                      labelText: 'New Password',
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
+                                  SizedBox(
+                                    width: 300, // Adjust the width as needed
+                                    child: TextField(
+                                      controller: newPasswordController,
+                                      obscureText: true,
+                                      decoration: InputDecoration(
+                                        labelText: 'New Password',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(15),
                                         ),
                                       ),
                                     ),
@@ -340,11 +437,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                     ),
                                     child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 10),
+                                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                       child: Text(
                                         'Change',
-                                        style: TextStyle(fontSize: 16, color : Colors.white),
+                                        style: TextStyle(fontSize: 16, color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -353,7 +449,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
+                        // Add the SizedBox widget to add space between the user profile card and the Display rooms button
                         const SizedBox(height: 20),
+                        // Add the ElevatedButton widget to display the rooms of the user
                         ElevatedButton(
                           onPressed: _toggleShowRooms,
                           style: ElevatedButton.styleFrom(
@@ -362,11 +460,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               borderRadius: BorderRadius.circular(5),
                             ),
                           ),
+                          // change the button text based on the showRooms value
                           child: Text(
                             // Add the Display rooms button
                             showRooms ? 'Hide rooms' : 'Display rooms',
                             style: const TextStyle(
-                                color: Colors.white, fontSize: 15),
+                                color: Colors.white , fontSize: 15),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -374,17 +473,26 @@ class _ProfilePageState extends State<ProfilePage> {
                         ValueListenableBuilder<List<Room>>(
                           valueListenable: widget.roomsNotifier,
                           builder: (context, rooms, child) {
+                            // if showRooms is true, display the rooms
                             if (showRooms) {
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Member of ${rooms.length} rooms',
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                  Row (
+                                    children: [
+                                      const Icon(Icons.person, color: Colors.black),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        'Member of ${rooms.length} rooms',
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
+
                                   const SizedBox(height: 10),
+                                  // Add the GridView.builder widget to display the rooms with a grid view
                                   GridView.builder(
                                     gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
