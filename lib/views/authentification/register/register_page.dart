@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/controllers/authentification/register_controller.dart';
-import '../utils/error_popup.dart';
+import '../../utils/error_popup.dart';
 
 
 class RegisterPage extends StatelessWidget {

@@ -6,22 +6,22 @@ import 'package:my_app/views/home/base_page.dart';
 import 'package:my_app/views/utils/error_popup.dart';
 import 'package:my_app/views/home/welcome_page.dart';
 import '../../controllers/authentification/logout_controller.dart';
-import '../../controllers/user/profile_controller.dart';
+import '../../controllers/user/user_controller.dart';
 import '../../models/room.dart';
 import '../../models/user.dart';
 import 'dart:math';
 
 class ProfilePage extends StatefulWidget {
-  // Add the profileController, userRoomsController, logoutController, and roomsNotifier properties
-  final ProfileController profileController;
+  // Add the UserController, userRoomsController, logoutController, and roomsNotifier properties
+  final UserController userController;
   final UserRoomsController userRoomsController;
   final LogoutController logoutController;
   final ValueNotifier<List<Room>> roomsNotifier;
 
-  // Add the profileController, userRoomsController, logoutController, and roomsNotifier to the constructor
+  // Add the UserController, userRoomsController, logoutController, and roomsNotifier to the constructor
   const ProfilePage({
     super.key,
-    required this.profileController,
+    required this.userController,
     required this.userRoomsController,
     required this.logoutController,
     required this.roomsNotifier,
@@ -60,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return null;
       } else {
         // load the user data from the server
-        return widget.profileController.getProfile(context);
+        return widget.userController.getProfile(context);
       }
     }).then((user) {
       setState(() {
@@ -111,8 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _updateUsername() async {
     // update the username if it is not empty
     if (usernameController.text.isNotEmpty) {
-      // update the username by calling the updateUsername method from the profileController
-      String result = await widget.profileController
+      // update the username by calling the updateUsername method from the UserController
+      String result = await widget.userController
           .updateUsername(usernameController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -135,8 +135,8 @@ class _ProfilePageState extends State<ProfilePage> {
     // update the password if the old password and new password are not empty
     if (oldPasswordController.text.isNotEmpty &&
         newPasswordController.text.isNotEmpty) {
-      // update the password by calling the updatePassword method from the profileController
-      String result = await widget.profileController.updatePassword(
+      // update the password by calling the updatePassword method from the UserController
+      String result = await widget.userController.updatePassword(
           oldPasswordController.text, newPasswordController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
