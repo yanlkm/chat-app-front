@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:my_app/presentation/cubits/profile/profile_cubit.dart';
 import 'package:my_app/views/room/room_page.dart';
-import 'package:my_app/views/profile/profile_page.dart';
+import 'package:my_app/presentation/views/profile/profile_view.dart';
 import 'package:my_app/views/admin/admin_page.dart'; // Import AdminPage
 import '../../controllers/authentification/logout_controller.dart';
 import '../../controllers/room/room_controller.dart';
@@ -26,7 +28,7 @@ class HomePage extends StatefulWidget {
     required this.roomController,
     required this.logoutController,
     required this.userRoomsService,
-    required this.userRoomsController,
+    required this.userRoomsController
   });
 
   // Add the createState method
@@ -37,7 +39,7 @@ class HomePage extends StatefulWidget {
 // Add the _HomePageState class
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  late ProfilePage _profilePage;
+  late ProfileView _profilePage;
   late RoomPage _roomPage;
   late AdminPage _adminPage; // Declare AdminPage
   late ValueNotifier<List<Room>> roomsNotifier;
@@ -50,12 +52,7 @@ class _HomePageState extends State<HomePage> {
     // Initialize roomsNotifier & usersNotifier
     roomsNotifier = ValueNotifier<List<Room>>([]);
     usersNotifier = ValueNotifier<List<User>>([]);
-    _profilePage = ProfilePage(
-      userController: widget.userController,
-      userRoomsController: widget.userRoomsController,
-      logoutController: widget.logoutController,
-      roomsNotifier: roomsNotifier,
-    );
+    // Initialize ProfilePage
     _roomPage = RoomPage(
       roomController: widget.roomController,
       logoutController: widget.logoutController,
@@ -119,7 +116,10 @@ class _HomePageState extends State<HomePage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          _profilePage,
+        //  BlocProvider(
+          //  create: (context) => ProfileCubit(widget.userController),
+            //child: const ProfileView(),
+          //),
           _roomPage,
           if (isAdmin) _adminPage, // Conditionally include AdminPage
         ],

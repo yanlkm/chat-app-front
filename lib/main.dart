@@ -10,7 +10,7 @@ import 'package:my_app/services/user/user_rooms_service.dart';
 import 'package:my_app/views/authentification/login/login_page.dart';
 import 'package:my_app/views/authentification/register/register_page.dart';
 import 'package:my_app/views/home/welcome_page.dart';
-import 'package:my_app/views/home/home_page.dart';
+import 'package:my_app/presentation/views/home/home_view.dart';
 import 'controllers/authentification/login_controller.dart';
 import 'controllers/authentification/logout_controller.dart';
 import 'controllers/authentification/register_controller.dart';

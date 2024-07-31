@@ -12,7 +12,7 @@ class UserRoomsController {
   UserRoomsController({required this.userRoomsService});
 
   // Get user rooms
-  Future<List<Room?>?> getUserRooms(BuildContext context) async {
+  Future<List<Room?>?> getUserRooms() async {
     try {
       // Call the get user rooms service
       return await userRoomsService.getUserRooms();
@@ -21,7 +21,7 @@ class UserRoomsController {
         print('Failed to load user rooms: $e');
       }
       // Display error message
-      ErrorDisplayIsolate.showErrorSnackBar(context, 'Failed to load user rooms');
+
     }
     // Return null if an error occurred
     return null;

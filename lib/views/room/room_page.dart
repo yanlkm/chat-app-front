@@ -84,7 +84,7 @@ class _RoomPageState extends State<RoomPage> {
       isExpandedList[index] = updatedRoom.members!.contains(userId);
     });
     // Add the newRooms to update the roomsNotifier
-    final newRooms = await widget.userRoomsController.getUserRooms(context);
+    final newRooms = await widget.userRoomsController.getUserRooms();
 
     // Update the room data
     if (mounted) {

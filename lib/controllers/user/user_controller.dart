@@ -9,30 +9,17 @@ class UserController {
   // Constructor
   UserController({required this.userService});
   // Get user profile
-  Future<User?> getProfile(BuildContext context) async {
+  Future<User?> getProfile() async {
     try {
       // Call the get user profile service
       final response = await userService.getUserProfile();
       // Display success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('User profile loaded successfully.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
       return response;
 
         } catch (e) {
       if (kDebugMode) {
         print('Failed to load user profile: $e');
       }
-      // Display error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Connexion error. Please try again.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
       // TODO : Add a condition to check if user is empty redirect, then redirect
       return User();
 

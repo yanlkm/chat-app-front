@@ -60,14 +60,15 @@ class _ProfilePageState extends State<ProfilePage> {
         return null;
       } else {
         // load the user data from the server
-        return widget.userController.getProfile(context);
+       // return widget.userController.getProfile(context);
       }
     }).then((user) {
       setState(() {
         // set the currentUser to the user data
         currentUser = user as User;
       });
-      return user;
+     return null;
+      // return user;
     });
   }
 
@@ -76,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       widget.roomsNotifier.value = [];
     });
-    var rooms = await widget.userRoomsController.getUserRooms(context);
+    var rooms = await widget.userRoomsController.getUserRooms();
     widget.roomsNotifier.value = rooms as List<Room>;
   }
 
