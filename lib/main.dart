@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:my_app/presentation/pages/authentication/sign_in/sign_in_page.dart';
+import 'package:my_app/presentation/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:my_app/presentation/pages/home/home_page.dart';
+import 'package:my_app/presentation/pages/home/welcome/welcome_page.dart';
 import 'package:my_app/services/authentification/login_service.dart';
 import 'package:my_app/services/authentification/logout_service.dart';
 import 'package:my_app/services/authentification/register_service.dart';
 import 'package:my_app/services/room/room_service.dart';
 import 'package:my_app/services/user/user_service.dart';
 import 'package:my_app/services/user/user_rooms_service.dart';
-import 'package:my_app/views/authentification/login/login_page.dart';
-import 'package:my_app/views/authentification/register/register_page.dart';
-import 'package:my_app/views/home/welcome_page.dart';
-import 'package:my_app/presentation/views/home/home_view.dart';
 import 'controllers/authentification/login_controller.dart';
 import 'controllers/authentification/logout_controller.dart';
 import 'controllers/authentification/register_controller.dart';
@@ -62,8 +61,8 @@ class MyApp extends StatelessWidget {
       initialRoute: initialRoute,
       // Add the routes
       routes: {
-        '/signup': (context) => RegisterPage(registerController: registerController),
-        '/signing': (context) => LoginPage(loginController: loginController),
+        '/signup': (context) => SignUpPage(registerController: registerController),
+        '/signing': (context) => SignInPage(loginController: loginController),
         '/welcome': (context) => const WelcomePage(),
         '/home': (context) => HomePage(
           userController: userController,
