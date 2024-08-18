@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/controllers/authentification/logout_controller.dart';
-import 'package:my_app/controllers/room/room_controller.dart';
-import 'package:my_app/controllers/user/user_rooms_controller.dart';
 import 'package:my_app/models/room.dart';
 import 'package:my_app/presentation/_widgets/rooms/search_bar_widget.dart';
 import 'package:my_app/views/home/base_page.dart';
@@ -11,54 +9,21 @@ import 'package:my_app/presentation/views/chat/chat_view.dart';
 import '../../_widgets/rooms/room_list_widget.dart';
 import '../../cubits/rooms/rooms_cubit.dart';
 
-
-class RoomPage extends StatelessWidget {
-  final RoomController roomController;
-  final LogoutController logoutController;
-  final UserRoomsController userRoomsController;
-  final ValueNotifier<List<Room>> roomsNotifier;
-  final ValueNotifier<List<Room>> userRoomsNotifier;
-
-  RoomPage({
-    Key? key,
-    required this.roomController,
-    required this.logoutController,
-    required this.userRoomsController,
-    required this.roomsNotifier,
-    required this.userRoomsNotifier,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => RoomsCubit(
-        roomController,
-        userRoomsController,
-        roomsNotifier,
-        userRoomsNotifier,
-      )..loadRooms(context),
-      child: RoomPageView(
-        logoutController: logoutController,
-        roomsNotifier: roomsNotifier,
-      ),
-    );
-  }
-}
-class RoomPageView extends StatefulWidget {
+class RoomView extends StatefulWidget {
   final LogoutController logoutController;
   final ValueNotifier<List<Room>> roomsNotifier;
 
-  RoomPageView({
-    Key? key,
+  const RoomView({
+    super.key,
     required this.logoutController,
     required this.roomsNotifier,
-  }) : super(key: key);
+  });
 
   @override
-  _RoomPageViewState createState() => _RoomPageViewState();
+  RoomPageViewState createState() => RoomPageViewState();
 }
 
-class _RoomPageViewState extends State<RoomPageView> {
+class RoomPageViewState extends State<RoomView> {
 List<bool> isExpandedList = [];
   String userId = '';
   TextEditingController searchController = TextEditingController();

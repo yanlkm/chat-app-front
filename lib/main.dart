@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:my_app/presentation/pages/home/home_page.dart';
 import 'package:my_app/services/authentification/login_service.dart';
 import 'package:my_app/services/authentification/logout_service.dart';
 import 'package:my_app/services/authentification/register_service.dart';

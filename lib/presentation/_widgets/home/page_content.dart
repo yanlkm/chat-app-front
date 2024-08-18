@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/controllers/authentification/logout_controller.dart';
 import 'package:my_app/controllers/room/room_controller.dart';
-import 'package:my_app/presentation/views/profile/profile_view.dart';
-import 'package:my_app/presentation/views/rooms/rooms_view.dart';
+import 'package:my_app/presentation/pages/admin/admin_page.dart';
+import 'package:my_app/presentation/pages/profile/profile_page.dart';
+import 'package:my_app/presentation/pages/rooms/rooms_page.dart';
 import '../../../controllers/user/user_controller.dart';
 import '../../../controllers/user/user_rooms_controller.dart';
 import '../../../models/room.dart';
 import '../../../models/user.dart';
-import '../../views/admin/admin_view.dart';
 
 
 class PageContent extends StatelessWidget {

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../controllers/authentification/logout_controller.dart';
-import '../../../controllers/user/user_controller.dart';
-import '../../../controllers/user/user_rooms_controller.dart';
-import '../../../models/room.dart';
 import '../../../models/user.dart';
 import '../../../views/home/base_page.dart';
 import '../../_widgets/profile/user_profile_widget.dart';
@@ -12,54 +9,19 @@ import '../../cubits/profile/password_cubit.dart';
 import '../../cubits/profile/profile_cubit.dart';
 import '../../cubits/profile/rooms_cubit.dart';
 
-class ProfilePage extends StatelessWidget {
-  final UserController userController;
-  final UserRoomsController userRoomsController;
-  final LogoutController logoutController;
-  final ValueNotifier<List<Room>> userRoomNotifier;
-
-  const ProfilePage({
-    super.key,
-    required this.userController,
-    required this.userRoomsController,
-    required this.logoutController,
-    required this.userRoomNotifier,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => ProfileCubit(userController)..loadProfile(),
-        ),
-        BlocProvider(
-          create: (context) => RoomsCubit(userRoomsController, userRoomNotifier)..loadRooms(),
-        ),
-        BlocProvider(
-          create: (context) => PasswordCubit(userController),
-        ),
-      ],
-      child: ProfileView(
-        logoutController: logoutController,
-      ),
-    );
-  }
-}
-
 class ProfileView extends StatefulWidget {
   final LogoutController logoutController;
 
   const ProfileView({
-    Key? key,
+    super.key,
     required this.logoutController,
-  }) : super(key: key);
+  });
 
   @override
-  _ProfileViewState createState() => _ProfileViewState();
+  ProfileViewState createState() => ProfileViewState();
 }
 
-class _ProfileViewState extends State<ProfileView> {
+class ProfileViewState extends State<ProfileView> {
   bool showRooms = false;
   bool showPasswords = false;
   bool isEditingUsername = false;

@@ -23,22 +23,22 @@ class ChatPage extends StatelessWidget {
       create: (context) => MessageCubit(MessageController()),
       child: BlocProvider(
         create: (context) => SocketCubit(SocketController()),
-        child: ChatPageView(room: room),
+        child: ChatView(room: room),
       ),
     );
   }
 }
 
-class ChatPageView extends StatefulWidget {
+class ChatView extends StatefulWidget {
   final Room room;
 
-  const ChatPageView({super.key, required this.room});
+  const ChatView({super.key, required this.room});
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  ChatViewState createState() => ChatViewState();
 }
 
-class _ChatPageState extends State<ChatPageView> with WidgetsBindingObserver {
+class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   final TextEditingController _messageControllerInput = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String? _username;
