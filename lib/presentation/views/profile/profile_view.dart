@@ -6,8 +6,6 @@ import '../../../controllers/user/user_rooms_controller.dart';
 import '../../../models/room.dart';
 import '../../../models/user.dart';
 import '../../../views/home/base_page.dart';
-import '../../../views/utils/error_popup.dart';
-import '../../_widgets/profile/update_password_widget.dart';
 import '../../_widgets/profile/user_profile_widget.dart';
 import '../../_widgets/profile/user_rooms_widget.dart';
 import '../../cubits/profile/password_cubit.dart';
@@ -18,14 +16,14 @@ class ProfilePage extends StatelessWidget {
   final UserController userController;
   final UserRoomsController userRoomsController;
   final LogoutController logoutController;
-  final ValueNotifier<List<Room>> roomsNotifier;
+  final ValueNotifier<List<Room>> userRoomNotifier;
 
   const ProfilePage({
     super.key,
     required this.userController,
     required this.userRoomsController,
     required this.logoutController,
-    required this.roomsNotifier,
+    required this.userRoomNotifier,
   });
 
   @override
@@ -36,7 +34,7 @@ class ProfilePage extends StatelessWidget {
           create: (context) => ProfileCubit(userController)..loadProfile(),
         ),
         BlocProvider(
-          create: (context) => RoomsCubit(userRoomsController, roomsNotifier)..loadRooms(),
+          create: (context) => RoomsCubit(userRoomsController, userRoomNotifier)..loadRooms(),
         ),
         BlocProvider(
           create: (context) => PasswordCubit(userController),
@@ -137,7 +135,8 @@ class _ProfileViewState extends State<ProfileView> {
                                   setState(() {
                                     isEditingUsername = false;
                                   });
-                                }, updatePassword: (oldPassword, newPassword) {
+                                },
+                                updatePassword: (oldPassword, newPassword) {
                                   context.read<PasswordCubit>().updatePassword(oldPassword, newPassword);
                                 },
                               ),
@@ -161,7 +160,7 @@ class _ProfileViewState extends State<ProfileView> {
                     return const Center(child: Text('An error occurred'));
                   } else if (state is RoomsLoaded) {
                     return UserRoomsWidget(
-                      roomsNotifier: context.read<RoomsCubit>().roomsNotifier,
+                      userRoomNotifier: context.read<RoomsCubit>().userRoomNotifier,
                       showRooms: showRooms,
                       onToggleRooms: () {
                         setState(() {

@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/presentation/_widgets/home/bottom_navigation_widget.dart';
 
-import 'package:my_app/views/room/room_page.dart';
-import 'package:my_app/views/admin/admin_page.dart';
 import '../../../controllers/authentification/logout_controller.dart';
 import '../../../controllers/room/room_controller.dart';
 import '../../../controllers/user/user_controller.dart';
@@ -37,10 +35,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  late RoomPage _roomPage;
-  late AdminPage _adminPage;
+
   late ValueNotifier<List<Room>> roomsNotifier;
   late ValueNotifier<List<User>> usersNotifier;
+  late ValueNotifier<List<Room>> userRoomsNotifier;
+  late ValueNotifier<User> selectedUserNotifier;
+  late ValueNotifier<User> userFoundNotifier;
+  late ValueNotifier<List<Room>> adminRoomNotifier;
+
   bool isAdmin = false;
 
   @override
@@ -48,20 +50,11 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     roomsNotifier = ValueNotifier<List<Room>>([]);
     usersNotifier = ValueNotifier<List<User>>([]);
-    _roomPage = RoomPage(
-      roomController: widget.roomController,
-      logoutController: widget.logoutController,
-      updateRoomsCallback: _updateRooms,
-      userRoomsController: widget.userRoomsController,
-      roomsNotifier: roomsNotifier,
-    );
-    _adminPage = AdminPage(
-      userController: widget.userController,
-      roomController: widget.roomController,
-      updateOneRoomCallback: _updateOneRoom,
-      usersNotifier: usersNotifier,
-      logoutController: widget.logoutController,
-    );
+    selectedUserNotifier = ValueNotifier(User());
+    userFoundNotifier = ValueNotifier(User());
+    userRoomsNotifier = ValueNotifier<List<Room>>([]);
+    adminRoomNotifier = ValueNotifier<List<Room>>([]);
+
     _checkIfUserIsAdmin();
   }
 
@@ -79,10 +72,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  void _updateRooms(List<Room?>? updatedRooms) {
-    roomsNotifier.value = (updatedRooms as List<Room>);
   }
 
   void _updateOneRoom(Room updatedRoom) {
@@ -104,13 +93,16 @@ class _HomePageState extends State<HomePage> {
       body: PageContent(
         selectedIndex: _selectedIndex,
         isAdmin: isAdmin,
-        roomPage: _roomPage,
-        adminPage: _adminPage,
         userController: widget.userController,
         userRoomsController: widget.userRoomsController,
         logoutController: widget.logoutController,
         roomsNotifier: roomsNotifier,
-        usersNotifier: usersNotifier
+        usersNotifier: usersNotifier,
+        roomController: widget.roomController,
+        selectedUserNotifier: selectedUserNotifier,
+        userRoomsNotifier: userRoomsNotifier,
+        adminRoomNotifier: adminRoomNotifier,
+        userFoundNotifier: userFoundNotifier,
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         isAdmin: isAdmin,

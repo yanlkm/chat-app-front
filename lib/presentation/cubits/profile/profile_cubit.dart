@@ -34,7 +34,11 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(ProfileLoading());
     try {
       final user = await userController.getProfile();
-      emit(ProfileLoaded(user!, 'Profile loaded successfully'));
+      if (user == null || user.userID == null) {
+        emit(ProfileError('Failed to load profile'));
+        return;
+      }
+      emit(ProfileLoaded(user, 'Profile loaded successfully'));
     } catch (e) {
       emit(ProfileError(e.toString()));
     }
@@ -44,12 +48,14 @@ class ProfileCubit extends Cubit<ProfileState> {
     if (state is ProfileLoaded) {
       try {
         final result = await userController.updateUsername(username);
-          if (result.contains('Failed to update username')) {
+        // TODO : change the way we check if the username was updated (check if the result has right status code)
+          if (result.contains('successfully')) {
+            User updatedUser = (state as ProfileLoaded) .user..username = username;
+            updatedUser.updatedAt = DateTime.now();
+            emit(ProfileLoaded(updatedUser, result));
+          } else {
             final user = (state as ProfileLoaded).user;
             emit(ProfileLoaded(user,result));
-          } else {
-            final updatedUser = (state as ProfileLoaded) .user..username = username;
-            emit(ProfileLoaded(updatedUser, result));
           }
       } catch (e) {
         emit(ProfileError(e.toString()));

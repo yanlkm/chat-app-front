@@ -56,7 +56,6 @@ class _RoomPageState extends State<RoomPage> {
       setState(() {
         isExpandedList = List.filled(rooms.length, false);
         isLoadingList = List.filled(rooms.length, false);
-        widget.roomsNotifier.value = rooms;
         allRooms = rooms;
       });
     });
@@ -96,7 +95,7 @@ class _RoomPageState extends State<RoomPage> {
       });
       // Update the roomsNotifier
       widget.updateRoomsCallback(newRooms);
-      widget.roomsNotifier.value = (newRooms as List<Room>);
+      //widget.roomsNotifier.value = (newRooms as List<Room>);
     }
   }
 
@@ -180,7 +179,7 @@ class _RoomPageState extends State<RoomPage> {
               setState(() {
                 isExpandedList = List.filled(rooms.length, false);
                 isLoadingList = List.filled(rooms.length, false);
-                widget.roomsNotifier.value = rooms;
+                //widget.roomsNotifier.value = rooms;
                 searchResultsNotifier.value = [];
                 allRooms = rooms;
               });

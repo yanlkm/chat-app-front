@@ -28,31 +28,26 @@ class RoomsError extends RoomsState {
 
 class RoomsCubit extends Cubit<RoomsState> {
   final UserRoomsController userRoomsController;
-  final ValueNotifier<List<Room>> roomsNotifier;
+  final ValueNotifier<List<Room>> userRoomNotifier;
 
   RoomsCubit(
       this.userRoomsController,
-      this.roomsNotifier
+      this.userRoomNotifier
       ) : super(RoomsInitial());
 
   Future<void> loadRooms() async {
     emit(RoomsLoading());
     try {
       final rooms = await userRoomsController.getUserRooms();
-      roomsNotifier.value = rooms as List<Room>;
-      emit(RoomsLoaded(roomsNotifier.value));
+      if (rooms == null) {
+        emit(RoomsError('No rooms found'));
+        return;
+      }
+      userRoomNotifier.value = rooms as List<Room>;
+      emit(RoomsLoaded(userRoomNotifier.value));
     } catch (e) {
       emit(RoomsError(e.toString()));
     }
   }
 
-  void updateRoom(Room updatedRoom) {
-    final int index = roomsNotifier.value.indexWhere((room) => room.roomID == updatedRoom.roomID);
-    if (index != -1) {
-      roomsNotifier.value[index] = updatedRoom;
-    } else {
-      roomsNotifier.value = [...roomsNotifier.value, updatedRoom];
-    }
-    emit(RoomsLoaded(roomsNotifier.value));
-  }
 }

@@ -57,7 +57,7 @@ class AdminPageState extends State<AdminPage> {
     try {
       // Call the get rooms service
       List<Room> rooms =
-          await widget.roomController.getRoomCreatedByAdmin(context);
+          await widget.roomController.getRoomCreatedByAdmin();
       // iterate through the rooms
       for (Room room in rooms) {
         // add the room id to the hashtag controller
@@ -171,7 +171,7 @@ class AdminPageState extends State<AdminPage> {
   // create a room
     try {
       Room? createdRoom = await widget.roomController
-          .createRoom(context, roomName, roomDescription);
+          .createRoom( roomName, roomDescription);
       // if the room is created : clear the room description and name controller, update the room and display a success message
       if (createdRoom != null) {
         roomDescriptionController.clear();
@@ -212,7 +212,7 @@ class AdminPageState extends State<AdminPage> {
   // add the hashtag to the room
     try {
       String? response = await widget.roomController
-          .addHashtagToRoom(context, room.roomID, hashtag);
+          .addHashtagToRoom( room.roomID, hashtag);
       //  if the response is not null : clear the hashtag controller, add the hashtag to the room, update the room, update the roomsNotifier and display a success message
       if (response != null) {
         hashtagControllers[room.roomID]!.clear();
@@ -240,7 +240,7 @@ class AdminPageState extends State<AdminPage> {
 
     try {
       String? response = await widget.roomController
-          .removeHashtagFromRoom(context, room.roomID, hashtag);
+          .removeHashtagFromRoom( room.roomID, hashtag);
       if (response != null) {
         // remove the hashtag from the room
         room.hashtags?.remove(hashtag);

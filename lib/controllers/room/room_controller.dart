@@ -42,19 +42,20 @@ class RoomController {
   }
 
   // Create room
-  Future<Room?> createRoom(BuildContext context, String roomName, String roomDescription) async {
+  Future<Room?> createRoom( String roomName, String roomDescription) async {
     try {
       return await roomService.addRoom(roomName, roomDescription);
 
     } catch (e) {
       // Display error message
-      ErrorDisplayIsolate.showErrorDialog(context, 'Failed to create the room');
+     // ErrorDisplayIsolate.showErrorDialog(context, 'Failed to create the room');
+      rethrow;
     }
     return null;
   }
 
   // getRoomCreatedByAdmin method
-  Future<List<Room>> getRoomCreatedByAdmin(BuildContext context) async {
+  Future<List<Room>> getRoomCreatedByAdmin() async {
     try {
       return await roomService.getRoomCreatedByAdmin();
     } catch (e) {
@@ -63,25 +64,27 @@ class RoomController {
   }
 
   // add hashtag to room
-  Future<String?> addHashtagToRoom(BuildContext context, String roomId, String hashtag) async {
+  Future<String?> addHashtagToRoom( String roomId, String hashtag) async {
     try {
       String response = await roomService.addHashtagToRoom(roomId, hashtag);
       return response;
     } catch (e) {
       // Display error message
-      ErrorDisplayIsolate.showErrorDialog(context, 'Failed to add hashtag to the room');
+      //ErrorDisplayIsolate.showErrorDialog(context, 'Failed to add hashtag to the room');
+      rethrow ;
     }
     return null;
   }
 
   // remove hashtag from room
-  Future<String?> removeHashtagFromRoom(BuildContext context, String roomId, String hashtag) async {
+  Future<String?> removeHashtagFromRoom( String roomId, String hashtag) async {
     try {
       String response = await roomService.removeHashtagFromRoom(roomId, hashtag);
       return response;
     } catch (e) {
       // Display error message
-      ErrorDisplayIsolate.showErrorDialog(context, 'Failed to remove hashtag from the room');
+      //ErrorDisplayIsolate.showErrorDialog(context, 'Failed to remove hashtag from the room');
+      rethrow;
     }
     return null;
   }

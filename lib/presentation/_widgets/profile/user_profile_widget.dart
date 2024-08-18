@@ -145,11 +145,15 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
               BlocListener<PasswordCubit, PasswordState>(
                 listener: (context, state) {
                   if (state is PasswordUpdated) {
+                    setState(() {
+                      widget.user.updatedAt = DateTime.now();
+                    });
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.message)),
                     );
                     oldPasswordController.clear();
                     newPasswordController.clear();
+                    showPasswords = false;
                   } else if (state is PasswordError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.message)),

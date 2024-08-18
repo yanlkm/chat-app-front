@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import '../../../models/room.dart';
 
 class UserRoomsWidget extends StatelessWidget {
-  final ValueNotifier<List<Room>> roomsNotifier;
+  final ValueNotifier<List<Room>> userRoomNotifier;
   final bool showRooms;
   final Function onToggleRooms;
 
   const UserRoomsWidget({
     super.key,
-    required this.roomsNotifier,
+    required this.userRoomNotifier,
     required this.showRooms,
     required this.onToggleRooms,
   });
@@ -40,7 +40,7 @@ class UserRoomsWidget extends StatelessWidget {
         ),
         if (showRooms)
           ValueListenableBuilder<List<Room>>(
-            valueListenable: roomsNotifier,
+            valueListenable: userRoomNotifier,
             builder: (context, rooms, child) {
               if (showRooms) {
                 return Padding(
