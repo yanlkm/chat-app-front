@@ -26,7 +26,6 @@ class UserWidget extends StatelessWidget {
 
     return Column(
       children: [
-        const Divider(color: Colors.blue, thickness: 3),
         const SizedBox(height: 10),
         const Text(
           'User Management',

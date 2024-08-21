@@ -5,10 +5,12 @@ import '../../../models/user.dart';
 
 abstract class ProfileState {}
 
-class ProfileInitial extends ProfileState {}
+class ProfileInitial extends ProfileState {
+  ProfileInitial();
+}
 
 class ProfileLoading extends ProfileState {
-
+ProfileLoading();
 }
 
 class ProfileLoaded extends ProfileState {

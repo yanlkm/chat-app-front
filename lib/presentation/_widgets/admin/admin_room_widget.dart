@@ -13,7 +13,7 @@ class RoomWidget extends StatelessWidget {
   final Map<String, String?> selectedHashtag;
 
   const RoomWidget({
-    Key? key,
+    super.key,
     required this.roomNameController,
     required this.roomDescriptionController,
     required this.hashtagControllers,
@@ -23,14 +23,13 @@ class RoomWidget extends StatelessWidget {
     required this.onRemoveHashtagFromRoom,
     required this.selectHashtag,
     required this.selectedHashtag,
-  }) : super(key: key);
+  });
 
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Divider(color: Colors.blue, thickness: 3),
         const SizedBox(height: 10),
         const Text(
           'Room Management',

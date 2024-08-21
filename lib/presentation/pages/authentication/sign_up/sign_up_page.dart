@@ -18,7 +18,10 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SignUpCubit(registerController: registerController),
+      create: (_) => SignUpCubit(
+        SignUpInitial(),
+        registerController: registerController,
+      ),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -34,15 +37,6 @@ class SignUpPage extends StatelessWidget {
               passwordController: _passwordController,
               passwordConfirmationController: _passwordConfirmationController,
               codeController: _codeController,
-              onSignUpPressed: () {
-                context.read<SignUpCubit>().register(
-                  context,
-                  _usernameController.text,
-                  _passwordController.text,
-                  _passwordConfirmationController.text,
-                  _codeController.text,
-                );
-              },
             );
           },
         ),

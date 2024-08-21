@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_app/presentation/cubits/admin/admin_code_cubit.dart';
+import '../../../controllers/authentification/logout_controller.dart';
 import '../../../controllers/room/room_controller.dart';
 import '../../../controllers/user/user_controller.dart';
 import '../../../models/room.dart';
@@ -10,6 +11,7 @@ import '../../cubits/admin/admin_users_cubit.dart';
 import '../../views/admin/admin_view.dart';
 
 class AdminPage extends StatelessWidget {
+  final LogoutController logoutController;
   final UserController userController;
   final RoomController roomController;
   final ValueNotifier<List<Room>> adminRoomNotifier;
@@ -27,6 +29,7 @@ class AdminPage extends StatelessWidget {
     required this.selectedUserNotifier,
     required this.userFoundNotifier,
     required this.userNotifier,
+    required this.logoutController,
   }) ;
 
   @override
@@ -46,6 +49,7 @@ class AdminPage extends StatelessWidget {
         ),
       ],
       child: AdminView(
+        logoutController: logoutController,
         adminRoomNotifier: adminRoomNotifier,
         userNotifier: userNotifier,
         selectedUserNotifier: selectedUserNotifier,

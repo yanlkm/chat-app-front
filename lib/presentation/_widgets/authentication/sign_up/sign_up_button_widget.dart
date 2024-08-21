@@ -10,7 +10,7 @@ class SignUpButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        fixedSize: const Size(100, 50),
+        fixedSize: const Size(120, 60),
         backgroundColor: Colors.blue,
         padding: const EdgeInsets.all(15),
       ),

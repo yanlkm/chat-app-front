@@ -60,6 +60,7 @@ class PageContent extends StatelessWidget {
       ),
         if (isAdmin)
           AdminPage(
+            logoutController: logoutController,
             userController: userController,
             roomController: roomController,
             adminRoomNotifier: adminRoomNotifier,

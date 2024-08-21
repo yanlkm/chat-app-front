@@ -16,7 +16,9 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SignInCubit(loginController: loginController),
+      create: (_) => SignInCubit(
+          SignInInitial(),
+          loginController: loginController),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
