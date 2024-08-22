@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../controllers/user/user_controller.dart';
+import 'package:my_app/domain/use_cases/users/user_usecases.dart';
 
 abstract class PasswordState {}
 
@@ -21,20 +20,19 @@ class PasswordError extends PasswordState {
 }
 
 class PasswordCubit extends Cubit<PasswordState> {
-  final UserController userController;
+  final UserUseCases userUseCases;
 
-  PasswordCubit(this.userController) : super(PasswordInitial());
+  PasswordCubit(this.userUseCases) : super(PasswordInitial());
 
   Future<void> updatePassword(String oldPassword, String newPassword) async {
     emit(PasswordLoading());
     try {
-      //TODO: Call the update password service modified
-      final result = await userController.updatePassword(oldPassword, newPassword);
-      if (result == 'Password updated successfully') {
-        emit(PasswordUpdated(result));
-      } else {
-        emit(PasswordError(result));
-      }
+      final result = await userUseCases.updatePassword(oldPassword, newPassword);
+
+      result.fold(
+        (error) => emit(PasswordError(error.message)),
+        (message) => emit(PasswordUpdated(message)),
+      );
     } catch (e) {
       emit(PasswordError(e.toString()));
     }

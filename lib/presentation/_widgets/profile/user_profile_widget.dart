@@ -1,57 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:my_app/domain/entities/users/user_entity.dart';
 
-import '../../../models/user.dart';
-import '../../cubits/profile/password_cubit.dart';
-import 'update_password_widget.dart';
-
-class UserProfileWidget extends StatefulWidget {
-  final User user;
+class UserProfileWidget extends StatelessWidget {
+  final UserEntity user;
   final bool isEditingUsername;
   final TextEditingController usernameController;
-  final Function onEditPressed;
-  final Function updatePassword;
-  final Function onSavePressed;
+  final VoidCallback onEditPressed;
+  final VoidCallback onSavePressed;
+  final VoidCallback onTogglePasswords;
+  final bool showPasswords;
+  final TextEditingController oldPasswordController;
+  final TextEditingController newPasswordController;
 
-  UserProfileWidget({
+  const UserProfileWidget({
     super.key,
     required this.user,
     required this.isEditingUsername,
     required this.usernameController,
     required this.onEditPressed,
     required this.onSavePressed,
-    required this.updatePassword,
+    required this.onTogglePasswords,
+    required this.showPasswords,
+    required this.oldPasswordController,
+    required this.newPasswordController,
   });
 
   @override
-  _UserProfileWidgetState createState() => _UserProfileWidgetState();
-}
-
-class _UserProfileWidgetState extends State<UserProfileWidget> {
-  bool showPasswords = false;
-  TextEditingController oldPasswordController = TextEditingController();
-  TextEditingController newPasswordController = TextEditingController();
-
-  void onTogglePasswords() {
-    setState(() {
-      showPasswords = !showPasswords;
-    });
-  }
-
-  void onUpdatePassword() {
-    widget.updatePassword(
-      oldPasswordController.text,
-      newPasswordController.text,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    DateFormat dateFormat = DateFormat('MMMM dd, yyyy');
-    String updatedAtFormatted = dateFormat.format(widget.user.updatedAt!);
-    // Set the username controller text
-    widget.usernameController.text = widget.user.username!;
+    DateFormat dateFormat = DateFormat('MMMM dd, yyyy ss:mm');
+    String updatedAtFormatted = dateFormat.format(user.updatedAt!);
+    usernameController.text = user.username!;
 
     return Card(
       color: Colors.white,
@@ -86,53 +65,53 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
             const SizedBox(height: 10),
             Column(
               children: [
-                widget.isEditingUsername
+                isEditingUsername
                     ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              width: 250,
-                              child: TextField(
-                                controller: widget.usernameController,
-                                decoration: InputDecoration(
-                                  labelText: 'Enter new username',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                ),
-                              ),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        width: 250,
+                        child: TextField(
+                          controller: usernameController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter new username',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          IconButton(
-                            icon:
-                                const Icon(Icons.check, color: Colors.blueGrey),
-                            onPressed: () => widget.onSavePressed(),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            widget.user.username!,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => widget.onEditPressed(),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.vpn_key, color: Colors.blue),
-                            onPressed: () => onTogglePasswords(),
-                          ),
-                        ],
+                        ),
                       ),
+                    ),
+                    IconButton(
+                      icon:
+                      const Icon(Icons.check, color: Colors.blueGrey),
+                      onPressed: onSavePressed,
+                    ),
+                  ],
+                )
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      user.username!,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: onEditPressed,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.vpn_key, color: Colors.blue),
+                      onPressed: onTogglePasswords,
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 Text(
                   'Last updated: $updatedAtFormatted',
@@ -140,34 +119,6 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            if (showPasswords)
-              BlocListener<PasswordCubit, PasswordState>(
-                listener: (context, state) {
-                  if (state is PasswordUpdated) {
-                    setState(() {
-                      widget.user.updatedAt = DateTime.now();
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                    oldPasswordController.clear();
-                    newPasswordController.clear();
-                    showPasswords = false;
-                  } else if (state is PasswordError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                  }
-                },
-                child: UpdatePasswordWidget(
-                  showPasswords: showPasswords,
-                  oldPasswordController: oldPasswordController,
-                  newPasswordController: newPasswordController,
-                  onTogglePasswords: onTogglePasswords,
-                  onUpdatePassword: onUpdatePassword,
-                ),
-              ),
           ],
         ),
       ),

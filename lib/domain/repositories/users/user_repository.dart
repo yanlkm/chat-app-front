@@ -17,4 +17,6 @@ Future<Either<NetworkErrorHandler,String>> unbanUser(String userToUnbanId);
 
 Future<Either<NetworkErrorHandler,List<UserEntity>>> getUsers();
 
+Future<Either<NetworkErrorHandler,String>> createRegistrationCode(String code);
+
 }

@@ -17,12 +17,41 @@ class UserEntity extends Equatable {
     this.role,
     this.validity,
     this.rooms,
-});
+  });
 
-  @override
-  List<Object?> get props {
-   return
-     [userID, username, createdAt, updatedAt, role, validity, rooms];
+  UserEntity copyWith({
+    String? userID,
+    String? username,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? role,
+    String? validity,
+    List<String>? rooms,
+  }) {
+    return UserEntity(
+      userID: userID ?? this.userID,
+      username: username ?? this.username,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      role: role ?? this.role,
+      validity: validity ?? this.validity,
+      rooms: rooms ?? this.rooms,
+    );
   }
 
+  // define setter for user entity
+  UserEntity setUpdatedAt(DateTime newDate) {
+    return UserEntity(
+      userID: userID,
+      username: username,
+      createdAt: createdAt,
+      updatedAt: newDate,
+      role: role,
+      validity: validity,
+      rooms: rooms,
+    );
+  }
+
+  @override
+  List<Object?> get props => [userID, username, createdAt, updatedAt, role, validity, rooms];
 }

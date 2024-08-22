@@ -4,6 +4,8 @@ import '../../../controllers/authentification/logout_controller.dart';
 import '../../../controllers/room/room_controller.dart';
 import '../../../controllers/user/user_controller.dart';
 import '../../../controllers/user/user_rooms_controller.dart';
+import '../../../domain/use_cases/rooms/room_usecases.dart';
+import '../../../domain/use_cases/users/user_usecases.dart';
 import '../../../models/room.dart';
 import '../../../services/user/user_rooms_service.dart';
 import '../../../models/user.dart';
@@ -17,6 +19,11 @@ class HomePage extends StatefulWidget {
   final UserRoomsService userRoomsService;
   final UserRoomsController userRoomsController;
 
+  // usesCases
+  final UserUseCases userUseCases;
+  final RoomUsesCases roomUsesCases;
+
+
   const HomePage({
     super.key,
     required this.userController,
@@ -24,6 +31,8 @@ class HomePage extends StatefulWidget {
     required this.logoutController,
     required this.userRoomsService,
     required this.userRoomsController,
+    required this.userUseCases,
+    required this.roomUsesCases,
   });
 
   @override
@@ -87,6 +96,8 @@ class _HomePageState extends State<HomePage> {
       userRoomsNotifier: userRoomsNotifier,
       adminRoomNotifier: adminRoomNotifier,
       userFoundNotifier: userFoundNotifier,
+      userUseCases: widget.userUseCases,
+      roomUsesCases: widget.roomUsesCases,
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-
-import '../../../controllers/user/user_rooms_controller.dart';
+import 'package:my_app/utils/errors/handlers/network_error_handler.dart';
+import '../../../domain/use_cases/rooms/room_usecases.dart';
 import '../../../models/room.dart';
 
 abstract class RoomsState {}
@@ -27,27 +27,41 @@ class RoomsError extends RoomsState {
 }
 
 class RoomsCubit extends Cubit<RoomsState> {
-  final UserRoomsController userRoomsController;
+  final RoomUsesCases roomUsesCases;
   final ValueNotifier<List<Room>> userRoomNotifier;
 
   RoomsCubit(
-      this.userRoomsController,
+      this.roomUsesCases,
       this.userRoomNotifier
       ) : super(RoomsInitial());
 
   Future<void> loadRooms() async {
     emit(RoomsLoading());
     try {
-      final rooms = await userRoomsController.getUserRooms();
-      if (rooms == null) {
-        emit(RoomsError('No rooms found'));
-        return;
-      }
-      userRoomNotifier.value = rooms as List<Room>;
-      emit(RoomsLoaded(userRoomNotifier.value));
+      final eitherRoomsOrError = await roomUsesCases.getUserRooms();
+
+      eitherRoomsOrError.fold(
+            (error) => emit(RoomsError(_mapErrorToMessage(error))),
+            (roomEntities) {
+          // Convert RoomEntity to Room model if necessary
+          final rooms = roomEntities.map((roomEntity) => Room(
+            roomID: roomEntity.roomID,
+            name: roomEntity.name,
+            description: roomEntity.description,
+            // Add other fields as necessary
+          )).toList();
+
+          userRoomNotifier.value = rooms;
+          emit(RoomsLoaded(userRoomNotifier.value));
+        },
+      );
     } catch (e) {
       emit(RoomsError(e.toString()));
     }
   }
 
+  String _mapErrorToMessage(NetworkErrorHandler error) {
+    // Implement error mapping here
+    return error.message ?? 'An error occurred';
+  }
 }

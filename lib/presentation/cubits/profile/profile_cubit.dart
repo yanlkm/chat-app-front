@@ -1,7 +1,9 @@
+import 'package:either_dart/either.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/use_cases/users/user_usecases.dart';
 
-import '../../../controllers/user/user_controller.dart';
-import '../../../models/user.dart';
+import '../../../domain/entities/users/user_entity.dart';
+import '../../../utils/errors/handlers/network_error_handler.dart';
 
 abstract class ProfileState {}
 
@@ -10,37 +12,49 @@ class ProfileInitial extends ProfileState {
 }
 
 class ProfileLoading extends ProfileState {
-ProfileLoading();
+  ProfileLoading();
 }
 
 class ProfileLoaded extends ProfileState {
-  final User user;
+  final UserEntity user;
   final String message;
+  final bool hasError;
 
-  ProfileLoaded(this.user, this.message);
+  ProfileLoaded(this.user, this.message, this.hasError);
 }
 
 class ProfileError extends ProfileState {
   final String message;
 
   ProfileError(this.message);
-
 }
 
 class ProfileCubit extends Cubit<ProfileState> {
-  final UserController userController;
+  final UserUseCases userUseCases;
 
-  ProfileCubit(this.userController) : super(ProfileInitial());
+  ProfileCubit(this.userUseCases) : super(ProfileInitial());
+
+  Future<void> loadDynamically(UserEntity user, String message) async {
+    if(state is ProfileLoaded){
+      emit(ProfileLoaded(user, message, false));
+    }
+  }
 
   Future<void> loadProfile() async {
     emit(ProfileLoading());
     try {
-      final user = await userController.getProfile();
-      if (user == null || user.userID == null) {
-        emit(ProfileError('Failed to load profile'));
-        return;
-      }
-      emit(ProfileLoaded(user, 'Profile loaded successfully'));
+      final Either<NetworkErrorHandler, UserEntity> result = await userUseCases.getUser();
+
+      result.fold(
+            (error) => emit(ProfileError(error.message)),
+            (user) {
+          if (user.userID == null) {
+            emit(ProfileError('Failed to load profile'));
+          } else {
+            emit(ProfileLoaded(user, 'Profile loaded successfully', false));
+          }
+        },
+      );
     } catch (e) {
       emit(ProfileError(e.toString()));
     }
@@ -49,18 +63,25 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> updateUsername(String username) async {
     if (state is ProfileLoaded) {
       try {
-        final result = await userController.updateUsername(username);
-        // TODO : change the way we check if the username was updated (check if the result has right status code)
-          if (result.contains('successfully')) {
-            User updatedUser = (state as ProfileLoaded) .user..username = username;
-            updatedUser.updatedAt = DateTime.now();
-            emit(ProfileLoaded(updatedUser, result));
-          } else {
-            final user = (state as ProfileLoaded).user;
-            emit(ProfileLoaded(user,result));
-          }
+        final user = (state as ProfileLoaded).user;
+
+        // Assuming you have an updateUsername use case
+        final result = await userUseCases.updateUsername(username);
+
+        result.fold(
+              (error) => emit(ProfileLoaded(user, error.message, true)),
+              (successMessage) {
+            UserEntity updatedUser = user.copyWith(username: username, updatedAt: DateTime.now());
+            emit(ProfileLoaded(updatedUser, successMessage, false));
+          },
+        );
       } catch (e) {
-        emit(ProfileError(e.toString()));
+        if (state is ProfileLoaded) {
+          final user = (state as ProfileLoaded).user;
+          emit(ProfileLoaded(user, e.toString(), true));
+        } else {
+          emit(ProfileError(e.toString()));
+        }
       }
     }
   }

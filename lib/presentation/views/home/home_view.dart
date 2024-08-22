@@ -4,6 +4,8 @@ import '../../../controllers/authentification/logout_controller.dart';
 import '../../../controllers/room/room_controller.dart';
 import '../../../controllers/user/user_controller.dart';
 import '../../../controllers/user/user_rooms_controller.dart';
+import '../../../domain/use_cases/rooms/room_usecases.dart';
+import '../../../domain/use_cases/users/user_usecases.dart';
 import '../../../models/room.dart';
 import '../../../models/user.dart';
 import '../../_widgets/home/bottom_navigation_widget.dart';
@@ -18,6 +20,11 @@ class HomeView extends StatelessWidget {
   final RoomController roomController;
   final LogoutController logoutController;
   final UserRoomsController userRoomsController;
+
+  // usesCases
+  final UserUseCases userUseCases;
+  // roomUseCases
+  final RoomUsesCases roomUsesCases;
 
   final ValueNotifier<List<Room>> roomsNotifier;
   final ValueNotifier<List<User>> usersNotifier;
@@ -41,6 +48,8 @@ class HomeView extends StatelessWidget {
     required this.userRoomsNotifier,
     required this.adminRoomNotifier,
     required this.userFoundNotifier,
+    required this.userUseCases,
+    required this.roomUsesCases,
   }) : super(key: key);
 
   @override
@@ -59,6 +68,8 @@ class HomeView extends StatelessWidget {
         userRoomsNotifier: userRoomsNotifier,
         adminRoomNotifier: adminRoomNotifier,
         userFoundNotifier: userFoundNotifier,
+        userUseCases: userUseCases,
+        roomUsesCases: roomUsesCases,
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         isAdmin: isAdmin,

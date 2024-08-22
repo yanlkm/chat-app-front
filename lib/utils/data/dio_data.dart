@@ -8,14 +8,14 @@ class DioData {
   late final Dio _dio;
   late final AppConstants _appConstants;
 
-  DioData(apiToken) {
+  DioData() {
     _appConstants = AppConstants();
     _dio = Dio();
     _dio
       ..options.baseUrl = _appConstants.baseUrl!
       ..options.headers = {
         HttpHeaders.contentTypeHeader: ContentType.json.mimeType,
-        HttpHeaders.authorizationHeader: '$apiToken',
+        HttpHeaders.authorizationHeader: '${_appConstants.token}',
       }
       // enabler redirection
       ..options.followRedirects = true

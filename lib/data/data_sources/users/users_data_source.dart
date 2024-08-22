@@ -20,4 +20,5 @@ abstract class UsersDataSource {
   // Unban User
   Future<String> unbanUser(String userToUnbanId);
 
+  Future<String> createRegistrationCode(String code);
 }
