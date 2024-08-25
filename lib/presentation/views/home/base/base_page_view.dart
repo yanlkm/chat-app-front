@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../views/home/welcome_page.dart';
 import '../../../_widgets/home/base/base_page_widget.dart';
 import '../../../cubits/home/base/base_page_cubit.dart';
+import '../../../pages/home/welcome/welcome_page.dart';
 
 class BasePageView extends StatefulWidget {
   final Widget child;

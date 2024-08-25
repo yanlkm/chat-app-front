@@ -88,7 +88,6 @@ List<bool> isExpandedList = [];
     } else if (sortBy == 'hashtags') {
       sortedRooms.sort((a, b) => a.hashtags!.join().compareTo(b.hashtags!.join()));
     } else {
-      print('all');
       sortedRooms =widget.roomsNotifier.value;
     }
     setState(() {

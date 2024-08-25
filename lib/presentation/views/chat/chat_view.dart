@@ -2,14 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/domain/entities/rooms/room_entity.dart';
-import '../../../controllers/chat/message_controller.dart';
-import '../../../controllers/chat/socket_controller.dart';
 import '../../../domain/entities/chat/db/message_db_entity.dart';
 import '../../../domain/entities/chat/socket/message_socket_entity.dart';
-import '../../../models/message.dart';
-import '../../../models/message_socket.dart';
-import '../../../models/room.dart';
-import '../../../views/utils/error_popup.dart';
 import '../../_widgets/chat/chat_input_widget.dart';
 import '../../_widgets/chat/message_list_widget.dart';
 import '../../cubits/chat/message_cubit.dart';
@@ -76,8 +70,14 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
         _scrollToBottom();
       });
     } else {
-      ErrorDisplayIsolate.showErrorDialog(
-          context, 'Failed to connect to the room. Please try again.');
+     // scaffold with error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to connect to the room'),
+          ),
+        );
+      }
     }
   }
 

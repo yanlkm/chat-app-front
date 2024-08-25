@@ -157,7 +157,7 @@ class MyApp extends StatelessWidget {
   final MessageSocketUseCases messageSocketUseCases;
 
   // Add the initialRoute and userUseCases to the constructor
-  MyApp(
+  const MyApp(
       {super.key,
       required this.initialRoute,
       required this.userUseCases,
