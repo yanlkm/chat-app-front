@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/data/data_sources/chat/db/message_db_data_source.dart';
 import 'package:my_app/data/models/chat/db/message_db_model.dart';
@@ -5,6 +6,7 @@ import 'package:my_app/data/models/chat/db/message_db_model.dart';
 import '../../../../utils/constants/app_constants.dart';
 import '../../../../utils/constants/options_data.dart';
 import '../../../../utils/data/dio_data.dart';
+import '../../../../utils/errors/handlers/network_error_handler.dart';
 
 class MessageDBDataSourceImpl implements MessageDBDataSource {
 
@@ -38,8 +40,13 @@ class MessageDBDataSourceImpl implements MessageDBDataSource {
             .map<MessageDBModel>((message) => MessageDBModel.fromJson(message))
             .toList();
       } else {
-          throw response.data['error'] ?? "Failed to load messages";
-      }
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );      }
     }catch(e) {
       rethrow;
     }

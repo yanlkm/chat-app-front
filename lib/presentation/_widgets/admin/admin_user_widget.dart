@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../models/user.dart';
+import 'package:my_app/domain/entities/users/user_entity.dart';
 
 class UserWidget extends StatelessWidget {
   final TextEditingController searchController;
   final Function(String) onSearchChanged;
-  final ValueNotifier<User> userNotifier;
-  final List<User> users;
+  final ValueNotifier<UserEntity> userNotifier;
+  final List<UserEntity> users;
   final Function(String userId) onBanUser;
   final Function(String userId) onUnbanUser;
 
@@ -52,10 +52,10 @@ class UserWidget extends StatelessWidget {
         onChanged: onSearchChanged,
         ),
         const SizedBox(height: 16),
-        ValueListenableBuilder<User>(
+        ValueListenableBuilder<UserEntity>(
           valueListenable: userNotifier,
           builder: (context, user, _) {
-            return user.username != null
+            return (user.username != null && user.username!.isNotEmpty)
                 ? _buildUserDetails(user)
                 : const SizedBox.shrink();
           },
@@ -64,7 +64,7 @@ class UserWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildUserList(List<User> users, String title, Color color, Function(String) onButtonPressed) {
+  Widget _buildUserList(List<UserEntity> users, String title, Color color, Function(String) onButtonPressed) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +106,7 @@ class UserWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildUserDetails(User user) {
+  Widget _buildUserDetails(UserEntity user) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(

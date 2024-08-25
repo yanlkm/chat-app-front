@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_app/presentation/pages/home/welcome/welcome_page.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 
-import '../../../../controllers/authentification/logout_controller.dart';
 import '../../../cubits/home/base/base_page_cubit.dart';
 import '../../../views/home/base/base_page_view.dart';
 
@@ -10,34 +9,22 @@ import '../../../views/home/base/base_page_view.dart';
 class BasePage extends StatelessWidget {
   final Widget child;
   final bool showFooter;
-  final LogoutController logoutController;
+  final AuthUseCases authUseCases;
 
   const BasePage({
     super.key,
     required this.child,
-    this.showFooter = true,
-    required this.logoutController,
+    required this.showFooter ,
+    required this.authUseCases,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BasePageCubit(logoutController: logoutController),
-      child: BlocListener<BasePageCubit, void>(
-        listener: (context, state) {
-          // Handle state changes if necessary
-        },
-        child: BasePageView(
-          showFooter: showFooter,
-          onLogout: () async {
-            await context.read<BasePageCubit>().logoutUser();
-            // Navigate to WelcomePage
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const WelcomePage()),
-            );
-          },
-          child: child,
-        ),
+      create: (context) => BasePageCubit(authUseCases: authUseCases),
+      child: BasePageView(
+        showFooter: showFooter,
+        child: child,
       ),
     );
   }

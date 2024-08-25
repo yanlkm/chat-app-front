@@ -1,18 +1,23 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/controllers/user/user_rooms_controller.dart';
-import 'package:my_app/models/room.dart';
+import 'package:my_app/domain/entities/rooms/room_entity.dart';
+import 'package:my_app/domain/use_cases/rooms/room_usecases.dart';
 
-import '../../../controllers/room/room_controller.dart';
 
-abstract class RoomsState {}
+abstract class RoomsState {
+  RoomsState();
+}
 
-class RoomsInitial extends RoomsState {}
+class RoomsInitial extends RoomsState {
+  RoomsInitial();
+}
 
-class RoomsLoading extends RoomsState {}
+class RoomsLoading extends RoomsState {
+  RoomsLoading();
+}
 
 class RoomsLoaded extends RoomsState {
-  final List<Room> rooms;
+  final List<RoomEntity> rooms;
   final String message;
   RoomsLoaded(this.rooms, this.message);
 }
@@ -23,14 +28,12 @@ class RoomsError extends RoomsState {
 }
 
 class RoomsCubit extends Cubit<RoomsState> {
-  final RoomController roomController;
-  final UserRoomsController userRoomsController;
-  final ValueNotifier<List<Room>> roomsNotifier;
-  final ValueNotifier<List<Room>> userRoomsNotifier;
+  final RoomUsesCases  roomUsesCases;
+  final ValueNotifier<List<RoomEntity>> roomsNotifier;
+  final ValueNotifier<List<RoomEntity>> userRoomsNotifier;
 
   RoomsCubit(
-      this.roomController,
-      this.userRoomsController,
+      this.roomUsesCases,
       this.roomsNotifier,
       this.userRoomsNotifier,
       ) : super(RoomsInitial());
@@ -38,14 +41,19 @@ class RoomsCubit extends Cubit<RoomsState> {
   Future<void> loadRooms(BuildContext context) async {
     emit(RoomsLoading());
     try {
-      final rooms = await roomController.getRooms(context);
-      print('Rooms: ${rooms}');
-      if (rooms.isEmpty) {
-        emit(RoomsError('No rooms found'));
-        return;
-      }
-      roomsNotifier.value = rooms;
-      emit(RoomsLoaded(roomsNotifier.value, 'Rooms loaded successfully'));
+
+      final eitherRoomsOrError = await roomUsesCases.getRooms();
+      eitherRoomsOrError.fold(
+            (error) => emit(RoomsError(error.message)),
+            (rooms) {
+          if (rooms.isEmpty) {
+            emit(RoomsError('No rooms found'));
+            return;
+          }
+          roomsNotifier.value = rooms;
+          emit(RoomsLoaded(roomsNotifier.value, 'Rooms loaded successfully'));
+        },
+      );
     } catch (e) {
       emit(RoomsError(e.toString()));
     }
@@ -53,20 +61,37 @@ class RoomsCubit extends Cubit<RoomsState> {
 
   Future<void> addMemberToRoom(BuildContext context, String roomID) async {
     try {
-      final response = await roomController.addMemberToRoom(context, roomID);
-      if (response == null) {
-        emit(RoomsError('Failed to add member to room'));
-        return;
-      }
-      // Update rooms
-      final newRooms = await roomController.getRooms(context);
-      roomsNotifier.value = newRooms;
+      List<RoomEntity> roomsLoaded = [];
+      final eitherSuccessOrError = await roomUsesCases.addMemberToRoom(roomID);
 
-      // Update user-specific rooms
-      final userRooms = await userRoomsController.getUserRooms();
-      userRoomsNotifier.value = userRooms as List<Room>;
+      eitherSuccessOrError.fold(
+            (error) => emit(RoomsError(error.message)),
+            (success) async {
+          if (success.isEmpty) {
+            emit(RoomsError('Failed to add member to room'));
+            return;
+          }
+          // refresh rooms
+          final eitherRoomsOrError = await roomUsesCases.getRooms();
 
-      emit(RoomsLoaded(roomsNotifier.value, 'Member added and rooms updated successfully'));
+          eitherRoomsOrError.fold(
+                (error) => emit(RoomsError(error.message)),
+                (rooms) {
+              if (rooms.isEmpty) {
+                emit(RoomsError('No rooms found'));
+                return;
+              }
+              roomsLoaded = rooms;
+            },
+          );
+          // find the room and add it to userRoomsNotifier
+          final room = roomsLoaded.firstWhere((room) => room.roomID == roomID);
+          // Update user-specific rooms
+          userRoomsNotifier.value = [...userRoomsNotifier.value, room];
+          roomsNotifier.value = roomsLoaded;
+          emit(RoomsLoaded(roomsNotifier.value, 'Member added and rooms updated successfully'));
+        },
+      );
     } catch (e) {
       emit(RoomsError(e.toString()));
     }
@@ -74,36 +99,60 @@ class RoomsCubit extends Cubit<RoomsState> {
 
   Future<void> removeMemberFromRoom(BuildContext context, String roomID) async {
     try {
-      final response = await roomController.removeMemberFromRoom(context, roomID);
-      if (response == null) {
-        emit(RoomsError('Failed to remove member from room'));
-        return;
-      }
-      // Update rooms
-      final newRooms = await roomController.getRooms(context);
-      roomsNotifier.value = newRooms;
-
-      // Update user-specific rooms
-      final userRooms = await userRoomsController.getUserRooms();
-      userRoomsNotifier.value = userRooms as List<Room>;
-
-      emit(RoomsLoaded(roomsNotifier.value, 'Member removed and rooms updated successfully'));
+      List<RoomEntity> roomsLoaded = [];
+      final eitherSuccessOrError = await roomUsesCases.removeMemberFromRoom(roomID);
+      eitherSuccessOrError.fold(
+            (error) => emit(RoomsError(error.message)),
+            (success) async {
+          if (success.isEmpty) {
+            emit(RoomsError('Failed to remove member from room'));
+            return;
+          }
+          // refresh rooms
+          final eitherRoomsOrError = await roomUsesCases.getRooms();
+          eitherRoomsOrError.fold(
+                (error) => emit(RoomsError(error.message)),
+                (rooms) {
+              if (rooms.isEmpty) {
+                emit(RoomsError('No rooms found'));
+                return;
+              }
+              roomsLoaded = rooms;
+            },
+          );
+          // find the room and remove it from userRoomsNotifier
+          final room = roomsLoaded.firstWhere((room) => room.roomID == roomID);
+          // Update user-specific rooms
+          userRoomsNotifier.value = userRoomsNotifier.value.where((element) => element.roomID != roomID).toList();
+          roomsNotifier.value = roomsLoaded;
+          emit(RoomsLoaded(roomsNotifier.value, 'Member removed and rooms updated successfully'));
+        },
+      );
     } catch (e) {
       emit(RoomsError(e.toString()));
     }
   }
 
-  Future<void> refreshRoom(BuildContext context, int index, Room updatedRoom) async {
+  Future<void> refreshRoom(BuildContext context, int index, RoomEntity updatedRoom) async {
     try {
-      final newRooms = await roomController.getRooms(context);
-      roomsNotifier.value = newRooms;
-      emit(RoomsLoaded(roomsNotifier.value, 'Rooms loaded successfully'));
+      final eitherRoomsOrError = await roomUsesCases.getRooms();
+      eitherRoomsOrError.fold(
+            (error) => emit(RoomsError(error.message)),
+            (rooms) {
+          if (rooms.isEmpty) {
+            emit(RoomsError('No rooms found'));
+            return;
+          }
+          roomsNotifier.value = rooms;
+          emit(RoomsLoaded(roomsNotifier.value, 'Rooms loaded successfully'));
+        },
+      );
     } catch (e) {
       emit(RoomsError(e.toString()));
     }
   }
 
-  void updateRoom(Room updatedRoom) {
+  void updateRoom(RoomEntity updatedRoom) {
     final int index = roomsNotifier.value.indexWhere((room) => room.roomID == updatedRoom.roomID);
     if (index != -1) {
       roomsNotifier.value[index] = updatedRoom;

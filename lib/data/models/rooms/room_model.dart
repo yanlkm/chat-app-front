@@ -42,6 +42,7 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
       roomID: json['_id']?? '',
       name: json['name']?? '',
       description: json['description']?? '',
+      creator: json['creator']?? '',
       members:
           json['members'] != null ? List<String>.from(json['members']) : [],
       createdAt: json['createdAt'] != null

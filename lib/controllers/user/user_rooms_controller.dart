@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:my_app/views/utils/error_popup.dart';
 
 import '../../models/room.dart';
 import '../../services/user/user_rooms_service.dart';

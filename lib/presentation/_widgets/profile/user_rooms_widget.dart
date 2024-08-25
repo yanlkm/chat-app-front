@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../models/room.dart';
+import '../../../domain/entities/rooms/room_entity.dart';
 
 class UserRoomsWidget extends StatelessWidget {
-  final ValueNotifier<List<Room>> userRoomNotifier;
+  final ValueNotifier<List<RoomEntity>> userRoomNotifier;
   final bool showRooms;
   final Function onToggleRooms;
 
@@ -39,7 +39,7 @@ class UserRoomsWidget extends StatelessWidget {
           child: Text(showRooms ? 'Hide your rooms' : 'Show your rooms'),
         ),
         if (showRooms)
-          ValueListenableBuilder<List<Room>>(
+          ValueListenableBuilder<List<RoomEntity>>(
             valueListenable: userRoomNotifier,
             builder: (context, rooms, child) {
               if (showRooms) {

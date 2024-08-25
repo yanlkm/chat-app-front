@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../../controllers/authentification/logout_controller.dart';
-import '../../../controllers/room/room_controller.dart';
-import '../../../controllers/user/user_controller.dart';
-import '../../../controllers/user/user_rooms_controller.dart';
+import 'package:my_app/domain/entities/rooms/room_entity.dart';
+import 'package:my_app/domain/entities/users/user_entity.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
+import 'package:my_app/domain/use_cases/chat/db/message_db_usecases.dart';
+import 'package:my_app/domain/use_cases/chat/socket/message_socket_usescases.dart';
 import '../../../domain/use_cases/rooms/room_usecases.dart';
 import '../../../domain/use_cases/users/user_usecases.dart';
-import '../../../models/room.dart';
-import '../../../services/user/user_rooms_service.dart';
-import '../../../models/user.dart';
 import '../../views/home/home_view.dart';
 
 
 class HomePage extends StatefulWidget {
-  final UserController userController;
-  final RoomController roomController;
-  final LogoutController logoutController;
-  final UserRoomsService userRoomsService;
-  final UserRoomsController userRoomsController;
+
 
   // usesCases
   final UserUseCases userUseCases;
   final RoomUsesCases roomUsesCases;
+  final AuthUseCases authUseCases;
+  final MessageDBUseCases messageDBUseCases;
+  final MessageSocketUseCases   messageSocketUseCases;
 
 
   const HomePage({
     super.key,
-    required this.userController,
-    required this.roomController,
-    required this.logoutController,
-    required this.userRoomsService,
-    required this.userRoomsController,
     required this.userUseCases,
     required this.roomUsesCases,
+    required this.authUseCases,
+    required this.messageDBUseCases,
+    required this.messageSocketUseCases,
   });
 
   @override
@@ -42,24 +37,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  late ValueNotifier<List<Room>> roomsNotifier;
-  late ValueNotifier<List<User>> usersNotifier;
-  late ValueNotifier<List<Room>> userRoomsNotifier;
-  late ValueNotifier<User> selectedUserNotifier;
-  late ValueNotifier<User> userFoundNotifier;
-  late ValueNotifier<List<Room>> adminRoomNotifier;
+  late ValueNotifier<List<RoomEntity>> roomsNotifier;
+  late ValueNotifier<List<UserEntity>> usersNotifier;
+  late ValueNotifier<List<RoomEntity>> userRoomsNotifier;
+  late ValueNotifier<UserEntity> selectedUserNotifier;
+  late ValueNotifier<UserEntity> userFoundNotifier;
+  late ValueNotifier<List<RoomEntity>> adminRoomNotifier;
 
   bool isAdmin = false;
 
   @override
   void initState() {
     super.initState();
-    roomsNotifier = ValueNotifier<List<Room>>([]);
-    usersNotifier = ValueNotifier<List<User>>([]);
-    selectedUserNotifier = ValueNotifier(User());
-    userFoundNotifier = ValueNotifier(User());
-    userRoomsNotifier = ValueNotifier<List<Room>>([]);
-    adminRoomNotifier = ValueNotifier<List<Room>>([]);
+    roomsNotifier = ValueNotifier<List<RoomEntity>>([]);
+    usersNotifier = ValueNotifier<List<UserEntity>>([]);
+    selectedUserNotifier = ValueNotifier(const UserEntity());
+    userFoundNotifier = ValueNotifier(const UserEntity());
+    userRoomsNotifier = ValueNotifier<List<RoomEntity>>([]);
+    adminRoomNotifier = ValueNotifier<List<RoomEntity>>([]);
 
     _checkIfUserIsAdmin();
   }
@@ -86,18 +81,17 @@ class _HomePageState extends State<HomePage> {
       selectedIndex: _selectedIndex,
       onItemTapped: _onItemTapped,
       isAdmin: isAdmin,
-      userController: widget.userController,
-      userRoomsController: widget.userRoomsController,
-      logoutController: widget.logoutController,
       roomsNotifier: roomsNotifier,
       usersNotifier: usersNotifier,
-      roomController: widget.roomController,
       selectedUserNotifier: selectedUserNotifier,
       userRoomsNotifier: userRoomsNotifier,
       adminRoomNotifier: adminRoomNotifier,
       userFoundNotifier: userFoundNotifier,
       userUseCases: widget.userUseCases,
       roomUsesCases: widget.roomUsesCases,
+      authUseCases: widget.authUseCases,
+      messageDBUseCases: widget.messageDBUseCases,
+      messageSocketUseCases: widget.messageSocketUseCases,
     );
   }
 }

@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_app/controllers/authentification/logout_controller.dart';
-import 'package:my_app/controllers/room/room_controller.dart';
-import 'package:my_app/controllers/user/user_rooms_controller.dart';
-import 'package:my_app/models/room.dart';
+import '../../../domain/entities/rooms/room_entity.dart';
+import '../../../domain/use_cases/authentication/auth_usecases.dart';
+import '../../../domain/use_cases/rooms/room_usecases.dart';
+import '../../../domain/use_cases/users/user_usecases.dart';
 import '../../cubits/rooms/rooms_cubit.dart';
 import '../../views/rooms/rooms_view.dart';
 
 
 class RoomPage extends StatelessWidget {
-  final RoomController roomController;
-  final LogoutController logoutController;
-  final UserRoomsController userRoomsController;
-  final ValueNotifier<List<Room>> roomsNotifier;
-  final ValueNotifier<List<Room>> userRoomsNotifier;
+  // useCases
+  final AuthUseCases authUseCases;
+  final RoomUsesCases roomUseCases;
+  final UserUseCases userUseCases;
+  // notifiers
+  final ValueNotifier<List<RoomEntity>> roomsNotifier;
+  final ValueNotifier<List<RoomEntity>> userRoomsNotifier;
 
   const RoomPage({
     super.key,
-    required this.roomController,
-    required this.logoutController,
-    required this.userRoomsController,
+    required this.authUseCases,
+    required this.roomUseCases,
+    required this.userUseCases,
     required this.roomsNotifier,
     required this.userRoomsNotifier,
   });
@@ -28,13 +30,12 @@ class RoomPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => RoomsCubit(
-        roomController,
-        userRoomsController,
+        roomUseCases,
         roomsNotifier,
         userRoomsNotifier,
       )..loadRooms(context),
       child: RoomView(
-        logoutController: logoutController,
+        authUseCases: authUseCases,
         roomsNotifier: roomsNotifier,
       ),
     );

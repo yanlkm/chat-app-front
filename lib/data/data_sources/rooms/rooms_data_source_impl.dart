@@ -1,9 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/data/data_sources/rooms/rooms_data_source.dart';
 import 'package:my_app/data/models/rooms/room_model.dart';
 import '../../../utils/constants/app_constants.dart';
 import '../../../utils/constants/options_data.dart';
 import '../../../utils/data/dio_data.dart';
+import '../../../utils/errors/handlers/network_error_handler.dart';
 
 class RoomsDataSourceImpl implements RoomsDataSource {
   final DioData dioData;
@@ -30,7 +32,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
         final List<dynamic> roomsData = response.data['rooms'];
         return roomsData.map((room) => RoomModel.fromJson(room)).toList();
       } else {
-        throw response.data['error'] ?? 'Failed to get rooms';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
      rethrow;
@@ -49,7 +57,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
       if (response.statusCode == 200) {
         return 'Hashtag added successfully';
       } else {
-        throw response.data['error'] ?? 'Failed to add hashtag';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       rethrow;
@@ -63,7 +77,7 @@ class RoomsDataSourceImpl implements RoomsDataSource {
 
     try {
       final response = await dioData.put(
-        'rooms/add/$roomId',
+        '/rooms/add/$roomId',
         data: {'ID': userId},
         options: options,
       );
@@ -71,7 +85,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
       if (response.statusCode == 200) {
         return 'Member added successfully';
       } else {
-        throw response.data['error'] ?? 'Failed to add member';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       rethrow;
@@ -98,7 +118,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
       if (response.statusCode == 200) {
         return RoomModel.fromJson(response.data['room']);
       } else {
-        throw response.data['error'] ?? 'Failed to create room';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       rethrow;
@@ -118,7 +144,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
         final List<dynamic> roomsData = response.data['rooms'] ?? [];
         return roomsData.map((room) => RoomModel.fromJson(room)).toList();
       } else {
-        throw response.data['error'] ?? 'Failed to get rooms created by admin';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       rethrow;
@@ -131,14 +163,20 @@ class RoomsDataSourceImpl implements RoomsDataSource {
     final String? userId = await secureStorage.read(key: 'userId');
     try {
       final response = await dioData.get(
-        'rooms/user/$userId',
+        '/rooms/user/$userId',
         options: options
       );
       if (response.statusCode == 200) {
         final List<dynamic> roomsData = response.data['rooms'] ?? [];
         return roomsData.map((room) => RoomModel.fromJson(room)).toList();
       } else {
-        throw response.data['error'] ?? 'Failed to get user rooms';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       rethrow;
@@ -158,7 +196,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
       if (response.statusCode == 200) {
         return 'Hashtag removed successfully';
       } else {
-        throw response.data['error'] ?? 'Failed to remove hashtag';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
      rethrow;
@@ -179,7 +223,13 @@ class RoomsDataSourceImpl implements RoomsDataSource {
       if (response.statusCode == 200) {
         return 'Member removed successfully';
       } else {
-        throw response.data['error'] ?? 'Failed to remove member';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
     } catch (e) {
       rethrow;

@@ -15,6 +15,10 @@ class UserUseCases {
     return userRepositoryImpl.getUser();
   }
 
+  Future<Either<NetworkErrorHandler, List<UserEntity>>> getUsers() async {
+    return userRepositoryImpl.getUsers();
+  }
+
   Future<Either<NetworkErrorHandler, String>> banUser(String userToBanId) async {
     return userRepositoryImpl.banUser(userToBanId);
   }
@@ -29,5 +33,9 @@ class UserUseCases {
 
   Future<Either<NetworkErrorHandler, String>> unbanUser(String userToUnbanId) async {
     return userRepositoryImpl.unbanUser(userToUnbanId);
+  }
+
+  Future<Either<NetworkErrorHandler,String>> createRegistrationCode(String userId) async {
+    return userRepositoryImpl.createRegistrationCode(userId);
   }
 }

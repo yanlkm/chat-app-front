@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_app/domain/entities/rooms/room_entity.dart';
+import 'package:my_app/domain/entities/users/user_entity.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 import 'package:my_app/presentation/cubits/admin/admin_code_cubit.dart';
 import 'package:my_app/presentation/pages/home/base/base_page.dart';
-import '../../../controllers/authentification/logout_controller.dart';
-import '../../../models/room.dart';
-import '../../../models/user.dart';
 import '../../_widgets/admin/admin_code_widget.dart';
 import '../../_widgets/admin/admin_room_widget.dart';
 import '../../_widgets/admin/admin_user_widget.dart';
@@ -13,11 +13,11 @@ import '../../cubits/admin/admin_rooms_cubit.dart';
 import '../../cubits/admin/admin_users_cubit.dart';
 
 class AdminView extends StatefulWidget {
-  final LogoutController logoutController;
-  final ValueNotifier<List<Room>> adminRoomNotifier;
-  final ValueNotifier<List<User>> userNotifier;
-  final ValueNotifier<User> userFoundNotifier;
-  final ValueNotifier<User> selectedUserNotifier;
+  final AuthUseCases authUseCases;
+  final ValueNotifier<List<RoomEntity>> adminRoomNotifier;
+  final ValueNotifier<List<UserEntity>> userNotifier;
+  final ValueNotifier<UserEntity> userFoundNotifier;
+  final ValueNotifier<UserEntity> selectedUserNotifier;
 
   const AdminView({
     super.key,
@@ -25,7 +25,7 @@ class AdminView extends StatefulWidget {
     required this.userNotifier,
     required this.selectedUserNotifier,
     required this.userFoundNotifier,
-    required this.logoutController,
+    required this.authUseCases,
   });
 
   @override
@@ -55,8 +55,13 @@ class AdminViewState extends State<AdminView> {
   }
 
   void _initializeHashtagControllers() {
-    // Initialize controllers for each room
-    for (Room room in widget.adminRoomNotifier.value) {
+    for (RoomEntity room in widget.adminRoomNotifier.value) {
+      hashtagControllers[room.roomID] = TextEditingController();
+      selectedHashtag[room.roomID] = null;
+    }
+  }
+  void _initializeHashtagControllersManual(List<RoomEntity> rooms) {
+    for (RoomEntity room in rooms) {
       hashtagControllers[room.roomID] = TextEditingController();
       selectedHashtag[room.roomID] = null;
     }
@@ -140,7 +145,7 @@ class AdminViewState extends State<AdminView> {
   }
 
   // Method to add a hashtag to a room
-  void _addHashtagToRoom(RoomCubit roomCubit, Room room, String hashtag) {
+  void _addHashtagToRoom(RoomCubit roomCubit, RoomEntity room, String hashtag) {
     if (hashtag.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -202,7 +207,7 @@ class AdminViewState extends State<AdminView> {
   }
 
   // Method to remove a hashtag from a room
-  void _removeHashtagFromRoom(RoomCubit roomCubit, Room room, String hashtag) {
+  void _removeHashtagFromRoom(RoomCubit roomCubit, RoomEntity room, String hashtag) {
     // if hashtag selected is the last hashtag, return
     if (room.hashtags?.length == 1) {
       if (mounted) {
@@ -239,10 +244,10 @@ class AdminViewState extends State<AdminView> {
       // Reload users and update UI
       userCubit.loadUsers();
       setState(() {
-        widget.selectedUserNotifier.value = User();
+        widget.selectedUserNotifier.value = const UserEntity();
         // if the user to (un)ban is on search result
         if (widget.userFoundNotifier.value.userID == userId) {
-          widget.userFoundNotifier.value.validity = "invalid";
+          widget.userFoundNotifier.value= widget.userFoundNotifier.value.copyWith(validity: "invalid");
         }
       });
     }).catchError((error) {
@@ -263,10 +268,10 @@ class AdminViewState extends State<AdminView> {
       // Reload users and update UI
       userCubit.loadUsers();
       setState(() {
-        widget.selectedUserNotifier.value = User();
+        widget.selectedUserNotifier.value = const UserEntity();
         // if the user to (un)ban is on search result
         if (widget.userFoundNotifier.value.userID == userId) {
-          widget.userFoundNotifier.value.validity = "valid";
+          widget.userFoundNotifier.value = widget.userFoundNotifier.value.copyWith(validity: "valid");
         }
       });
     }).catchError((error) {
@@ -308,19 +313,19 @@ class AdminViewState extends State<AdminView> {
   Widget build(BuildContext context) {
     final userCubit = context.read<UserCubit>();
     final roomCubit = context.read<RoomCubit>();
-
     // Reinitialize controllers if new rooms are loaded
     if (roomCubit.state is RoomLoaded) {
       final rooms = (roomCubit.state as RoomLoaded).rooms;
       if (rooms.length != hashtagControllers.length) {
+        // Safeguard against multiple initializations
         setState(() {
-          _initializeHashtagControllers();
+          _initializeHashtagControllersManual(rooms);
         });
       }
     }
     return BasePage(
       showFooter: false,
-      logoutController: widget.logoutController,
+      authUseCases: widget.authUseCases,
       child: Scaffold(
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -353,6 +358,16 @@ class AdminViewState extends State<AdminView> {
                       // call loadRooms to reload rooms
                       roomCubit.loadRooms();
                     });
+                  }
+                  if (state is RoomLoaded) {
+                    if (state.hasError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   }
                 },
                 child: Container(),
@@ -389,16 +404,18 @@ class AdminViewState extends State<AdminView> {
                   onCreateRoom: (name, description) =>
                       _createRoom(roomCubit, name, description),
                   selectedHashtag: selectedHashtag,
-                  onAddHashtagToRoom: (Room room, String hashtag) =>
+                  onAddHashtagToRoom: (RoomEntity room, String hashtag) =>
                       _addHashtagToRoom(roomCubit, room, hashtag),
-                  onRemoveHashtagFromRoom: (Room room, String hashtag) =>
+                  onRemoveHashtagFromRoom: (RoomEntity room, String hashtag) =>
                       _removeHashtagFromRoom(roomCubit, room, hashtag),
                   selectHashtag: _selectHashtag, // Pass the callback here
                 )
               else
+
                 const Center(
                   child: CircularProgressIndicator(),
                 ),
+
             ],
           ),
         ),

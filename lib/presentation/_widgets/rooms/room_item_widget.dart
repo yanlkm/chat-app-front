@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_app/models/room.dart';
+import 'package:my_app/domain/entities/rooms/room_entity.dart';
+
 
 class RoomItem extends StatelessWidget {
-  final Room room;
+  final RoomEntity room;
   final List<bool> isExpandedList;
   final String userId;
   final int index;
   final VoidCallback onExpand;
-  final Function(int, Room) onRefreshRoom;
-  final Function(Room) onEnterRoom;
+  final Function(int, RoomEntity) onRefreshRoom;
+  final Function(RoomEntity) onEnterRoom;
   final Function(String) onJoinRoom;
   final Function(String) onLeaveRoom;
-  final Function(Room) updateRoom;
+  final Function(RoomEntity) updateRoom;
 
   const RoomItem({
     super.key,

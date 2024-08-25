@@ -5,6 +5,6 @@ import '../../models/users/user_model.dart';
 
 abstract class AuthDataSource {
   Future<TokenModel> login(SignInModel signInModel);
-  Future<void> logout(String token);
+  Future<void> logout();
   Future<UserModel> register(SignUpModel signUpModel);
 }

@@ -44,7 +44,7 @@ class MessageSocketDataSourceImpl implements MessageSocketDataSource {
     }
   }
 
-  @override
+  @override 
   void sendMessage(MessageSocketModel message) {
     if (_channel == null) {
       throw Exception('WebSocket connection is not established.');

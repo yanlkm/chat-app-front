@@ -1,17 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../controllers/user/user_controller.dart';
-import '../../../models/user.dart';
+import 'package:my_app/domain/entities/users/user_entity.dart';
+import 'package:my_app/domain/use_cases/users/user_usecases.dart';
 
-abstract class UserState {}
+abstract class UserState {
+  UserState();
+}
 
-class UserInitial extends UserState {}
+class UserInitial extends UserState {
+  UserInitial();
+}
 
-class UserLoading extends UserState {}
+class UserLoading extends UserState {
+  UserLoading();
+}
 
 class UserLoaded extends UserState {
-  final List<User> users;
-  final User? userFound;
+  final List<UserEntity> users;
+  final UserEntity? userFound;
   final String message;
 
   UserLoaded(this.users,
@@ -26,23 +32,23 @@ class UserError extends UserState {
 }
 
 class UserCubit extends Cubit<UserState> {
-  final UserController userController;
-  final ValueNotifier<List<User>> userNotifier;
-  final ValueNotifier<User> userFoundNotifier;
+  final UserUseCases userUseCases;
+  final ValueNotifier<List<UserEntity>> userNotifier;
+  final ValueNotifier<UserEntity> userFoundNotifier;
 
 
-  UserCubit(this.userController, this.userFoundNotifier, this.userNotifier) :
+  UserCubit(this.userUseCases, this.userFoundNotifier, this.userNotifier) :
         super(UserInitial());
 
   Future<void> loadUsers() async {
     try {
-      List<User> users = await userController.getUsers();
-      if (users.isEmpty) {
-        emit(UserError('No users found'));
-        return;
-      }
-      userNotifier.value = users;
-      emit(UserLoaded(userNotifier.value,null, 'Users loaded successfully'));
+      final eitherUsersOrError = await userUseCases.getUsers();
+      eitherUsersOrError.fold(
+              (error) => emit(UserError(error.message)),
+              (userEntities) {
+            userNotifier.value = userEntities;
+            emit(UserLoaded(userNotifier.value, const UserEntity(), "Users loaded successfully"));
+          });
     } catch (e) {
       emit(UserError(e.toString()));
     }
@@ -50,47 +56,76 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> searchUser(String userUniqueReference) async{
     try {
-      print("PERFORMING USER SEARCH");
-      // Call the get users service
-      List<User> users = await userController.getUsers();
+      List<UserEntity> users = [];
+      final eitherUsersOrError = await userUseCases.getUsers();
+      eitherUsersOrError.fold(
+              (error) => emit(UserError(error.message)),
+              (userEntities) {
+                users = userEntities;
+              }
+      );
       if (userUniqueReference.isEmpty) {
         // if the search string is empty, set the userNotifier value to an empty user
+        userFoundNotifier.value = const UserEntity();
         return;
       }
       // find the user by username or user id
-      User user = users.firstWhere(
+      UserEntity user = users.firstWhere(
               (user) => user.username == userUniqueReference || user.userID == userUniqueReference,
-              orElse: () => User());
+              orElse: () => const UserEntity());
+      if(user == const UserEntity()){
+        // if the user is not found set the userNotifier value to an empty user
+        userFoundNotifier.value = const UserEntity();
+        return;
+      }
       //update userNotifier
       userFoundNotifier.value = user;
-
       UserLoaded(users,user,"User found successfully");
-
     } catch(e) {
       // throw error while during search
       UserError("Error occurred performing research");
       return;
     }
-
   }
 
   Future<void> banUser(String userId) async {
     try {
-      await userController.banUser(userId);
-      await loadUsers(); // Reload users after banning
+      // Optimistically update state
+      final updatedUsers = userNotifier.value.map((user) {
+        if (user.userID == userId) {
+          return user.copyWith(validity: 'invalid');
+        }
+        return user;
+      }).toList();
+
+      emit(UserLoaded(updatedUsers, userFoundNotifier.value, "User banned successfully"));
+
+      // Call the use case to ban the user
+      await userUseCases.banUser(userId);
     } catch (e) {
-      // Handle the error
-      emit(UserError(e.toString()));
+      // Revert the state if there's an error
+      emit(UserError("Failed to ban user: $e"));
     }
   }
 
   Future<void> unbanUser(String userId) async {
     try {
-      await userController.unbanUser(userId);
-      await loadUsers(); // Reload users after unbanning
+      // Optimistically update state
+      final updatedUsers = userNotifier.value.map((user) {
+        if (user.userID == userId) {
+          return user.copyWith(validity: 'valid');
+        }
+        return user;
+      }).toList();
+
+      emit(UserLoaded(updatedUsers, userFoundNotifier.value, "User unbanned successfully"));
+
+      // Call the use case to unban the user
+      await userUseCases.unbanUser(userId);
     } catch (e) {
-      // Handle the error
-      emit(UserError(e.toString()));
+      // Revert the state if there's an error
+      emit(UserError("Failed to unban user: $e"));
     }
   }
+
 }

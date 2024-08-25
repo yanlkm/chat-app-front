@@ -1,12 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../controllers/authentification/logout_controller.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 
 class BasePageCubit extends Cubit<void> {
-  final LogoutController logoutController;
+final AuthUseCases authUseCases;
 
-  BasePageCubit({required this.logoutController}) : super(null);
+  BasePageCubit({required this.authUseCases}) : super(null);
 
   Future<void> logoutUser() async {
-    await logoutController.Logout();
+    final eitherSuccessOrError = await authUseCases.logout();
+    eitherSuccessOrError.fold((error) => emit(null), (success) => emit(null));
   }
 }

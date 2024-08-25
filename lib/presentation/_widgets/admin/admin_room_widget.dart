@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../../models/room.dart';
+import '../../../domain/entities/rooms/room_entity.dart';
 
 class RoomWidget extends StatelessWidget {
   final TextEditingController roomNameController;
   final TextEditingController roomDescriptionController;
   final Map<String, TextEditingController> hashtagControllers;
-  final List<Room> rooms;
+  final List<RoomEntity> rooms;
   final Function(String name, String description) onCreateRoom;
-  final Function(Room room, String hashtag) onAddHashtagToRoom;
-  final Function(Room room, String hashtag) onRemoveHashtagFromRoom;
+  final Function(RoomEntity room, String hashtag) onAddHashtagToRoom;
+  final Function(RoomEntity room, String hashtag) onRemoveHashtagFromRoom;
   final void Function(String roomID, String hashtag) selectHashtag;
   final Map<String, String?> selectedHashtag;
 
@@ -149,7 +149,7 @@ class RoomWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildHashtagSection(Room room, TextEditingController hashtagController) {
+  Widget _buildHashtagSection(RoomEntity room, TextEditingController hashtagController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

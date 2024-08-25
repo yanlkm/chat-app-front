@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onLogout;
 
-  const CustomAppBar({Key? key, required this.onLogout}) : super(key: key);
+  const CustomAppBar({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {

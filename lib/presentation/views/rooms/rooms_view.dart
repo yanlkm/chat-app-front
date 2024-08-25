@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:my_app/controllers/authentification/logout_controller.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 import 'package:my_app/models/room.dart';
 import 'package:my_app/presentation/_widgets/rooms/search_bar_widget.dart';
-import 'package:my_app/views/home/base_page.dart';
+import 'package:my_app/presentation/pages/home/base/base_page.dart';
 import 'package:my_app/presentation/views/chat/chat_view.dart';
+import '../../../domain/entities/rooms/room_entity.dart';
 import '../../_widgets/rooms/room_list_widget.dart';
 import '../../cubits/rooms/rooms_cubit.dart';
 
 class RoomView extends StatefulWidget {
-  final LogoutController logoutController;
-  final ValueNotifier<List<Room>> roomsNotifier;
+  final AuthUseCases authUseCases;
+  final ValueNotifier<List<RoomEntity>> roomsNotifier;
 
   const RoomView({
     super.key,
-    required this.logoutController,
+    required this.authUseCases,
     required this.roomsNotifier,
   });
 
@@ -27,7 +28,7 @@ class RoomPageViewState extends State<RoomView> {
 List<bool> isExpandedList = [];
   String userId = '';
   TextEditingController searchController = TextEditingController();
-  ValueNotifier<List<Room>> searchResultsNotifier = ValueNotifier([]);
+  ValueNotifier<List<RoomEntity>> searchResultsNotifier = ValueNotifier([]);
   String sortBy = 'name';
 
   @override
@@ -62,7 +63,7 @@ List<bool> isExpandedList = [];
   }
 
   void _performSearch(String query) {
-    List<Room> filteredRooms = widget.roomsNotifier.value.where((room) {
+    List<RoomEntity> filteredRooms = widget.roomsNotifier.value.where((room) {
       return room.name!.toLowerCase().contains(query.toLowerCase()) ||
           room.description!.toLowerCase().contains(query.toLowerCase()) ||
           room.hashtags!.any((tag) => tag.toLowerCase().contains(query.toLowerCase()));
@@ -74,7 +75,7 @@ List<bool> isExpandedList = [];
   }
 
   void _sortRooms(String sortBy) {
-    List<Room> sortedRooms = searchResultsNotifier.value.isNotEmpty ? searchResultsNotifier.value : widget.roomsNotifier.value;
+    List<RoomEntity> sortedRooms = searchResultsNotifier.value.isNotEmpty ? searchResultsNotifier.value : widget.roomsNotifier.value;
     if (sortBy == 'name') {
       sortedRooms.sort((a, b) => a.name!.compareTo(b.name!));
     } else if (sortBy == 'description') {
@@ -108,15 +109,15 @@ List<bool> isExpandedList = [];
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      showFooter: true,
-      logoutController: widget.logoutController,
+      showFooter: false,
+      authUseCases: widget.authUseCases,
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
             final cubit = context.read<RoomsCubit>();
             await cubit.loadRooms(context);
           },
-          child: ValueListenableBuilder<List<Room>>(
+          child: ValueListenableBuilder<List<RoomEntity>>(
             valueListenable: widget.roomsNotifier,
             builder: (context, rooms, _) {
               return Column(
@@ -168,7 +169,7 @@ List<bool> isExpandedList = [];
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ChatPage(room: room),
+                            builder: (context) => ChatPage(room: new Room(roomID : room.roomID, name : room.name, description : room.description, hashtags : room.hashtags, members : room.members, messages : room.messages, createdAt : room.createdAt, updatedAt : room.updatedAt)),
                           ),
                         );
                       },

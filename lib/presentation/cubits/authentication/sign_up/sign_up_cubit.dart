@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import '../../../../controllers/authentification/register_controller.dart';
-import '../../../../models/user.dart';
-import '../../../../models/utils/error.dart';
+import 'package:my_app/domain/entities/users/user_entity.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 
-abstract class SignUpState {}
+abstract class SignUpState {
+  SignUpState();
+}
 
 class SignUpInitial extends SignUpState {
   SignUpInitial();
@@ -19,7 +20,7 @@ class SignUpLoaded extends SignUpState {
 }
 
 class SignUpSuccess extends SignUpState {
-  final User user;
+  final UserEntity user;
   final String message;
 
   SignUpSuccess(this.user, this.message);
@@ -32,9 +33,9 @@ class SignUpError extends SignUpState {
 }
 
 class SignUpCubit extends Cubit<SignUpState> {
-  final RegisterController registerController;
+  final AuthUseCases authUseCases;
 
-  SignUpCubit(super.initialState, {required this.registerController}) ;
+  SignUpCubit(super.initialState, {required this.authUseCases}) ;
 
   void register(BuildContext context, String username, String password, String passwordConfirmation, String code) async {
     if (username.isEmpty || password.isEmpty || code.isEmpty) {
@@ -50,17 +51,12 @@ class SignUpCubit extends Cubit<SignUpState> {
       );
       return;
     }
-    final response = await registerController.register(
-        context, username, password, code);
-
-    if (response is User) {
-      emit(SignUpSuccess(response, 'User registered successfully. You can now sign in.'));
-    } else
-    if(response is ErrorResponse) {
-      {
-        emit(SignUpError(response.error));
-      }
+    final eitherUserOrError = await authUseCases.register(username, password, code);
+    eitherUserOrError.fold((error) => {
+      emit(SignUpError(error.message))
+    }, (user) => {
+      emit(SignUpSuccess(user, 'User registered successfully. You can now sign in.'))
     }
-
+    );
   }
 }

@@ -16,8 +16,8 @@ class AuthUseCases {
     return authRepositoryImpl.login(username, password);
   }
 
-  Future<Either<NetworkErrorHandler, void>> logout(String token) async {
-    return authRepositoryImpl.logout(token);
+  Future<Either<NetworkErrorHandler, void>> logout() async {
+    return authRepositoryImpl.logout();
   }
 
   Future<Either<NetworkErrorHandler, UserEntity>> register(String username, String password, String code) async {

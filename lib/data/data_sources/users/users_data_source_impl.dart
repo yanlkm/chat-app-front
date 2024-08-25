@@ -1,9 +1,11 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/data/data_sources/users/users_data_source.dart';
 import '../../../utils/constants/app_constants.dart';
 import '../../../utils/constants/options_data.dart';
 import '../../../utils/data/dio_data.dart';
+import '../../../utils/errors/handlers/network_error_handler.dart';
 import '../../models/users/user_model.dart';
 
 class UserDataSourceImpl implements UsersDataSource {
@@ -26,7 +28,13 @@ class UserDataSourceImpl implements UsersDataSource {
       final userId = await secureStorage.read(key: 'userId');
       final response = await dioData.get('/users/$userId', options: options);
       if (response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to get user';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return UserModel.fromJson(response.data);
     } catch (e) {
@@ -44,7 +52,13 @@ class UserDataSourceImpl implements UsersDataSource {
         options: options,
       );
       if (response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to ban user';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return response.data['message'] ?? 'User banned successfully';
     } catch (e) {
@@ -62,7 +76,13 @@ class UserDataSourceImpl implements UsersDataSource {
         options: options,
       );
       if(response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to unban user';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return response.data['message'] ?? 'User unbanned successfully';
     } catch (e) {
@@ -76,7 +96,13 @@ class UserDataSourceImpl implements UsersDataSource {
       final options = await optionsData.loadOptions();
       final response = await dioData.get('/users', options: options);
       if (response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to get users';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return (response.data as List<dynamic>)
           .map<UserModel>((user) => UserModel.fromJson(user))
@@ -97,7 +123,13 @@ class UserDataSourceImpl implements UsersDataSource {
         options: options,
       );
       if(response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to update username';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return response.data['message'] ?? 'Username updated successfully';
     } catch (e) {
@@ -119,7 +151,13 @@ class UserDataSourceImpl implements UsersDataSource {
         options: options,
       );
       if (response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to update password';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return response.data['message'] ?? 'Password updated successfully';
     } catch (e) {
@@ -137,7 +175,13 @@ class UserDataSourceImpl implements UsersDataSource {
         options: options,
       );
       if(response.statusCode != 200) {
-        throw response.data['error'] ?? 'Failed to create code';
+        throw NetworkErrorHandler.fromDioError(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+          ),
+        );
       }
       return response.data['message'] ?? 'Code created successfully';
     } catch (e) {

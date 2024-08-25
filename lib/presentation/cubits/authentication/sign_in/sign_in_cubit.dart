@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_app/models/utils/error.dart';
-import 'package:my_app/models/utils/token.dart';
-import '../../../../controllers/authentification/login_controller.dart';
+import 'package:my_app/domain/entities/authentication/token_entity.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 import 'package:flutter/material.dart';
 
 abstract class SignInState {}
@@ -19,7 +18,7 @@ class SignInLoaded extends SignInState {
 }
 
 class SignInSuccess extends SignInState {
-  final Token token;
+  final TokenEntity token;
 
   SignInSuccess(this.token);
 }
@@ -31,9 +30,9 @@ class SignInError extends SignInState {
 }
 
 class SignInCubit extends Cubit<SignInState> {
-  final LoginController loginController;
+  final AuthUseCases authUseCases; // This is the use case that will be used to login
 
-  SignInCubit(super.initialState, {required this.loginController});
+  SignInCubit(super.initialState, {required this.authUseCases});
 
   void login(BuildContext context, String username, String password) async {
     if (username.isEmpty || password.isEmpty) {
@@ -42,14 +41,11 @@ class SignInCubit extends Cubit<SignInState> {
       );
       return;
     }
-    final response = await loginController.login(context, username, password);
+    final eitherTokenOrError = await authUseCases.login(username, password);
+    eitherTokenOrError.fold(
+      (error) => emit(SignInError(error.message)),
+      (token) => emit(SignInSuccess(token)),
+    );
 
-    if (response is Token)
-    {
-      emit(SignInSuccess(response));
-    }
-    else if (response is ErrorResponse) {
-      emit(SignInError(response.error));
-    }
   }
 }

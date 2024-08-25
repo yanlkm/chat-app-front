@@ -71,6 +71,7 @@ class RoomRepositoryImpl implements RoomRepository {
       final List<RoomEntity> roomEntities = rooms.map((room) => room.toEntity()).toList();
       return Right<NetworkErrorHandler, List<RoomEntity>>(roomEntities);
     } on NetworkErrorHandler catch (e) {
+      print("Error Handler: ${e.message}");
       return Left<NetworkErrorHandler, List<RoomEntity>>(e);
     }
   }

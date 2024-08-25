@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
+import 'package:my_app/presentation/cubits/home/base/base_page_cubit.dart';
 import 'package:my_app/views/home/welcome_page.dart';
-import '../../controllers/authentification/logout_controller.dart';
 
 
 class BasePage extends StatelessWidget {
   // Add the child and showFooter properties
   final Widget child;
   final bool showFooter;
-  final LogoutController logoutController;
-  const BasePage({required this.child, this.showFooter = true, super.key, required this.logoutController});
+  final AuthUseCases authUseCases;
+  const BasePage({required this.child, required this.authUseCases, this.showFooter = true, super.key});
 
   // Add the build method
   @override
   Widget build(BuildContext context) {
+    // initialize the cubit
+    final cubit = BasePageCubit(authUseCases : authUseCases);
+    // return the Scaffold widget
     return Scaffold(
       // Add the AppBar widget
       appBar: AppBar(
@@ -41,7 +45,7 @@ class BasePage extends StatelessWidget {
             icon: const Icon(Icons.logout),
             // Add the onPressed method to logout
             onPressed: () async {
-              await logoutController.Logout();
+              await cubit.logoutUser();
               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage()));
             },
           ),

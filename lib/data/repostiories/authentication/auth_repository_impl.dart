@@ -24,9 +24,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<NetworkErrorHandler, void>> logout(String token) async {
+  Future<Either<NetworkErrorHandler, void>> logout() async {
     try {
-      await authRemoteDataSource.logout(token);
+      await authRemoteDataSource.logout();
       return const Right(null);
     } on NetworkErrorHandler catch (error) {
       return Left(error);

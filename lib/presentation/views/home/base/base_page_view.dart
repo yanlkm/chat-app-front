@@ -1,28 +1,50 @@
 import 'package:flutter/material.dart';
-import '../../../_widgets/home/base/custom_app_bar_widget.dart';
-import '../../../_widgets/home/base/footer_widget.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BasePageView extends StatelessWidget {
+import '../../../../views/home/welcome_page.dart';
+import '../../../_widgets/home/base/base_page_widget.dart';
+import '../../../cubits/home/base/base_page_cubit.dart';
+
+class BasePageView extends StatefulWidget {
   final Widget child;
   final bool showFooter;
-  final VoidCallback onLogout;
 
   const BasePageView({
     super.key,
     required this.child,
     this.showFooter = true,
-    required this.onLogout,
   });
 
   @override
+  BasePageViewState createState() => BasePageViewState();
+}
+
+
+class BasePageViewState extends State<BasePageView> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(onLogout: onLogout),
-      body: Column(
-        children: [
-          Expanded(child: child),
-          if (showFooter) const Footer(),
-        ],
+    const secureStorage = FlutterSecureStorage();
+
+    return BlocListener<BasePageCubit, void>(
+      listener: (context, state) {
+        // Handle state changes if necessary
+      },
+      child: BasePageWidget(
+        showFooter: widget.showFooter,
+        onLogout: () async {
+          await context.read<BasePageCubit>().logoutUser();
+          // Clear secure storage
+          await secureStorage.delete(key: 'token');
+          await secureStorage.delete(key: 'userId');
+          await secureStorage.delete(key: 'username');
+          await secureStorage.delete(key: 'role');
+          // Navigate to WelcomePage
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const WelcomePage()),
+          );
+        },
+        child: widget.child,
       ),
     );
   }

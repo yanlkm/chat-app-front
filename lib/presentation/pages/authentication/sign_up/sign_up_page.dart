@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../controllers/authentification/register_controller.dart';
+import '../../../../domain/use_cases/authentication/auth_usecases.dart';
 import '../../../cubits/authentication/sign_up/sign_up_cubit.dart';
 import '../../../views/authentication/sign_up/sign_up_view.dart';
 
 class SignUpPage extends StatelessWidget {
-  final RegisterController registerController;
+  final AuthUseCases authUseCases;
 
-  SignUpPage({super.key, required this.registerController});
+  SignUpPage({super.key, required this.authUseCases});
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -20,7 +19,7 @@ class SignUpPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => SignUpCubit(
         SignUpInitial(),
-        registerController: registerController,
+        authUseCases: authUseCases,
       ),
       child: Scaffold(
         appBar: AppBar(

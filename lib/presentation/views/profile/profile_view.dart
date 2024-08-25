@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
-import '../../../controllers/authentification/logout_controller.dart';
-import '../../../views/home/base_page.dart';
+import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
+import 'package:my_app/presentation/pages/home/base/base_page.dart';
 import '../../_widgets/profile/update_password_widget.dart';
 import '../../_widgets/profile/user_profile_widget.dart';
 import '../../_widgets/profile/user_rooms_widget.dart';
@@ -12,11 +12,11 @@ import '../../cubits/profile/rooms_cubit.dart';
 
 
 class ProfileView extends StatefulWidget {
-  final LogoutController logoutController;
+  final AuthUseCases authUseCases;
 
   const ProfileView({
     super.key,
-    required this.logoutController,
+    required this.authUseCases,
   });
 
   @override
@@ -51,8 +51,8 @@ class ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      showFooter: true,
-      logoutController: widget.logoutController,
+      showFooter: false,
+      authUseCases: widget.authUseCases,
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
