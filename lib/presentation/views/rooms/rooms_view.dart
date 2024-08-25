@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
-import 'package:my_app/models/room.dart';
+import 'package:my_app/domain/use_cases/chat/db/message_db_usecases.dart';
 import 'package:my_app/presentation/_widgets/rooms/search_bar_widget.dart';
+import 'package:my_app/presentation/pages/chat/chat_page.dart';
 import 'package:my_app/presentation/pages/home/base/base_page.dart';
-import 'package:my_app/presentation/views/chat/chat_view.dart';
 import '../../../domain/entities/rooms/room_entity.dart';
+import '../../../domain/use_cases/chat/socket/message_socket_usescases.dart';
 import '../../_widgets/rooms/room_list_widget.dart';
 import '../../cubits/rooms/rooms_cubit.dart';
 
 class RoomView extends StatefulWidget {
+  final MessageDBUseCases messageDBUseCases;
+  final MessageSocketUseCases messageSocketUseCases;
   final AuthUseCases authUseCases;
   final ValueNotifier<List<RoomEntity>> roomsNotifier;
 
@@ -18,6 +21,8 @@ class RoomView extends StatefulWidget {
     super.key,
     required this.authUseCases,
     required this.roomsNotifier,
+    required this.messageDBUseCases,
+    required this.messageSocketUseCases,
   });
 
   @override
@@ -169,7 +174,11 @@ List<bool> isExpandedList = [];
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ChatPage(room: new Room(roomID : room.roomID, name : room.name, description : room.description, hashtags : room.hashtags, members : room.members, messages : room.messages, createdAt : room.createdAt, updatedAt : room.updatedAt)),
+                            builder: (context) => ChatPage(
+                              room: room,
+                              messageDBUseCases: widget.messageDBUseCases,
+                              messageSocketUseCases: widget.messageSocketUseCases,
+                            ),
                           ),
                         );
                       },

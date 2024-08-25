@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../../models/message.dart';
+import 'package:my_app/domain/entities/chat/db/message_db_entity.dart';
 
 
 class MessageItemWidget extends StatelessWidget {
-  final Message message;
+  final MessageDBEntity message;
   final String? currentUserId;
 
   const MessageItemWidget({
-    Key? key,
+    super.key,
     required this.message,
     required this.currentUserId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:my_app/domain/entities/rooms/room_entity.dart';
 import '../../../controllers/chat/message_controller.dart';
 import '../../../controllers/chat/socket_controller.dart';
+import '../../../domain/entities/chat/db/message_db_entity.dart';
+import '../../../domain/entities/chat/socket/message_socket_entity.dart';
 import '../../../models/message.dart';
 import '../../../models/message_socket.dart';
 import '../../../models/room.dart';
@@ -11,26 +14,8 @@ import '../../_widgets/chat/chat_input_widget.dart';
 import '../../_widgets/chat/message_list_widget.dart';
 import '../../cubits/chat/message_cubit.dart';
 import '../../cubits/chat/socket_cubit.dart';
-
-class ChatPage extends StatelessWidget {
-  final Room room;
-
-  const ChatPage({super.key, required this.room});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MessageCubit(MessageController()),
-      child: BlocProvider(
-        create: (context) => SocketCubit(SocketController()),
-        child: ChatView(room: room),
-      ),
-    );
-  }
-}
-
 class ChatView extends StatefulWidget {
-  final Room room;
+  final RoomEntity room;
 
   const ChatView({super.key, required this.room});
 
@@ -61,7 +46,8 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   void _initializeCubits() {
     final messageCubit = context.read<MessageCubit>();
     messageCubit.fetchMessages(widget.room.roomID);
-    // Listen to changes in the message list and scroll to the bottom once messages are loaded
+
+    // Scroll to the bottom after messages are loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       messageCubit.stream.listen((messages) {
         if (messages.isNotEmpty) {
@@ -78,7 +64,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     if (socketCubit.state) {
       socketCubit.listenToMessages((message) {
         context.read<MessageCubit>().addMessage(
-          Message(
+          MessageDBEntity(
             messageID: message.roomId,
             roomID: message.roomId,
             username: message.username,
@@ -87,7 +73,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
             createdAt: DateTime.now(),
           ),
         );
-        _scrollToBottom(); // Scroll to the bottom when a new message is received
+        _scrollToBottom();
       });
     } else {
       ErrorDisplayIsolate.showErrorDialog(
@@ -105,15 +91,15 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
 
   void _sendMessage() {
     if (_messageControllerInput.text.isNotEmpty) {
-      final message = MessageSocket(
+      final message = MessageSocketEntity(
         roomId: widget.room.roomID,
         username: _username!,
         message: _messageControllerInput.text,
         userId: _userId!,
       );
-      context.read<SocketCubit>().socketController.sendMessage(message);
+      context.read<SocketCubit>().sendMessage(message);
       _messageControllerInput.clear();
-      _scrollToBottom(); // Scroll to the bottom when a message is sent
+      _scrollToBottom();
     }
   }
 
@@ -136,7 +122,6 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   }
 
   void _exitChatRoom() {
-    // Disconnect the socket and go back to the previous screen
     context.read<SocketCubit>().disconnect();
     Navigator.of(context).pop();
   }
@@ -180,9 +165,8 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
         child: Column(
           children: [
             Expanded(
-              child: BlocBuilder<MessageCubit, List<Message>>(
+              child: BlocBuilder<MessageCubit, List<MessageDBEntity>>(
                 builder: (context, messages) {
-
                   return MessageListWidget(
                     messages: messages,
                     currentUserId: _userId,

@@ -1,6 +1,6 @@
 
 import 'package:either_dart/either.dart';
-import 'package:my_app/data/repostiories/rooms/room_repository_impl.dart';
+import 'package:my_app/data/repositories/rooms/room_repository_impl.dart';
 
 import '../../../utils/errors/handlers/network_error_handler.dart';
 import '../../entities/rooms/room_entity.dart';

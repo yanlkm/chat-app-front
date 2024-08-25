@@ -1,4 +1,4 @@
-import 'package:my_app/data/repostiories/authentication/auth_repository_impl.dart';
+import 'package:my_app/data/repositories/authentication/auth_repository_impl.dart';
 import 'package:either_dart/either.dart';
 import '../../../utils/errors/handlers/network_error_handler.dart';
 import '../../entities/authentication/token_entity.dart';

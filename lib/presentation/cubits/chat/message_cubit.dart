@@ -1,24 +1,24 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../controllers/chat/message_controller.dart';
-import '../../../models/message.dart';
+import '../../../domain/entities/chat/db/message_db_entity.dart';
+import '../../../domain/use_cases/chat/db/message_db_usecases.dart';
 
 
-class MessageCubit extends Cubit<List<Message>> {
-  final MessageController messageController;
+class MessageCubit extends Cubit<List<MessageDBEntity>> {
+  final MessageDBUseCases messageDBUseCases;
 
-  MessageCubit(this.messageController) : super([]);
+  MessageCubit(this.messageDBUseCases) : super([]);
 
   Future<void> fetchMessages(String roomId) async {
-    try {
-      final messages = await messageController.getMessages(roomId);
-      emit(messages);
-    } catch (e) {
-      emit([]);
-    }
+    final result = await messageDBUseCases.fetchMessages(roomId);
+    result.fold(
+          (error) => emit([]),
+          (messages) => emit(messages),
+    );
   }
 
-  void addMessage(Message message) {
+  void addMessage(MessageDBEntity message) {
     emit([...state, message]);
   }
 }
+

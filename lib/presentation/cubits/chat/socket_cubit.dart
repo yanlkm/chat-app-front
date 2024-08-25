@@ -1,28 +1,40 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../controllers/chat/socket_controller.dart';
-import '../../../models/message_socket.dart';
+import '../../../domain/entities/chat/socket/message_socket_entity.dart';
+import '../../../domain/use_cases/chat/socket/message_socket_usescases.dart';
+
 
 class SocketCubit extends Cubit<bool> {
-  final SocketController socketController;
+  final MessageSocketUseCases messageSocketUseCases;
 
-  SocketCubit(this.socketController) : super(false);
+  SocketCubit(this.messageSocketUseCases) : super(false);
 
   Future<void> connectToRoom(String roomId) async {
-    try {
-      await socketController.connectToRoom(roomId);
-      emit(true);
-    } catch (e) {
-      emit(false);
-    }
+    final result = await messageSocketUseCases.connect(roomId);
+    result.fold(
+          (error) => emit(false),
+          (_) => emit(true),
+    );
   }
 
-  void listenToMessages(Function(MessageSocket) onMessageReceived) {
-    socketController.messages.listen(onMessageReceived);
+  void listenToMessages(Function(MessageSocketEntity) onMessageReceived) {
+    messageSocketUseCases.messages.listen((eitherMessage) {
+      eitherMessage.fold(
+            (error) {
+        },
+            (message) {
+          onMessageReceived(message);
+        },
+      );
+    });
   }
 
-  void disconnect() {
-    socketController.disconnect();
+  Future<void> sendMessage(MessageSocketEntity message) async {
+    await messageSocketUseCases.sendMessage(message);
+  }
+
+  void disconnect() async{
+   await messageSocketUseCases.disconnect();
     emit(false);
   }
 }

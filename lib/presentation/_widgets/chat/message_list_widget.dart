@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../models/message.dart';
+import 'package:my_app/domain/entities/chat/db/message_db_entity.dart';
 import 'message_item_widget.dart';
 
 class MessageListWidget extends StatelessWidget {
-  final List<Message> messages;
+  final List<MessageDBEntity> messages;
   final String? currentUserId;
   final ScrollController scrollController;
 
   const MessageListWidget({
-    Key? key,
+    super.key,
     required this.messages,
     required this.currentUserId,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   // Add the _formatDateIndicator method to format the date and indicate if it is today or yesterday or another date
   String _formatDateIndicator(DateTime date) {

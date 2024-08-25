@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_app/domain/use_cases/chat/db/message_db_usecases.dart';
+import 'package:my_app/domain/use_cases/chat/socket/message_socket_usescases.dart';
 import '../../../domain/entities/rooms/room_entity.dart';
 import '../../../domain/use_cases/authentication/auth_usecases.dart';
 import '../../../domain/use_cases/rooms/room_usecases.dart';
@@ -13,6 +15,9 @@ class RoomPage extends StatelessWidget {
   final AuthUseCases authUseCases;
   final RoomUsesCases roomUseCases;
   final UserUseCases userUseCases;
+  final MessageDBUseCases messageDBUseCases;
+  final MessageSocketUseCases messageSocketUseCases;
+
   // notifiers
   final ValueNotifier<List<RoomEntity>> roomsNotifier;
   final ValueNotifier<List<RoomEntity>> userRoomsNotifier;
@@ -22,6 +27,8 @@ class RoomPage extends StatelessWidget {
     required this.authUseCases,
     required this.roomUseCases,
     required this.userUseCases,
+    required this.messageDBUseCases,
+    required this.messageSocketUseCases,
     required this.roomsNotifier,
     required this.userRoomsNotifier,
   });
@@ -37,6 +44,8 @@ class RoomPage extends StatelessWidget {
       child: RoomView(
         authUseCases: authUseCases,
         roomsNotifier: roomsNotifier,
+        messageDBUseCases: messageDBUseCases,
+        messageSocketUseCases: messageSocketUseCases,
       ),
     );
   }

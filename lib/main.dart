@@ -5,31 +5,17 @@ import 'package:my_app/presentation/pages/authentication/sign_in/sign_in_page.da
 import 'package:my_app/presentation/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:my_app/presentation/pages/home/home_page.dart';
 import 'package:my_app/presentation/pages/home/welcome/welcome_page.dart';
-import 'package:my_app/services/authentification/login_service.dart';
-import 'package:my_app/services/authentification/logout_service.dart';
-import 'package:my_app/services/authentification/register_service.dart';
-import 'package:my_app/services/room/room_service.dart';
-import 'package:my_app/services/user/user_service.dart';
-import 'package:my_app/services/user/user_rooms_service.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'controllers/authentification/login_controller.dart';
-import 'controllers/authentification/logout_controller.dart';
-import 'controllers/authentification/register_controller.dart';
-import 'controllers/user/user_controller.dart';
-import 'controllers/room/room_controller.dart';
-import 'controllers/user/user_rooms_controller.dart';
-
 // Import the required classes for UserUseCases
 import 'data/data_sources/authentication/auth_data_source_impl.dart';
 import 'data/data_sources/chat/db/message_db_data_source_impl.dart';
 import 'data/data_sources/chat/socket/message_socket_data_source_impl.dart';
 import 'data/data_sources/rooms/rooms_data_source_impl.dart';
 import 'data/data_sources/users/users_data_source_impl.dart';
-import 'data/repostiories/authentication/auth_repository_impl.dart';
-import 'data/repostiories/chat/db/message_db_repository_impl.dart';
-import 'data/repostiories/chat/socket/message_socket_repository_impl.dart';
-import 'data/repostiories/rooms/room_repository_impl.dart';
-import 'data/repostiories/users/user_repository_impl.dart';
+import 'data/repositories/authentication/auth_repository_impl.dart';
+import 'data/repositories/chat/db/message_db_repository_impl.dart';
+import 'data/repositories/chat/socket/message_socket_repository_impl.dart';
+import 'data/repositories/rooms/room_repository_impl.dart';
+import 'data/repositories/users/user_repository_impl.dart';
 import 'domain/use_cases/authentication/auth_usecases.dart';
 import 'domain/use_cases/chat/db/message_db_usecases.dart';
 import 'domain/use_cases/chat/socket/message_socket_usescases.dart';
@@ -151,24 +137,8 @@ Future<void> main() async {
 
 // Add the MyApp class
 class MyApp extends StatelessWidget {
-  // Add the properties
-  final RegisterService registerService = RegisterService();
-  final LoginService loginService = LoginService();
-  final LogoutService logoutService = LogoutService();
-  final UserService userService = UserService();
-  final UserRoomsService userRoomsService = UserRoomsService();
-  final RegisterController registerController =
-      RegisterController(registerService: RegisterService());
-  final LoginController loginController =
-      LoginController(loginService: LoginService());
-  final LogoutController logoutController =
-      LogoutController(logoutService: LogoutService());
-  final UserController userController =
-      UserController(userService: UserService());
-  final RoomController roomController =
-      RoomController(roomService: RoomService());
-  final UserRoomsController userRoomsController =
-      UserRoomsController(userRoomsService: UserRoomsService());
+
+
   final String initialRoute;
 
   // Add the userUseCases as a property

@@ -1,5 +1,5 @@
 import 'package:either_dart/either.dart';
-import '../../../../data/repostiories/chat/socket/message_socket_repository_impl.dart';
+import '../../../../data/repositories/chat/socket/message_socket_repository_impl.dart';
 import '../../../../utils/errors/handlers/socket_error_handler.dart';
 import '../../../entities/chat/socket/message_socket_entity.dart';
 
@@ -17,6 +17,10 @@ class MessageSocketUseCases {
 
   Future<Either<SocketErrorHandler, void>> sendMessage(MessageSocketEntity message) async {
     return messageSocketRepositoryImpl.sendMessage(message);
+  }
+
+  Future<Either<SocketErrorHandler, void>> disconnect() async {
+    return messageSocketRepositoryImpl.disconnect();
   }
 
   Stream<Either<SocketErrorHandler, MessageSocketEntity>> get messages async* {

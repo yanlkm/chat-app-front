@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/controllers/authentification/logout_controller.dart';
-import 'package:my_app/controllers/room/room_controller.dart';
 import 'package:my_app/domain/entities/rooms/room_entity.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 import 'package:my_app/domain/use_cases/users/user_usecases.dart';
 import 'package:my_app/presentation/pages/admin/admin_page.dart';
 import 'package:my_app/presentation/pages/profile/profile_page.dart';
 import 'package:my_app/presentation/pages/rooms/rooms_page.dart';
-import '../../../controllers/user/user_controller.dart';
-import '../../../controllers/user/user_rooms_controller.dart';
 import '../../../domain/use_cases/authentication/auth_usecases.dart';
 import '../../../domain/use_cases/chat/db/message_db_usecases.dart';
 import '../../../domain/use_cases/chat/socket/message_socket_usescases.dart';
 import '../../../domain/use_cases/rooms/room_usecases.dart';
-import '../../../models/room.dart';
 
 class PageContent extends StatelessWidget {
   final int selectedIndex;
@@ -66,6 +61,8 @@ class PageContent extends StatelessWidget {
           authUseCases: authUseCases,
           roomUseCases: roomUsesCases,
           userUseCases: userUseCases,
+          messageDBUseCases: messageDBUseCases,
+          messageSocketUseCases: messageSocketUseCases,
           roomsNotifier: roomsNotifier,
           userRoomsNotifier: userRoomsNotifier,
         ),

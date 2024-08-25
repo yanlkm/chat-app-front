@@ -1,5 +1,5 @@
 import 'package:either_dart/either.dart';
-import 'package:my_app/data/repostiories/users/user_repository_impl.dart';
+import 'package:my_app/data/repositories/users/user_repository_impl.dart';
 
 import '../../../utils/errors/handlers/network_error_handler.dart';
 import '../../entities/users/user_entity.dart';
