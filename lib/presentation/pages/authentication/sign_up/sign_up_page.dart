@@ -4,19 +4,25 @@ import '../../../../domain/use_cases/authentication/auth_usecases.dart';
 import '../../../cubits/authentication/sign_up/sign_up_cubit.dart';
 import '../../../views/authentication/sign_up/sign_up_view.dart';
 
+// SignUpPage : sign up page entry point
 class SignUpPage extends StatelessWidget {
+  // UseCases
   final AuthUseCases authUseCases;
 
+  // Constructor
   SignUpPage({super.key, required this.authUseCases});
 
+  // initialize text controllers
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmationController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
 
+  // build method
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      // create SignUpCubit : cubit for sign up
       create: (_) => SignUpCubit(
         SignUpInitial(),
         authUseCases: authUseCases,
@@ -29,6 +35,7 @@ class SignUpPage extends StatelessWidget {
           ),
           backgroundColor: Colors.blue,
         ),
+        // BlocBuilder : builder for SignUpCubit
         body: BlocBuilder<SignUpCubit, void>(
           builder: (context, state) {
             return SignUpView(

@@ -8,21 +8,31 @@ import '../../_widgets/chat/chat_input_widget.dart';
 import '../../_widgets/chat/message_list_widget.dart';
 import '../../cubits/chat/message_cubit.dart';
 import '../../cubits/chat/socket_cubit.dart';
+
+// ChatView : chat view class
 class ChatView extends StatefulWidget {
+  // RoomEntity
   final RoomEntity room;
 
+  // Constructor
   const ChatView({super.key, required this.room});
 
+  // createState method
   @override
   ChatViewState createState() => ChatViewState();
 }
 
+// ChatViewState : ChatView state class
 class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
+  // attributes
+  // TextEditingController & ScrollController  : message controller and scroll controller
   final TextEditingController _messageControllerInput = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  // username & userId to store the username and userId
   String? _username;
   String? _userId;
 
+  // initState method : initialize the state and load the username
   @override
   void initState() {
     super.initState();
@@ -32,11 +42,13 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     _connectAndFetchMessages();
   }
 
+  // _loadUsername method : load the username
   Future<void> _loadUsername() async {
     _username = await const FlutterSecureStorage().read(key: 'username');
     _userId = await const FlutterSecureStorage().read(key: 'userId');
   }
 
+  // _initializeCubits method : initialize the cubits
   void _initializeCubits() {
     final messageCubit = context.read<MessageCubit>();
     messageCubit.fetchMessages(widget.room.roomID);
@@ -51,12 +63,16 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     });
   }
 
+  // _connectAndFetchMessages method : connect to the room and fetch messages
   void _connectAndFetchMessages() async {
+    // connect to the room
     final socketCubit = context.read<SocketCubit>();
     await socketCubit.connectToRoom(widget.room.roomID);
 
+    // listen to messages : if the connection is successful
     if (socketCubit.state) {
       socketCubit.listenToMessages((message) {
+        // add the message to the cubit
         context.read<MessageCubit>().addMessage(
           MessageDBEntity(
             messageID: message.roomId,
@@ -67,6 +83,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
             createdAt: DateTime.now(),
           ),
         );
+        // scroll to the bottom
         _scrollToBottom();
       });
     } else {
@@ -81,6 +98,8 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     }
   }
 
+  // dispose method : dispose the controllers and remove the observer
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -89,6 +108,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  // _sendMessage method : send a message
   void _sendMessage() {
     if (_messageControllerInput.text.isNotEmpty) {
       final message = MessageSocketEntity(
@@ -98,11 +118,14 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
         userId: _userId!,
       );
       context.read<SocketCubit>().sendMessage(message);
+      // clear the message controller
       _messageControllerInput.clear();
+      // scroll to the bottom
       _scrollToBottom();
     }
   }
 
+  // _scrollToBottom method : scroll to the bottom
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -113,6 +136,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     });
   }
 
+  // didChangeMetrics method : handle the keyboard event
   @override
   void didChangeMetrics() {
     final bottomInset = View.of(context).viewInsets.bottom;
@@ -121,11 +145,15 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     }
   }
 
+  // _exitChatRoom method : exit the chat room
   void _exitChatRoom() {
+    // disconnect from the room
     context.read<SocketCubit>().disconnect();
+    // pop the context
     Navigator.of(context).pop();
   }
 
+  // build method : build the widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,6 +177,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
                 const Icon(Icons.group, color: Colors.white),
                 const SizedBox(width: 4),
                 Text(
+                  // Display the number of members : if members > 99 display '+99'
                   widget.room.members!.length > 99
                       ? '+99'
                       : widget.room.members!.length.toString(),
@@ -161,6 +190,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
         ),
       ),
       body: GestureDetector(
+        // onTap : unfocused the context
         onTap: () => FocusScope.of(context).unfocus(),
         child: Column(
           children: [

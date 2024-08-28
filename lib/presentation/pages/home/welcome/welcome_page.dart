@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../views/home/welcome/welcome_view.dart';
 
+// WelcomePage : welcome page entry point
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
+  // build method : build the widget tree
   @override
   Widget build(BuildContext context) {
     return Scaffold(

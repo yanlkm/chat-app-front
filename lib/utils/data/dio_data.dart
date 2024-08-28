@@ -1,13 +1,15 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
-
 import '../constants/app_constants.dart';
 
+// DioData : dio data class
 class DioData {
+  // Dio instance
   late final Dio _dio;
+  // AppConstants instance
   late final AppConstants _appConstants;
 
+  // Constructor : initialize Dio and AppConstants
   DioData() {
     _appConstants = AppConstants();
     _dio = Dio();
@@ -23,6 +25,7 @@ class DioData {
       ..options.validateStatus = (status) {
         return status! < 500;
       }
+      // connect timeout of 15 seconds
       ..options.connectTimeout = const Duration(milliseconds: 15000)
       ..options.receiveTimeout = const Duration(milliseconds: 15000)
       ..options.responseType = ResponseType.json

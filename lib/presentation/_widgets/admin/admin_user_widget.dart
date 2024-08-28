@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 
+// User Widget
 class UserWidget extends StatelessWidget {
+  // Search Controller
   final TextEditingController searchController;
-  final Function(String) onSearchChanged;
+
+  // User Notifier
   final ValueNotifier<UserEntity> userNotifier;
+  // Users
   final List<UserEntity> users;
+  // Functions
+  final Function(String) onSearchChanged;
   final Function(String userId) onBanUser;
   final Function(String userId) onUnbanUser;
 
+  // Constructor
   const UserWidget({
     super.key,
     required this.searchController,
@@ -19,11 +26,14 @@ class UserWidget extends StatelessWidget {
     required this.onUnbanUser,
   });
 
+  // main build widget function
   @override
   Widget build(BuildContext context) {
+    // get banned users and not banned users
     final bannedUsers = users.where((user) => user.validity != 'valid').toList();
     final notBannedUsers = users.where((user) => user.validity == 'valid').toList();
 
+    // return the main column widget
     return Column(
       children: [
         const SizedBox(height: 10),
@@ -40,6 +50,7 @@ class UserWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+        // Search TextField
         TextField(
           controller: searchController,
           decoration: const InputDecoration(
@@ -52,9 +63,11 @@ class UserWidget extends StatelessWidget {
         onChanged: onSearchChanged,
         ),
         const SizedBox(height: 16),
+        // User Details on Search with ValueListenableBuilder
         ValueListenableBuilder<UserEntity>(
           valueListenable: userNotifier,
           builder: (context, user, _) {
+            // if user is not null or empty call _buildUserDetails widget method
             return (user.username != null && user.username!.isNotEmpty)
                 ? _buildUserDetails(user)
                 : const SizedBox.shrink();
@@ -64,6 +77,7 @@ class UserWidget extends StatelessWidget {
     );
   }
 
+  // define the _buildUserList widget
   Widget _buildUserList(List<UserEntity> users, String title, Color color, Function(String) onButtonPressed) {
     return Expanded(
       child: Column(
@@ -76,10 +90,12 @@ class UserWidget extends StatelessWidget {
           Divider(color: color, thickness: 2),
           SizedBox(
             height: 200.0,
+            // List View Builder on users list with ListTile
             child: ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index) {
                 final user = users[index];
+                // return the container with ListTile
                 return Container(
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
@@ -94,6 +110,7 @@ class UserWidget extends StatelessWidget {
                     trailing: IconButton(
                       icon: user.validity=="invalid" ? Icon(Icons.block, color: color) :
                       Icon(Icons.check_circle, color: color),
+                      // onButtonPressed function
                       onPressed: () => onButtonPressed(user.userID as String),
                     ),
                   ),
@@ -106,6 +123,7 @@ class UserWidget extends StatelessWidget {
     );
   }
 
+  // define the _buildUserDetails widget
   Widget _buildUserDetails(UserEntity user) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -120,6 +138,7 @@ class UserWidget extends StatelessWidget {
             user.username ?? 'No Name',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
           ),
+      // Animated Cross Fade for Ban and Unban : Lock and Lock Open Icons
       AnimatedCrossFade(
         alignment: Alignment.topCenter,
         excludeBottomFocus: true,
@@ -135,6 +154,7 @@ class UserWidget extends StatelessWidget {
             ? CrossFadeState.showSecond
             : CrossFadeState.showFirst,
         duration: const Duration(milliseconds: 200),
+        // layout builder to define logic for top and bottom child (ban and unban)
         layoutBuilder: (topChild, topChildKey, bottomChild, bottomChildKey) {
           return Stack(
             alignment: Alignment.topCenter,

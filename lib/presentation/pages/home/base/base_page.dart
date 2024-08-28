@@ -6,11 +6,14 @@ import '../../../cubits/home/base/base_page_cubit.dart';
 import '../../../views/home/base/base_page_view.dart';
 
 
+// BasePage : base page entry point
 class BasePage extends StatelessWidget {
+  // attributes : child, showFooter, authUseCases to be passed to the cubit
   final Widget child;
   final bool showFooter;
   final AuthUseCases authUseCases;
 
+  // Constructor
   const BasePage({
     super.key,
     required this.child,
@@ -20,6 +23,7 @@ class BasePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // BlocProvider : provider for the BasePageCubit
     return BlocProvider(
       create: (context) => BasePageCubit(authUseCases: authUseCases),
       child: BasePageView(

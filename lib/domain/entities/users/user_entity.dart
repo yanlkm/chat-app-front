@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+// User Entity
 class UserEntity extends Equatable {
   final String? userID;
   final String? username;
@@ -9,6 +10,7 @@ class UserEntity extends Equatable {
   final String? validity;
   final List<String>? rooms;
 
+  // Constructor
   const UserEntity({
     this.userID,
     this.username,
@@ -19,6 +21,7 @@ class UserEntity extends Equatable {
     this.rooms,
   });
 
+  // Method to return entity with changed attributes
   UserEntity copyWith({
     String? userID,
     String? username,
@@ -51,7 +54,7 @@ class UserEntity extends Equatable {
       rooms: rooms,
     );
   }
-
+// Equatable props
   @override
   List<Object?> get props => [userID, username, createdAt, updatedAt, role, validity, rooms];
 }

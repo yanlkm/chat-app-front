@@ -6,6 +6,7 @@ import '../../../utils/data/entity_convertible_data.dart';
 
 @JsonSerializable()
 class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
+  // define variables with JsonKey annotation
   @JsonKey(name: '_id')
   final String roomID;
   @JsonKey(name: 'name')
@@ -25,6 +26,7 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
   @JsonKey(name: 'messages')
   final List<String>? messages;
 
+  // constructor
   const RoomModel({
     required this.roomID,
     this.creator,
@@ -37,6 +39,7 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
     this.members,
   });
 
+  // from Json
   factory RoomModel.fromJson(Map<String, dynamic> json) {
     return RoomModel(
       roomID: json['_id']?? '',
@@ -60,6 +63,7 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
     );
   }
 
+  // to Json
   @override
   List<Object?> get props => [
         roomID,
@@ -72,6 +76,7 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
         messages
       ];
 
+  // to Entity
   @override
   RoomEntity toEntity() {
     return RoomEntity(

@@ -2,7 +2,7 @@ import 'package:either_dart/either.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 import 'package:my_app/utils/errors/handlers/network_error_handler.dart';
 
-
+// User Repository
 abstract class UserRepository {
 
 Future<Either<NetworkErrorHandler,UserEntity>> getUser();

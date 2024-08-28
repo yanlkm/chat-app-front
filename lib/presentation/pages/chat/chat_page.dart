@@ -7,11 +7,15 @@ import '../../cubits/chat/message_cubit.dart';
 import '../../cubits/chat/socket_cubit.dart';
 import '../../views/chat/chat_view.dart';
 
+// ChatPage : chat page entry point
 class ChatPage extends StatelessWidget {
+  // RoomEntity
   final RoomEntity room;
+  // UseCases
   final MessageDBUseCases messageDBUseCases;
   final MessageSocketUseCases messageSocketUseCases;
 
+  // Constructor
   const ChatPage({
     super.key,
     required this.room,
@@ -19,8 +23,10 @@ class ChatPage extends StatelessWidget {
     required this.messageSocketUseCases,
   });
 
+  // build method
   @override
   Widget build(BuildContext context) {
+    // MultiBlocProvider : provider for multiple blocs in the widget tree
     return MultiBlocProvider(
       providers: [
         BlocProvider(

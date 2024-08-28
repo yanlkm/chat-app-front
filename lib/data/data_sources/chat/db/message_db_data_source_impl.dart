@@ -8,13 +8,16 @@ import '../../../../utils/constants/options_data.dart';
 import '../../../../utils/data/dio_data.dart';
 import '../../../../utils/errors/handlers/network_error_handler.dart';
 
+// MessageDBDataSourceImpl is a class that implements the MessageDBDataSource
 class MessageDBDataSourceImpl implements MessageDBDataSource {
 
+  // final variables for the class
   final DioData dioData;
   final FlutterSecureStorage secureStorage;
   final OptionsData optionsData;
   final AppConstants appConstants;
 
+  // constructor
   const MessageDBDataSourceImpl({
     required this.dioData,
     required this.secureStorage,
@@ -22,6 +25,7 @@ class MessageDBDataSourceImpl implements MessageDBDataSource {
     required this.optionsData
   });
 
+  // fetchMessages method to get all messages from a Room
   @override
   Future<List<MessageDBModel>> fetchMessages(String roomId) async {
     final options = await optionsData.loadOptions();
@@ -40,6 +44,7 @@ class MessageDBDataSourceImpl implements MessageDBDataSource {
             .map<MessageDBModel>((message) => MessageDBModel.fromJson(message))
             .toList();
       } else {
+        // Throw NetworkErrorHandler if the response status code is not 200
         throw NetworkErrorHandler.fromDioError(
           DioException(
             requestOptions: response.requestOptions,

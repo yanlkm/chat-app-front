@@ -1,17 +1,22 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import '../models/network_error_model.dart';
 
+// NetworkErrorHandler : network error handler class
 class NetworkErrorHandler extends Equatable implements Exception{
 
+  // message
   late final String message;
+  // status code
   late final int? statusCode;
 
+  // Constructor : initialize message and status code with DioException
   NetworkErrorHandler.fromDioError(DioException dioException) {
+    // set status code from response
     statusCode = dioException.response?.statusCode;
 
+    // check the type of error and set the message accordingly
     switch (dioException.type) {
       case DioExceptionType.cancel:
         message = 'Request to API server was cancelled';
@@ -53,6 +58,7 @@ class NetworkErrorHandler extends Equatable implements Exception{
     }
   }
 
+  // Override toString method
   @override
   List<Object?> get props => [message, statusCode];
 }

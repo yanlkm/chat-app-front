@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+// Message DB Entity  : MessageDBEntity
 class MessageDBEntity extends Equatable {
   // Properties
   final String? messageID;
@@ -19,6 +20,7 @@ class MessageDBEntity extends Equatable {
     this.createdAt,
   });
 
+  // Method to return entity with changed attributes
   MessageDBEntity copyWith(
       {String? messageID,
       String? content,
@@ -35,8 +37,8 @@ class MessageDBEntity extends Equatable {
         username: username ?? this.username);
   }
 
+  // Equatable props
   @override
-  // TODO: implement props
   List<Object?> get props => [messageID, content, createdAt, roomID, username, userId];
 
 

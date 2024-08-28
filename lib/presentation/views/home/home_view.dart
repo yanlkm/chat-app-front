@@ -10,6 +10,7 @@ import '../../_widgets/home/bottom_navigation_widget.dart';
 import '../../_widgets/home/page_content.dart';
 
 class HomeView extends StatelessWidget {
+  // home view attributes : current selectedIndex, isAdmin status and onItemTapped function
   final int selectedIndex;
   final bool isAdmin;
   final Function(int) onItemTapped;
@@ -21,6 +22,7 @@ class HomeView extends StatelessWidget {
   final MessageDBUseCases messageDBUseCases;
   final MessageSocketUseCases   messageSocketUseCases;
 
+  // all notifiers
   final ValueNotifier<List<RoomEntity>> roomsNotifier;
   final ValueNotifier<List<UserEntity>> usersNotifier;
   final ValueNotifier<List<RoomEntity>> userRoomsNotifier;
@@ -28,8 +30,9 @@ class HomeView extends StatelessWidget {
   final ValueNotifier<UserEntity> userFoundNotifier;
   final ValueNotifier<List<RoomEntity>> adminRoomNotifier;
 
+  // constructor
   const HomeView({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.isAdmin,
     required this.onItemTapped,
@@ -44,11 +47,12 @@ class HomeView extends StatelessWidget {
     required this.authUseCases,
     required this.messageDBUseCases,
     required this.messageSocketUseCases,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Invoke Page Content component
       body: PageContent(
         selectedIndex: selectedIndex,
         isAdmin: isAdmin,

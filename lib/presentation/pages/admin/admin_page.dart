@@ -9,7 +9,7 @@ import 'package:my_app/presentation/cubits/admin/admin_code_cubit.dart';
 import '../../cubits/admin/admin_rooms_cubit.dart';
 import '../../cubits/admin/admin_users_cubit.dart';
 import '../../views/admin/admin_view.dart';
-
+// AdminPage : admin page entry point
 class AdminPage extends StatelessWidget {
   // UseCases
   final UserUseCases userUseCases;
@@ -22,6 +22,7 @@ class AdminPage extends StatelessWidget {
   final ValueNotifier<List<UserEntity>> userNotifier;
   final ValueNotifier<List<RoomEntity>> roomsNotifier;
 
+  //  Constructor
   const AdminPage({
     super.key,
     required this.adminRoomNotifier,
@@ -34,8 +35,10 @@ class AdminPage extends StatelessWidget {
     required this.roomUsesCases,
   }) ;
 
+  // build method
   @override
   Widget build(BuildContext context) {
+    // MultiBlocProvider : provider for multiple blocs in the widget tree
     return MultiBlocProvider(
       providers: [
         BlocProvider(

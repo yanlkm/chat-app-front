@@ -1,14 +1,17 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-
 import '../../../domain/entities/rooms/room_entity.dart';
 
+// UserRoomsWidget
 class UserRoomsWidget extends StatelessWidget {
+  // ValueNotifier of List of RoomEntity as attribute
   final ValueNotifier<List<RoomEntity>> userRoomNotifier;
+  // Show Rooms as attribute
   final bool showRooms;
+  // On Toggle Rooms action as a callback function
   final Function onToggleRooms;
 
+  // Constructor
   const UserRoomsWidget({
     super.key,
     required this.userRoomNotifier,
@@ -16,6 +19,7 @@ class UserRoomsWidget extends StatelessWidget {
     required this.onToggleRooms,
   });
 
+  // Get Random Color method to generate random colors
   Color _getRandomColor() {
     final random = Random();
     return Color.fromARGB(
@@ -26,10 +30,12 @@ class UserRoomsWidget extends StatelessWidget {
     ).withOpacity(0.5);
   }
 
+  // main build method
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Elevated Button to toggle rooms : Show or Hide
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
@@ -38,6 +44,7 @@ class UserRoomsWidget extends StatelessWidget {
           onPressed: () => onToggleRooms(),
           child: Text(showRooms ? 'Hide your rooms' : 'Show your rooms'),
         ),
+        // ValueListenableBuilder to listen to the userRoomNotifier : List of RoomEntities
         if (showRooms)
           ValueListenableBuilder<List<RoomEntity>>(
             valueListenable: userRoomNotifier,
@@ -63,6 +70,7 @@ class UserRoomsWidget extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
+                      // GridView to show the rooms
                       GridView.builder(
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
@@ -97,6 +105,7 @@ class UserRoomsWidget extends StatelessWidget {
                   ),
                 );
               }
+              // Return a SizedBox.shrink() if showRooms is false
               return const SizedBox.shrink();
             },
           ),

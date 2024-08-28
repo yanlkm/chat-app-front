@@ -9,6 +9,7 @@ import '../../cubits/profile/profile_cubit.dart';
 import '../../cubits/profile/rooms_cubit.dart';
 import '../../views/profile/profile_view.dart';
 
+// ProfilePage : profile page entry point
 class ProfilePage extends StatelessWidget {
   // UseCases
   final UserUseCases userUseCases;
@@ -17,6 +18,7 @@ class ProfilePage extends StatelessWidget {
   // notifier
   final ValueNotifier<List<RoomEntity>> userRoomNotifier;
 
+  // Constructor
   const ProfilePage({
     super.key,
     required this.userUseCases,
@@ -25,8 +27,10 @@ class ProfilePage extends StatelessWidget {
     required this.roomUsesCases,
   });
 
+  // build method
   @override
   Widget build(BuildContext context) {
+    // MultiBlocProvider : provider for multiple blocs in the widget tree
     return MultiBlocProvider(
       providers: [
         BlocProvider(

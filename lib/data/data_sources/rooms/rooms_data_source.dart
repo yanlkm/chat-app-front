@@ -1,6 +1,6 @@
 
 import '../../models/rooms/room_model.dart';
-
+// This is the abstract class for the RoomsDataSource
 abstract class RoomsDataSource {
 
   // Get all rooms

@@ -1,8 +1,10 @@
 
 import 'package:equatable/equatable.dart';
 
+// Room Entity
 class RoomEntity extends Equatable {
 
+  // Properties
   final String roomID;
   final String? name;
   final String? description;
@@ -13,6 +15,7 @@ class RoomEntity extends Equatable {
   final List<String>? messages;
   final List<String>? hashtags;
 
+  // Constructor
   const RoomEntity({
     required this.roomID,
     this.name,
@@ -25,6 +28,7 @@ class RoomEntity extends Equatable {
     this.hashtags,
   });
 
+// Method to return entity with changed attributes
   RoomEntity copyWith({
     String? roomID,
     String? name,
@@ -48,7 +52,7 @@ class RoomEntity extends Equatable {
       hashtags: hashtags ?? this.hashtags,
     );
   }
-
+// Equatable props
   @override
   List<Object?> get props => [roomID, name, description, creator, members, createdAt, updatedAt, messages, hashtags];
 

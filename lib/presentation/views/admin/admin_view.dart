@@ -12,13 +12,17 @@ import '../../_widgets/admin/admin_user_widget.dart';
 import '../../cubits/admin/admin_rooms_cubit.dart';
 import '../../cubits/admin/admin_users_cubit.dart';
 
+// AdminView : Admin view widget
 class AdminView extends StatefulWidget {
+
+  // useCase
   final AuthUseCases authUseCases;
+  // notifiers
   final ValueNotifier<List<RoomEntity>> adminRoomNotifier;
   final ValueNotifier<List<UserEntity>> userNotifier;
   final ValueNotifier<UserEntity> userFoundNotifier;
   final ValueNotifier<UserEntity> selectedUserNotifier;
-
+ // Constructor
   const AdminView({
     super.key,
     required this.adminRoomNotifier,
@@ -27,12 +31,14 @@ class AdminView extends StatefulWidget {
     required this.userFoundNotifier,
     required this.authUseCases,
   });
-
+  // createState method
   @override
   AdminViewState createState() => AdminViewState();
 }
 
+// AdminViewState : AdminView state class
 class AdminViewState extends State<AdminView> {
+  // text controllers
   final TextEditingController userSearchController = TextEditingController();
   final TextEditingController roomNameController = TextEditingController();
   final TextEditingController roomDescriptionController =
@@ -40,9 +46,11 @@ class AdminViewState extends State<AdminView> {
   final Map<String, TextEditingController> hashtagControllers = {};
   final Map<String, String?> selectedHashtag = {};
   final TextEditingController codeController = TextEditingController();
+  // attributes to store the current code
   String currentCode = '';
   bool isCodeCopied = false;
 
+  // initState method : initialize the state, controllers and listeners
   @override
   void initState() {
     super.initState();
@@ -50,16 +58,19 @@ class AdminViewState extends State<AdminView> {
     _initializeSearchController();
   }
 
+  // initializeSearchController method : initialize the search controller
   void _initializeSearchController() {
     userSearchController.addListener(_onSearchChanged);
   }
 
+  //  initializeHashtagControllers method : initialize the hashtag controllers
   void _initializeHashtagControllers() {
     for (RoomEntity room in widget.adminRoomNotifier.value) {
       hashtagControllers[room.roomID] = TextEditingController();
       selectedHashtag[room.roomID] = null;
     }
   }
+  // initializeHashtagControllersManual method : initialize the hashtag controllers manually
   void _initializeHashtagControllersManual(List<RoomEntity> rooms) {
     for (RoomEntity room in rooms) {
       hashtagControllers[room.roomID] = TextEditingController();
@@ -67,8 +78,10 @@ class AdminViewState extends State<AdminView> {
     }
   }
 
+  // performSearch method : perform a search
   void _performSearch(UserCubit userCubit) async {
 
+    // get the user unique reference
     String userUniqueReference = userSearchController.text;
     if (userUniqueReference.isNotEmpty) {
       try {
@@ -220,6 +233,7 @@ class AdminViewState extends State<AdminView> {
       }
       return;
     }
+    // remove the hashtag from the room
     roomCubit.removeHashtagFromRoom(room.roomID, hashtag).then((_) {
       // Reload rooms and update UI
       roomCubit.loadRooms();
@@ -286,8 +300,10 @@ class AdminViewState extends State<AdminView> {
     });
   }
 
+  // Method to select a hashtag
   void _selectHashtag(String roomID, String hashtag) {
     setState(() {
+      // if the hashtag is already selected, deselect it
       final isSelected = selectedHashtag[roomID] == hashtag;
       if (isSelected) {
         selectedHashtag[roomID] = null;
@@ -297,6 +313,7 @@ class AdminViewState extends State<AdminView> {
     });
   }
 
+  // dispose method : dispose the controllers and listeners when the widget is removed
   @override
   void dispose() {
     userSearchController.removeListener(_onSearchChanged);
@@ -311,6 +328,7 @@ class AdminViewState extends State<AdminView> {
 
   @override
   Widget build(BuildContext context) {
+    // MultiBlocProvider : provider for multiple blocs in the widget tree
     final userCubit = context.read<UserCubit>();
     final roomCubit = context.read<RoomCubit>();
     // Reinitialize controllers if new rooms are loaded
@@ -323,6 +341,7 @@ class AdminViewState extends State<AdminView> {
         });
       }
     }
+    // BasePage : base page widget
     return BasePage(
       showFooter: false,
       authUseCases: widget.authUseCases,
@@ -331,8 +350,10 @@ class AdminViewState extends State<AdminView> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // BlocListener : listener for UserCubit
               BlocListener<UserCubit, UserState>(
                 listener: (context, state) {
+                  // if the state is UserError
                   if (state is UserError) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -346,7 +367,9 @@ class AdminViewState extends State<AdminView> {
               ),
               BlocListener<RoomCubit, RoomState>(
                 listener: (context, state) {
+                  // if the state is RoomError
                   if (state is RoomError) {
+                    // show error message
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.message),
@@ -394,6 +417,7 @@ class AdminViewState extends State<AdminView> {
                 onCopyCode: _copyCode,
               ),
               // Room Widget Section
+              // if the state is RoomLoaded and hashtagControllers is not empty then show RoomWidget
               if (roomCubit.state is RoomLoaded &&
                   hashtagControllers.isNotEmpty)
                 RoomWidget(
@@ -410,6 +434,7 @@ class AdminViewState extends State<AdminView> {
                       _removeHashtagFromRoom(roomCubit, room, hashtag),
                   selectHashtag: _selectHashtag, // Pass the callback here
                 )
+                // else : show CircularProgressIndicator
               else
 
                 const Center(

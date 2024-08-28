@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import '../../../../domain/entities/chat/socket/message_socket_entity.dart';
 import '../../../../utils/data/entity_convertible_data.dart';
 
-
+// Message Socket Model
 @JsonSerializable()
 class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketModel, MessageSocketEntity> {
   final String roomId;
@@ -12,6 +12,7 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
   final String message;
   final DateTime? createdAt;
 
+  // constructor
   const MessageSocketModel({
     required this.roomId,
     required this.username,
@@ -20,6 +21,7 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
     this.createdAt,
   });
 
+  // from Json
   factory MessageSocketModel.fromJson(Map<String, dynamic> json) {
     return MessageSocketModel(
       roomId: json['roomId'],
@@ -30,6 +32,7 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
     );
   }
 
+  // to Json
   Map<String, dynamic> toJson() {
     return {
       'roomId': roomId,
@@ -40,9 +43,11 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
     };
   }
 
+// Equatable props
   @override
   List<Object?> get props => [roomId, username, userId, message, createdAt];
 
+  // to Entity
   @override
   MessageSocketEntity toEntity() {
     return MessageSocketEntity(

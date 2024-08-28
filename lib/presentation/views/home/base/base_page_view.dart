@@ -5,21 +5,26 @@ import '../../../_widgets/home/base/base_page_widget.dart';
 import '../../../cubits/home/base/base_page_cubit.dart';
 import '../../../pages/home/welcome/welcome_page.dart';
 
+// BasePageView : base page view
 class BasePageView extends StatefulWidget {
+  // attributes : child, showFooter
   final Widget child;
   final bool showFooter;
 
+  // Constructor
   const BasePageView({
     super.key,
     required this.child,
     this.showFooter = true,
   });
 
+  // createState method
   @override
   BasePageViewState createState() => BasePageViewState();
 }
 
 
+// BasePageViewState : base page view state
 class BasePageViewState extends State<BasePageView> {
   @override
   Widget build(BuildContext context) {

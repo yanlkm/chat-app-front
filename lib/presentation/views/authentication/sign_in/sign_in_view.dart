@@ -7,12 +7,16 @@ import '../../../_widgets/authentication/sign_in/sign_in_button_widget.dart';
 import '../../../_widgets/authentication/sign_in/username_input_widget.dart';
 import '../../../cubits/authentication/sign_in/sign_in_cubit.dart';
 
+// SignInView : sign in view
 class SignInView extends StatelessWidget {
+  // attributes
   final TextEditingController usernameController;
   final TextEditingController passwordController;
+  // callbacks
   final VoidCallback onSignInPressed;
   final VoidCallback onSignUpPressed;
 
+  // Constructor
   const SignInView({
     super.key,
     required this.usernameController,
@@ -21,8 +25,10 @@ class SignInView extends StatelessWidget {
     required this.onSignUpPressed,
   });
 
+  // build method
   @override
   Widget build(BuildContext context) {
+    // BlocConsumer : consumer for SignInCubit - listen to the state changes
     return BlocConsumer<SignInCubit, SignInState>(
       listener: (context, state) async {
         if (state is SignInError) {
@@ -32,6 +38,7 @@ class SignInView extends StatelessWidget {
               backgroundColor: Colors.red,
             ),
           );
+          // if state is SignInSuccess : treat the token response
         } else if (state is SignInSuccess) {
           // treat the token response
           var token = state.token.token;
@@ -57,6 +64,7 @@ class SignInView extends StatelessWidget {
           Navigator.pushNamed(context, '/home');
         }
       },
+      // builder for SignInCubit
       builder: (context, state) {
         return Scaffold(
 
@@ -68,6 +76,7 @@ class SignInView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // treat the state : if SignInLoading : display a circular progress indicator, if not : display the username input field
                 if(state is SignInLoading)
                   const Center(child: CircularProgressIndicator()),
                 if(state is! SignInLoading)

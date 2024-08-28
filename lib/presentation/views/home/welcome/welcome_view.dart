@@ -5,10 +5,11 @@ import '../../../_widgets/authentication/sign_up/sign_up_button_widget.dart';
 import '../../../_widgets/home/welcome/logo_widget.dart';
 import '../../../_widgets/home/welcome/text_widget.dart';
 
-
+// WelcomeView : welcome page view
 class WelcomeView extends StatelessWidget {
   const WelcomeView({super.key});
 
+  // main build
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

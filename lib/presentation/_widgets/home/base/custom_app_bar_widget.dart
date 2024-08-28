@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+// Custom App Bar
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  // Logout action as a callback function
   final VoidCallback onLogout;
 
+  // Constructor
   const CustomAppBar({super.key, required this.onLogout});
 
+  // main build method
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -21,6 +25,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.logout),
+          // Logout action
           onPressed: onLogout,
         ),
       ],
@@ -28,6 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
+  // Preferred Size
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

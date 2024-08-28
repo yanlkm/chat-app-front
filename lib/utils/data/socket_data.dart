@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import '../errors/handlers/socket_error_handler.dart';
 
+// SocketData : socket data class
 class SocketData {
+  // channel
   WebSocketChannel? _channel;
+  // stream controller : the controller for the stream to handle incoming data
   final StreamController<dynamic> _controller = StreamController<dynamic>.broadcast();
 
   /// Connect to the WebSocket server
@@ -16,34 +20,41 @@ class SocketData {
       await dotenv.load(fileName: ".env");
       final String? socketUrl = dotenv.env['SOCKET_URL'];
 
+      // Check if the socket URL is defined
       if (socketUrl == null || socketUrl.isEmpty) {
         throw const SocketErrorHandler('Socket URL is not defined in environment variables.');
       }
-
+      // Create the WebSocket channel
       final uri = Uri.tryParse('$socketUrl/ws?id=$roomId');
 
+      // Check if the URI is valid
       if (uri == null) {
         throw SocketErrorHandler('Invalid Socket URL: $socketUrl/ws?id=$roomId');
       }
-
+      // Connect to the WebSocket server if the URI is valid
       _channel = WebSocketChannel.connect(uri);
-
+      // Listen to the stream of incoming data
       _channel!.stream.listen(
             (event) {
           _handleIncomingData(event);
         },
+        // Handle errors
         onError: (error) {
           _controller.addError(SocketErrorHandler.fromException(error));
           disconnect();
         },
+        // Handle when the connection is done
         onDone: () {
           _controller.close();
-          print("WebSocket connection closed");
+          if (kDebugMode) {
+            print("WebSocket connection closed");
+          }
         },
         cancelOnError: true,
       );
-
-      print("Connected to WebSocket: $uri");
+      if (kDebugMode) {
+        print("Connected to WebSocket: $uri");
+      }
     } catch (e) {
       throw SocketErrorHandler.fromException(e);
     }
@@ -80,7 +91,9 @@ class SocketData {
   Future<void> disconnect() async {
     try {
       await _channel?.sink.close(status.normalClosure);
-      print("Disconnected from WebSocket");
+      if (kDebugMode) {
+        print("Disconnected from WebSocket");
+      }
     } catch (e) {
       throw SocketErrorHandler.fromException(e);
     } finally {

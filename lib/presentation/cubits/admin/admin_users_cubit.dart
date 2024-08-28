@@ -3,18 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 import 'package:my_app/domain/use_cases/users/user_usecases.dart';
 
+// UserState
 abstract class UserState {
   UserState();
 }
 
+// UserInitial : initial state
 class UserInitial extends UserState {
   UserInitial();
 }
 
+// UserLoading : loading state
 class UserLoading extends UserState {
   UserLoading();
 }
 
+// UserLoaded : loaded state
 class UserLoaded extends UserState {
   final List<UserEntity> users;
   final UserEntity? userFound;
@@ -25,27 +29,34 @@ class UserLoaded extends UserState {
       this.message);
 }
 
+// UserError : error state
 class UserError extends UserState {
   final String message;
 
   UserError(this.message);
 }
 
+// UserCubit : cubit for user
 class UserCubit extends Cubit<UserState> {
   final UserUseCases userUseCases;
   final ValueNotifier<List<UserEntity>> userNotifier;
   final ValueNotifier<UserEntity> userFoundNotifier;
 
 
+  // Constructor
   UserCubit(this.userUseCases, this.userFoundNotifier, this.userNotifier) :
         super(UserInitial());
 
+  // loadUsers method
   Future<void> loadUsers() async {
     try {
+      // eitherUsersOrError as attribute : get users
       final eitherUsersOrError = await userUseCases.getUsers();
       eitherUsersOrError.fold(
+        // if error emit UserError
               (error) => emit(UserError(error.message)),
               (userEntities) {
+            // if success emit UserLoaded
             userNotifier.value = userEntities;
             emit(UserLoaded(userNotifier.value, const UserEntity(), "Users loaded successfully"));
           });
@@ -54,13 +65,18 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
+  // searchUser method
   Future<void> searchUser(String userUniqueReference) async{
     try {
+      // define users as empty list
       List<UserEntity> users = [];
+      // get users
       final eitherUsersOrError = await userUseCases.getUsers();
+      // if error emit UserError
       eitherUsersOrError.fold(
               (error) => emit(UserError(error.message)),
               (userEntities) {
+                // if success set users to userEntities
                 users = userEntities;
               }
       );

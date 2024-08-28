@@ -10,6 +10,7 @@ import '../../../domain/use_cases/chat/db/message_db_usecases.dart';
 import '../../../domain/use_cases/chat/socket/message_socket_usescases.dart';
 import '../../../domain/use_cases/rooms/room_usecases.dart';
 
+// PageContent : the main content of the home page
 class PageContent extends StatelessWidget {
   final int selectedIndex;
   final bool isAdmin;
@@ -29,6 +30,7 @@ class PageContent extends StatelessWidget {
   late ValueNotifier<List<RoomEntity>> userRoomsNotifier;
   late ValueNotifier<List<RoomEntity>> adminRoomNotifier;
 
+  // Constructor
   PageContent({
     super.key,
     required this.selectedIndex,
@@ -46,6 +48,7 @@ class PageContent extends StatelessWidget {
     required this.messageSocketUseCases,
   });
 
+  // main build method that returns an IndexedStack with the ProfilePage, RoomPage, and AdminPage
   @override
   Widget build(BuildContext context) {
     return IndexedStack(

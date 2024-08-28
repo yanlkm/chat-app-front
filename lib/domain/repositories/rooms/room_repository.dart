@@ -3,7 +3,7 @@ import 'package:either_dart/either.dart';
 import 'package:my_app/domain/entities/rooms/room_entity.dart';
 
 import '../../../utils/errors/handlers/network_error_handler.dart';
-
+// Room Repository
 abstract class RoomRepository {
 
   Future<Either<NetworkErrorHandler,List<RoomEntity>>> getRooms();

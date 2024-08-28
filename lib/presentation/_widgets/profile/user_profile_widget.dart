@@ -2,17 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 
+// UserProfileWidget
 class UserProfileWidget extends StatelessWidget {
+  // UserEntity, isEditingUsername, showPasswords as attributes
   final UserEntity user;
   final bool isEditingUsername;
-  final TextEditingController usernameController;
-  final VoidCallback onEditPressed;
-  final VoidCallback onSavePressed;
-  final VoidCallback onTogglePasswords;
   final bool showPasswords;
+
+  // usernameController, oldPasswordController, newPasswordController as controllers
+  final TextEditingController usernameController;
   final TextEditingController oldPasswordController;
   final TextEditingController newPasswordController;
 
+  //  onEditPressed, onSavePressed, onTogglePasswords as functions
+  final VoidCallback onEditPressed;
+  final VoidCallback onSavePressed;
+  final VoidCallback onTogglePasswords;
+
+  // Constructor
   const UserProfileWidget({
     super.key,
     required this.user,
@@ -26,12 +33,16 @@ class UserProfileWidget extends StatelessWidget {
     required this.newPasswordController,
   });
 
+  // main build method
   @override
   Widget build(BuildContext context) {
+    // DateFormat to format the updatedAt date
     DateFormat dateFormat = DateFormat('MMMM dd, yyyy ss:mm');
     String updatedAtFormatted = dateFormat.format(user.updatedAt!);
+    // set the username in the controller
     usernameController.text = user.username!;
 
+    // Card to show the user profile
     return Card(
       color: Colors.white,
       elevation: 5,
@@ -63,8 +74,10 @@ class UserProfileWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
+            // Column to show the username and last updated date
             Column(
               children: [
+                // if isEditingUsername is true show the TextField to edit the username
                 isEditingUsername
                     ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -90,6 +103,7 @@ class UserProfileWidget extends StatelessWidget {
                     ),
                   ],
                 )
+                    // else show the username with edit and toggle password buttons
                     : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

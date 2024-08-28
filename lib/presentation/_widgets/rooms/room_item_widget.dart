@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_app/domain/entities/rooms/room_entity.dart';
 
-
+// RoomItem
 class RoomItem extends StatelessWidget {
+  // RoomEntity, isExpandedList, userId, index as attributes
   final RoomEntity room;
   final List<bool> isExpandedList;
   final String userId;
   final int index;
+  // onExpand, onRefreshRoom, onEnterRoom, onJoinRoom, updateRoom, onLeaveRoom as functions
   final VoidCallback onExpand;
   final Function(int, RoomEntity) onRefreshRoom;
   final Function(RoomEntity) onEnterRoom;
@@ -15,6 +17,7 @@ class RoomItem extends StatelessWidget {
   final Function(String) onLeaveRoom;
   final Function(RoomEntity) updateRoom;
 
+  // Constructor
   const RoomItem({
     super.key,
     required this.room,
@@ -29,11 +32,14 @@ class RoomItem extends StatelessWidget {
     required this.onLeaveRoom,
   });
 
+  // main build method
   @override
   Widget build(BuildContext context) {
+    // check if the user is a member or creator
     final bool isMember = room.members?.contains(userId) ?? false;
     final bool isCreator = room.creator == userId;
 
+    // Room Item Widget
     return GestureDetector(
       onTap: onExpand,
       child: AnimatedContainer(
@@ -79,6 +85,7 @@ class RoomItem extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            // Animated CrossFade to show the description and hashtags
             AnimatedCrossFade(
               alignment: Alignment.topCenter,
               excludeBottomFocus: true,
@@ -122,10 +129,12 @@ class RoomItem extends StatelessWidget {
                   ),
                 ],
               ),
+              // CrossFadeState based on isExpandedList : showSecond if true else showFirst
               crossFadeState: isExpandedList[index]
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 200),
+              // layoutBuilder to stack the topChild and bottomChild
               layoutBuilder: (topChild, topChildKey, bottomChild, bottomChildKey) {
                 return Stack(
                   alignment: Alignment.topCenter,
@@ -145,6 +154,7 @@ class RoomItem extends StatelessWidget {
               },
             ),
             const SizedBox(height: 8),
+            // 2 Buttons to Join or Enter the Room
             Row(
               children: [
                 Expanded(
@@ -177,6 +187,7 @@ class RoomItem extends StatelessWidget {
                       room.members?.remove(userId);
 
                     },
+                    // Elevated Button to Leave the Room
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isMember ? (isCreator ? Colors.grey : Colors.redAccent) : Colors.grey,
                       shape: RoundedRectangleBorder(

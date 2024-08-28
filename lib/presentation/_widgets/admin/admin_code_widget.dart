@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
+// Admin Code Widget
 class AdminCodeWidget extends StatelessWidget {
+  // Code Controller
   final TextEditingController codeController;
+
+  // Attributes
   final String currentCode;
   final bool isCodeCopied;
+
+  // Callbacks
   final VoidCallback onCreateCode;
   final VoidCallback onCopyCode;
 
+  // Constructor
   const AdminCodeWidget({
     super.key,
     required this.codeController,
@@ -16,11 +23,13 @@ class AdminCodeWidget extends StatelessWidget {
     required this.onCopyCode,
   });
 
+  // Build Method
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Generate Code
         const Text(
           'Generate Code',
           style: TextStyle(
@@ -45,6 +54,7 @@ class AdminCodeWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
+            // Create Code Button
             ElevatedButton(
               onPressed: onCreateCode,
               style: ElevatedButton.styleFrom(
@@ -62,6 +72,7 @@ class AdminCodeWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 20),
+        // Current Code Generated
         if (currentCode.isNotEmpty)
           Container(
             padding: const EdgeInsets.all(8),
@@ -72,6 +83,7 @@ class AdminCodeWidget extends StatelessWidget {
             ),
             width: MediaQuery.of(context).size.width * 0.5,
             child: ListTile(
+              // Current Code
               title: Text(
                 currentCode,
                 style: const TextStyle(
@@ -80,6 +92,7 @@ class AdminCodeWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              // Copy Code Button
               trailing: IconButton(
                 onPressed: onCopyCode,
                 icon: Icon(

@@ -3,9 +3,11 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 import 'package:my_app/utils/data/entity_convertible_data.dart';
 
+// User Model : UserModel
 @JsonSerializable()
 class UserModel extends Equatable with EntityConvertible<UserModel,UserEntity> {
 
+  // define variables with JsonKey annotation
   @JsonKey(name : '_id')
   final String? userID;
   @JsonKey(name :'username')
@@ -21,6 +23,7 @@ class UserModel extends Equatable with EntityConvertible<UserModel,UserEntity> {
   @JsonKey(name :'joinedSalons')
   final List<String>? rooms;
 
+  //  constructor
   UserModel({
     this.userID,
     this.username,
@@ -31,6 +34,7 @@ class UserModel extends Equatable with EntityConvertible<UserModel,UserEntity> {
     this.rooms,
   });
 
+  // from Json
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       username: json['username'],
@@ -43,10 +47,11 @@ class UserModel extends Equatable with EntityConvertible<UserModel,UserEntity> {
     );
   }
 
-
+// to Json
   @override
   List<Object?> get props => [userID, username, createdAt, updatedAt, role, validity, rooms];
 
+  // to Entity
   @override
   UserEntity toEntity() {
     return UserEntity(
@@ -60,7 +65,4 @@ class UserModel extends Equatable with EntityConvertible<UserModel,UserEntity> {
 
     );
   }
-
-
-
 }

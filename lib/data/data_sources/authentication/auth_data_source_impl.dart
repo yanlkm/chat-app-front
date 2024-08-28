@@ -12,13 +12,18 @@ import '../../models/authentication/sign_in/sign_in_model.dart';
 import '../../models/authentication/token_model.dart';
 import 'auth_data_source.dart';
 
+// This is the implementation of the AuthDataSource
 class AuthDataSourceImpl implements AuthDataSource {
+  // The required data sources and constants
   final DioData dioData;
+  // The secure storage for storing the token
   final FlutterSecureStorage secureStorage;
+  // The options data for the headers
   final OptionsData optionsData;
+  // The app constants
   final AppConstants appConstants;
 
-
+  // The constructor
   AuthDataSourceImpl({
     required this.dioData,
     required this.secureStorage,
@@ -26,9 +31,11 @@ class AuthDataSourceImpl implements AuthDataSource {
     required this.appConstants,
   });
 
+  // The login method to login the user
   @override
   Future<TokenModel> login(SignInModel signInModel) async {
     try {
+      // Make a post request to the login endpoint
       final response = await dioData.post(
         '/auth/login',
         data: signInModel.toJson(),
@@ -37,6 +44,7 @@ class AuthDataSourceImpl implements AuthDataSource {
           final token = response.data['token'];
           return TokenModel(token: token);
         } else {
+          // If the response is not 200, throw an error
           throw NetworkErrorHandler.fromDioError(
               DioException(
                 requestOptions: response.requestOptions,
@@ -50,10 +58,13 @@ class AuthDataSourceImpl implements AuthDataSource {
     }
   }
 
+  // The logout method to logout the user
   @override
   Future<void> logout() async {
     try {
+      // Load the options
       final options = await optionsData.loadOptions();
+      // Make a get request to the logout endpoint
       final response = await dioData.get(
         '/auth/logout',
         options: options
@@ -74,14 +85,16 @@ class AuthDataSourceImpl implements AuthDataSource {
     }
   }
 
+  // The register method to register the user
   @override
   Future<UserModel> register(SignUpModel signUpModel) async {
-
+    // Make a post request to the users endpoint
     try {
       final response = await dioData.post(
         '/users',
         data: signUpModel.toJson(),
       );
+      // If the response is 200, return the user model
       if (response.statusCode == 200) {
         return UserModel.fromJson(response.data);
       } else {

@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/rooms/room_entity.dart';
 
+// Room Widget
 class RoomWidget extends StatelessWidget {
+  // Controllers
   final TextEditingController roomNameController;
   final TextEditingController roomDescriptionController;
   final Map<String, TextEditingController> hashtagControllers;
+
+  // Attributes
+  final Map<String, String?> selectedHashtag;
   final List<RoomEntity> rooms;
+
+  // Callbacks & Functions
+  final void Function(String roomID, String hashtag) selectHashtag;
   final Function(String name, String description) onCreateRoom;
   final Function(RoomEntity room, String hashtag) onAddHashtagToRoom;
   final Function(RoomEntity room, String hashtag) onRemoveHashtagFromRoom;
-  final void Function(String roomID, String hashtag) selectHashtag;
-  final Map<String, String?> selectedHashtag;
 
+  // Constructor
   const RoomWidget({
     super.key,
     required this.roomNameController,
@@ -29,6 +36,7 @@ class RoomWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      // Main Column
       children: [
         const SizedBox(height: 10),
         const Text(
@@ -36,13 +44,16 @@ class RoomWidget extends StatelessWidget {
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue),
         ),
         const SizedBox(height: 10),
+        // Call the buildCreateRoomSection widget
         _buildCreateRoomSection(),
         const SizedBox(height: 16),
+        // Call the buildRoomList widget
         _buildRoomList(),
       ],
     );
   }
 
+  // define the buildCreateRoomSection widget
   Widget _buildCreateRoomSection() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -53,12 +64,15 @@ class RoomWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Create a New Room
           const Text(
             'Create a New Room',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
           ),
           const SizedBox(height: 8),
+          // Room Name TextField
           TextField(
+            // Controller
             controller: roomNameController,
             decoration: InputDecoration(
               labelText: 'Room Name',
@@ -70,6 +84,7 @@ class RoomWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           TextField(
+            // Controller
             controller: roomDescriptionController,
             decoration: InputDecoration(
               labelText: 'Room Description',
@@ -81,6 +96,7 @@ class RoomWidget extends StatelessWidget {
             maxLines: 3,
           ),
           const SizedBox(height: 10),
+          //
           Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton(
@@ -110,8 +126,10 @@ class RoomWidget extends StatelessWidget {
     );
   }
 
+  // Build the Room List widget
   Widget _buildRoomList() {
     return ListView.builder(
+      // use of shrinkWrap and NeverScrollableScrollPhysics to avoid scrolling
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: rooms.length,
@@ -120,6 +138,7 @@ class RoomWidget extends StatelessWidget {
         final room = rooms[index];
         final hashtagController = hashtagControllers[room.roomID]!;
 
+        // Return a Container with the room details
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           padding: const EdgeInsets.all(12),
@@ -140,6 +159,7 @@ class RoomWidget extends StatelessWidget {
                 style: const TextStyle(fontSize: 16, color: Colors.black87),
               ),
               const SizedBox(height: 8),
+              // Call the _buildHashtagSection widget
               _buildHashtagSection(room, hashtagController),
               const SizedBox(height: 10),
             ],
@@ -149,6 +169,7 @@ class RoomWidget extends StatelessWidget {
     );
   }
 
+  // Build the Hashtag Section widget
   Widget _buildHashtagSection(RoomEntity room, TextEditingController hashtagController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,6 +203,7 @@ class RoomWidget extends StatelessWidget {
           }).toList() ?? [],
         ),
         const SizedBox(height: 4),
+        // if selectedHashtag is not null then show the ElevatedButton to remove the hashtag
         if (selectedHashtag[room.roomID] != null)
           ElevatedButton(
             onPressed: () => onRemoveHashtagFromRoom(room, selectedHashtag[room.roomID]!),
@@ -200,6 +222,7 @@ class RoomWidget extends StatelessWidget {
         const SizedBox(height: 4),
         const Divider(color: Colors.grey, thickness: 1),
         const SizedBox(height: 8),
+        // add Hashtag section
         Row(
           children: [
             Flexible(

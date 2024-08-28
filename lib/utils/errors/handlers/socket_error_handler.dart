@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'dart:io';
 
+// SocketErrorHandler : socket error handler class
 class SocketErrorHandler extends Equatable implements Exception {
+  // message
   final String message;
 
   // Public named constructor
   const SocketErrorHandler(this.message);
 
+  // Factory constructor : create SocketErrorHandler from exception
   factory SocketErrorHandler.fromException(dynamic exception) {
+    // Check the type of exception and set the message accordingly
     if (exception is SocketException) {
       return const SocketErrorHandler(
         'No internet connection. Please check your network settings.',
@@ -33,9 +37,11 @@ class SocketErrorHandler extends Equatable implements Exception {
     }
   }
 
+  // Override toString method
   @override
   String toString() => 'SocketError: $message';
 
+  // Override props
   @override
   List<Object?> get props => [message];
 }

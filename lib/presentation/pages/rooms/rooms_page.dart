@@ -10,6 +10,7 @@ import '../../cubits/rooms/rooms_cubit.dart';
 import '../../views/rooms/rooms_view.dart';
 
 
+// RoomPage : room page entry point
 class RoomPage extends StatelessWidget {
   // useCases
   final AuthUseCases authUseCases;
@@ -22,6 +23,7 @@ class RoomPage extends StatelessWidget {
   final ValueNotifier<List<RoomEntity>> roomsNotifier;
   final ValueNotifier<List<RoomEntity>> userRoomsNotifier;
 
+  // Constructor
   const RoomPage({
     super.key,
     required this.authUseCases,
@@ -33,8 +35,10 @@ class RoomPage extends StatelessWidget {
     required this.userRoomsNotifier,
   });
 
+  // build method : build the widget
   @override
   Widget build(BuildContext context) {
+    // BlocProvider : provider for the bloc in the widget tree
     return BlocProvider(
       create: (context) => RoomsCubit(
         roomUseCases,

@@ -7,12 +7,15 @@ import '../../../_widgets/authentication/sign_up/password_confirmation_input_wid
 import '../../../_widgets/authentication/sign_up/sign_up_button_widget.dart';
 import '../../../cubits/authentication/sign_up/sign_up_cubit.dart';
 
+// SignUpView : sign up view
 class SignUpView extends StatelessWidget {
+  // attributes : text controllers
   final TextEditingController usernameController;
   final TextEditingController passwordController;
   final TextEditingController passwordConfirmationController;
   final TextEditingController codeController;
 
+  // Constructor
   const SignUpView({
     super.key,
     required this.usernameController,
@@ -21,8 +24,10 @@ class SignUpView extends StatelessWidget {
     required this.codeController,
   });
 
+  // build method
   @override
   Widget build(BuildContext context) {
+    // BlocConsumer : consumer for SignUpCubit - listen to the state changes
     return BlocConsumer<SignUpCubit, SignUpState>(
       listener: (context, state) {
         // Display success message or handle errors
@@ -52,6 +57,11 @@ class SignUpView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // UsernameTextField : username input field
+                // PasswordTextField : password input field
+                // PasswordConfirmationTextField : password confirmation input field
+                // CodeTextField : code input field
+                // SignUpButton : sign up button
                 const SizedBox(height: 20.0),
                 UsernameTextField(usernameController: usernameController),
                 const SizedBox(height: 20.0),
@@ -63,6 +73,7 @@ class SignUpView extends StatelessWidget {
                 const SizedBox(height: 20.0),
                 CodeTextField(codeController: codeController),
                 const SizedBox(height: 20.0),
+                // treat the state : if SignUpLoading : display a circular progress indicator, if not : display the sign up button
                 if (state is SignUpLoading)
                   const Center(child: CircularProgressIndicator()),
                 if (state is! SignUpLoading)

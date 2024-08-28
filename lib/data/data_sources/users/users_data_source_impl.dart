@@ -8,12 +8,16 @@ import '../../../utils/data/dio_data.dart';
 import '../../../utils/errors/handlers/network_error_handler.dart';
 import '../../models/users/user_model.dart';
 
-class UserDataSourceImpl implements UsersDataSource {
+// Users Data Source Implementation
+class UserDataSourceImpl implements  UsersDataSource {
+
+  // final instances
   final DioData dioData;
   final FlutterSecureStorage secureStorage;
   final OptionsData optionsData;
   final AppConstants appConstants;
 
+  // constructor
   UserDataSourceImpl({
     required this.dioData,
     required this.secureStorage,
@@ -21,6 +25,7 @@ class UserDataSourceImpl implements UsersDataSource {
     required this.appConstants,
   });
 
+  // Get user from API
   @override
   Future<UserModel> getUser() async {
     try {
@@ -42,6 +47,7 @@ class UserDataSourceImpl implements UsersDataSource {
     }
   }
 
+  // Ban user from API
   @override
   Future<String> banUser(String userToBanId) async {
     try {
@@ -66,6 +72,7 @@ class UserDataSourceImpl implements UsersDataSource {
     }
   }
 
+  // Unban user from API
   @override
   Future<String> unbanUser(String userToUnbanId) async {
     try {
@@ -90,12 +97,14 @@ class UserDataSourceImpl implements UsersDataSource {
     }
   }
 
+  // Get all users from API
   @override
   Future<List<UserModel>> getUsers() async {
     try {
       final options = await optionsData.loadOptions();
       final response = await dioData.get('/users', options: options);
       if (response.statusCode != 200) {
+        // throw error if response is not successful
         throw NetworkErrorHandler.fromDioError(
           DioException(
             requestOptions: response.requestOptions,
@@ -104,6 +113,7 @@ class UserDataSourceImpl implements UsersDataSource {
           ),
         );
       }
+      // return list of users if response is successful
       return (response.data as List<dynamic>)
           .map<UserModel>((user) => UserModel.fromJson(user))
           .toList();
@@ -112,6 +122,7 @@ class UserDataSourceImpl implements UsersDataSource {
     }
   }
 
+  // Update username from API
   @override
   Future<String> updateUsername(String username) async {
     try {
@@ -122,6 +133,7 @@ class UserDataSourceImpl implements UsersDataSource {
         data: {'username': username},
         options: options,
       );
+      // throw error if response is not successful
       if(response.statusCode != 200) {
         throw NetworkErrorHandler.fromDioError(
           DioException(
@@ -131,12 +143,14 @@ class UserDataSourceImpl implements UsersDataSource {
           ),
         );
       }
+      // return message if response is successful
       return response.data['message'] ?? 'Username updated successfully';
     } catch (e) {
       rethrow;
     }
   }
 
+  // Update password from API
   @override
   Future<String> updatePassword(String oldPassword, String newPassword) async {
     try {
@@ -150,6 +164,7 @@ class UserDataSourceImpl implements UsersDataSource {
         },
         options: options,
       );
+      // throw error if response is not successful
       if (response.statusCode != 200) {
         throw NetworkErrorHandler.fromDioError(
           DioException(
@@ -159,12 +174,14 @@ class UserDataSourceImpl implements UsersDataSource {
           ),
         );
       }
+      // return message if response is successful
       return response.data['message'] ?? 'Password updated successfully';
     } catch (e) {
       rethrow;
     }
   }
 
+  // Create registration code from API
   @override
   Future<String> createRegistrationCode(String code) async {
     try {
@@ -174,6 +191,7 @@ class UserDataSourceImpl implements UsersDataSource {
         data: {'code': code},
         options: options,
       );
+      // throw error if response is not successful
       if(response.statusCode != 200) {
         throw NetworkErrorHandler.fromDioError(
           DioException(
@@ -183,6 +201,7 @@ class UserDataSourceImpl implements UsersDataSource {
           ),
         );
       }
+      // return message if response is successful
       return response.data['message'] ?? 'Code created successfully';
     } catch (e) {
       rethrow;

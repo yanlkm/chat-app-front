@@ -4,9 +4,11 @@ import 'package:my_app/domain/entities/chat/db/message_db_entity.dart';
 
 import '../../../../utils/data/entity_convertible_data.dart';
 
+// Message DB Model : MessageDBModel
 @JsonSerializable()
 class MessageDBModel extends Equatable with EntityConvertible<MessageDBModel,MessageDBEntity>{
 
+  // define variables with JsonKey annotation
   @JsonKey(name: '_id')
   final String? messageID;
   @JsonKey(name: 'roomId')
@@ -20,6 +22,7 @@ class MessageDBModel extends Equatable with EntityConvertible<MessageDBModel,Mes
   @JsonKey(name: 'createdAt')
   final DateTime? createdAt;
 
+  // constructor
   const MessageDBModel
       ({this.messageID,
         this.username,
@@ -29,6 +32,7 @@ class MessageDBModel extends Equatable with EntityConvertible<MessageDBModel,Mes
         this.roomID
       });
 
+  // from Json
   factory MessageDBModel.fromJson( Map<String, dynamic> json) {
 
     return MessageDBModel(
@@ -40,11 +44,11 @@ class MessageDBModel extends Equatable with EntityConvertible<MessageDBModel,Mes
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
     );
   }
-
+// to Json
   @override
-  // TODO: implement props
   List<Object?> get props => [messageID,content, roomID, userId, username, createdAt];
 
+  // to Entity
   @override
   MessageDBEntity toEntity() {
     return

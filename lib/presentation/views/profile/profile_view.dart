@@ -10,33 +10,41 @@ import '../../cubits/profile/password_cubit.dart';
 import '../../cubits/profile/profile_cubit.dart';
 import '../../cubits/profile/rooms_cubit.dart';
 
-
+// ProfileView : profile view page
 class ProfileView extends StatefulWidget {
+  // auth use cases
   final AuthUseCases authUseCases;
 
+  // constructor
   const ProfileView({
     super.key,
     required this.authUseCases,
   });
 
+  // invoke view state
   @override
   ProfileViewState createState() => ProfileViewState();
 }
 
+// Profile View State
 class ProfileViewState extends State<ProfileView> {
+  // attributes
   bool showRooms = false;
   bool showPasswords = false;
   bool isEditingUsername = false;
+  // text controllers
   TextEditingController usernameController = TextEditingController();
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
 
+  // show/hide passwords fields
   void togglePasswords() {
     setState(() {
       showPasswords = !showPasswords;
     });
   }
 
+  // update username method using ProfileCubit
   void saveUsername() {
     context.read<ProfileCubit>().updateUsername(usernameController.text);
     setState(() {
@@ -44,10 +52,12 @@ class ProfileViewState extends State<ProfileView> {
     });
   }
 
+  // update password method using PasswordCubit
   void updatePassword(String oldPassword, String newPassword) {
     context.read<PasswordCubit>().updatePassword(oldPassword, newPassword);
   }
 
+  // main build
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -55,6 +65,7 @@ class ProfileViewState extends State<ProfileView> {
       authUseCases: widget.authUseCases,
       child: Scaffold(
         body: RefreshIndicator(
+          // on refresh load profile and rooms
           onRefresh: () async {
             context.read<ProfileCubit>().loadProfile();
             context.read<RoomsCubit>().loadRooms();
@@ -62,8 +73,10 @@ class ProfileViewState extends State<ProfileView> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                // bloc listener to profile state using profile cubit
                 BlocListener<ProfileCubit, ProfileState>(
                   listener: (context, state) {
+                    // if profile is loaded, then display a message, if error display a red error message
                     if (state is ProfileLoaded) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.message)),
@@ -76,8 +89,10 @@ class ProfileViewState extends State<ProfileView> {
                       );
                     }
                   },
+                  // show profile using bloc builder on profile state
                   child: BlocBuilder<ProfileCubit, ProfileState>(
                     builder: (context, state) {
+                      // if profile loaded then display user logged in
                       if (state is ProfileLoading) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (state is ProfileLoaded) {
@@ -97,7 +112,7 @@ class ProfileViewState extends State<ProfileView> {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-
+                                // call UserProfileWidget
                                 UserProfileWidget(
                                   user: user,
                                   isEditingUsername: isEditingUsername,
@@ -113,14 +128,13 @@ class ProfileViewState extends State<ProfileView> {
                                   oldPasswordController: oldPasswordController,
                                   newPasswordController: newPasswordController,
                                 ),
-
+                                // show/hide password depending on showPasswords
                                 if (showPasswords)
                                   BlocListener<PasswordCubit, PasswordState>(
                                     listener: (context, state) {
                                       if (state is PasswordUpdated) {
                                         setState(() {
                                           user = user.setUpdatedAt(DateTime.now());
-                                          // TODO: Update user
                                           context.read<ProfileCubit>().loadDynamically(user,state.message);
 
                                         });
@@ -157,6 +171,7 @@ class ProfileViewState extends State<ProfileView> {
                     },
                   ),
                 ),
+                // display rooms using bloc builder on rooms state
                 BlocBuilder<RoomsCubit, RoomsState>(
                   builder: (context, state) {
                     if (state is RoomsLoading) {

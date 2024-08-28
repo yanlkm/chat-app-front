@@ -9,7 +9,7 @@ import '../../../domain/use_cases/rooms/room_usecases.dart';
 import '../../../domain/use_cases/users/user_usecases.dart';
 import '../../views/home/home_view.dart';
 
-
+// HomePage : home page entry point
 class HomePage extends StatefulWidget {
 
 
@@ -21,6 +21,7 @@ class HomePage extends StatefulWidget {
   final MessageSocketUseCases   messageSocketUseCases;
 
 
+  // Constructor
   const HomePage({
     super.key,
     required this.userUseCases,
@@ -30,13 +31,17 @@ class HomePage extends StatefulWidget {
     required this.messageSocketUseCases,
   });
 
+  // createState method
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+// _HomePageState : HomePage state class
 class _HomePageState extends State<HomePage> {
+  // attributes
+  // index of the selected item
   int _selectedIndex = 0;
-
+// notifiers
   late ValueNotifier<List<RoomEntity>> roomsNotifier;
   late ValueNotifier<List<UserEntity>> usersNotifier;
   late ValueNotifier<List<RoomEntity>> userRoomsNotifier;
@@ -44,8 +49,10 @@ class _HomePageState extends State<HomePage> {
   late ValueNotifier<UserEntity> userFoundNotifier;
   late ValueNotifier<List<RoomEntity>> adminRoomNotifier;
 
+  // isAdmin
   bool isAdmin = false;
 
+  // initState method : initialize the state and check if the user is admin
   @override
   void initState() {
     super.initState();
@@ -59,6 +66,7 @@ class _HomePageState extends State<HomePage> {
     _checkIfUserIsAdmin();
   }
 
+  // _checkIfUserIsAdmin method : check if the user is admin
   Future<void> _checkIfUserIsAdmin() async {
     const secureStorage = FlutterSecureStorage();
     String? role = await secureStorage.read(key: 'role');
@@ -69,14 +77,17 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // _onItemTapped method : handle the tap event on the bottom navigation bar
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
+  // build method
   @override
   Widget build(BuildContext context) {
+    // HomeView : home view
     return HomeView(
       selectedIndex: _selectedIndex,
       onItemTapped: _onItemTapped,

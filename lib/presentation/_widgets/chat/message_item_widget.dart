@@ -2,20 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_app/domain/entities/chat/db/message_db_entity.dart';
 
-
+// MessageItemWidget
 class MessageItemWidget extends StatelessWidget {
+  // MessageDBEntity as attribute
   final MessageDBEntity message;
+  // currentUserId as attribute
   final String? currentUserId;
 
+  // Constructor
   const MessageItemWidget({
     super.key,
     required this.message,
     required this.currentUserId,
   });
 
+  // main build method
   @override
   Widget build(BuildContext context) {
+    // check if the message is from the current user
     final isCurrentUser = message.userId == currentUserId;
+    // format the time
     final formattedTime = DateFormat('HH:mm').format(message.createdAt!);
 
     return Padding(
@@ -24,10 +30,12 @@ class MessageItemWidget extends StatelessWidget {
         mainAxisAlignment:
         isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
+          // ConstrainedBox to limit the width of the message
           ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 2 / 3,
             ),
+            // Container to wrap the message
             child: Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -56,6 +64,7 @@ class MessageItemWidget extends StatelessWidget {
                       const SizedBox(height: 10),
                     ],
                   ),
+                  // Positioned to place the time at the bottom right
                   Positioned(
                     bottom: 0,
                     right: 0,

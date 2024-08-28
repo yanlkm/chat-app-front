@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 
+// Password Change Fields
 class PasswordChangeFields extends StatelessWidget {
+  // Old Password and New Password Text Editing controllers
   final TextEditingController oldPasswordController;
   final TextEditingController newPasswordController;
+  // Update action as a Callback function
   final VoidCallback onUpdate;
 
+  // Constructor
   const PasswordChangeFields({
-    Key? key,
+    super.key,
     required this.oldPasswordController,
     required this.newPasswordController,
     required this.onUpdate,
-  }) : super(key: key);
+  });
 
+  // main build method
   @override
   Widget build(BuildContext context) {
     return Column(
