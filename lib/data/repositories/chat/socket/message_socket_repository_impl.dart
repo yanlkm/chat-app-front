@@ -38,6 +38,7 @@ class MessageSocketRepositoryImpl implements MessageSocketRepository {
         userId: message.userId,
         message: message.message,
         createdAt: message.createdAt,
+        token:  message.token,
       );
       // Send message
       messageSocketDataSource.sendMessage(model);

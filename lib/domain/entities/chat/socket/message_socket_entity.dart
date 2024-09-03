@@ -7,6 +7,7 @@ class MessageSocketEntity extends Equatable {
   final String? userId;
   final String message;
   final DateTime? createdAt;
+  final String? token;
 // constructor
   const MessageSocketEntity({
     required this.roomId,
@@ -14,9 +15,10 @@ class MessageSocketEntity extends Equatable {
     this.userId,
     required this.message,
     this.createdAt,
+    this.token,
   });
 
   // Equatable props
   @override
-  List<Object?> get props => [roomId, username, userId, message, createdAt];
+  List<Object?> get props => [roomId, username, userId, message, createdAt, token];
 }

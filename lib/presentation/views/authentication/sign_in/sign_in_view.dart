@@ -48,7 +48,7 @@ class SignInView extends StatelessWidget {
           // decode the token
           Map<String, dynamic> jwt = JwtDecoder.decode(token);
           // store the user id in secure storage
-          await secureStorage.write(key : 'userId', value : jwt['_id']);
+          await secureStorage.write(key : 'userId', value : jwt['UserID']);
           // store the username in secure storage
           await secureStorage.write(key : 'username', value:  jwt['Username']);
           // store the user role in secure storage

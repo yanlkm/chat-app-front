@@ -31,6 +31,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   // username & userId to store the username and userId
   String? _username;
   String? _userId;
+  String? _token;
 
   // initState method : initialize the state and load the username
   @override
@@ -46,6 +47,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   Future<void> _loadUsername() async {
     _username = await const FlutterSecureStorage().read(key: 'username');
     _userId = await const FlutterSecureStorage().read(key: 'userId');
+    _token = await const FlutterSecureStorage().read(key: 'token');
   }
 
   // _initializeCubits method : initialize the cubits
@@ -110,13 +112,16 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
 
   // _sendMessage method : send a message
   void _sendMessage() {
+    print("token : $_token");
     if (_messageControllerInput.text.isNotEmpty) {
       final message = MessageSocketEntity(
         roomId: widget.room.roomID,
         username: _username!,
         message: _messageControllerInput.text,
         userId: _userId!,
+        token: _token!,
       );
+      print("message : $message");
       context.read<SocketCubit>().sendMessage(message);
       // clear the message controller
       _messageControllerInput.clear();

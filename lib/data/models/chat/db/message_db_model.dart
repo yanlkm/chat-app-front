@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:my_app/domain/entities/chat/db/message_db_entity.dart';
 
@@ -34,6 +35,8 @@ class MessageDBModel extends Equatable with EntityConvertible<MessageDBModel,Mes
 
   // from Json
   factory MessageDBModel.fromJson( Map<String, dynamic> json) {
+    // Define the date format that matches JSON
+    final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss.SSS ZZZ");
 
     return MessageDBModel(
       messageID: json['_id'] ?? '',
@@ -41,7 +44,7 @@ class MessageDBModel extends Equatable with EntityConvertible<MessageDBModel,Mes
       roomID: json['roomId'] ?? '',
       userId: json['userId'] ?? '',
       username: json['username'] ?? '',
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      createdAt: json['createdAt'] != null ? dateFormat.parse(json['createdAt']) : DateTime.now(),
     );
   }
 // to Json

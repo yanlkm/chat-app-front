@@ -113,6 +113,10 @@ class UserDataSourceImpl implements  UsersDataSource {
           ),
         );
       }
+      if (response.data == null) {
+        // if response data is null, return empty list
+        return [];
+      }
       // return list of users if response is successful
       return (response.data as List<dynamic>)
           .map<UserModel>((user) => UserModel.fromJson(user))

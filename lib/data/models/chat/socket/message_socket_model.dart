@@ -11,6 +11,7 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
   final String? userId;
   final String message;
   final DateTime? createdAt;
+  final String? token;
 
   // constructor
   const MessageSocketModel({
@@ -19,16 +20,19 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
     this.userId,
     required this.message,
     this.createdAt,
+    this.token,
   });
 
   // from Json
   factory MessageSocketModel.fromJson(Map<String, dynamic> json) {
+    // return MessageSocketModel
     return MessageSocketModel(
       roomId: json['roomId'],
       username: json['username'],
       userId: json['userId'],
       message: json['message'],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+      token : json['token'],
     );
   }
 
@@ -40,12 +44,13 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
       'userId': userId,
       'message': message,
       'createdAt': createdAt,
+      'token' : token,
     };
   }
 
 // Equatable props
   @override
-  List<Object?> get props => [roomId, username, userId, message, createdAt];
+  List<Object?> get props => [roomId, username, userId, message, createdAt, token];
 
   // to Entity
   @override
@@ -56,6 +61,7 @@ class MessageSocketModel extends Equatable with EntityConvertible<MessageSocketM
       userId: userId,
       message: message,
       createdAt: createdAt,
+      token : token,
     );
   }
 }

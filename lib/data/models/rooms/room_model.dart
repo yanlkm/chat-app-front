@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:my_app/domain/entities/rooms/room_entity.dart';
 
@@ -41,18 +42,21 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
 
   // from Json
   factory RoomModel.fromJson(Map<String, dynamic> json) {
+    // Define the date format that matches JSON
+    final DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss.SSS ZZZ");
+
     return RoomModel(
-      roomID: json['_id']?? '',
-      name: json['name']?? '',
-      description: json['description']?? '',
-      creator: json['creator']?? '',
+      roomID: json['_id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      creator: json['creator'] ?? '',
       members:
-          json['members'] != null ? List<String>.from(json['members']) : [],
+      json['members'] != null ? List<String>.from(json['members']) : [],
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
+          ? dateFormat.parse(json['createdAt'])
           : DateTime.now(),
       updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
+          ? dateFormat.parse(json['updatedAt'])
           : DateTime.now(),
       messages: json['messages'] != null
           ? List<String>.from(json['messages'])
@@ -62,6 +66,7 @@ class RoomModel extends Equatable with EntityConvertible<RoomModel,RoomEntity> {
           : [],
     );
   }
+
 
   // to Json
   @override

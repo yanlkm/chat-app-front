@@ -18,6 +18,7 @@ class MessageSocketDataSourceImpl implements MessageSocketDataSource {
   // This method is used to connect to the socket
   @override
   Future<void> connect(String roomId) async {
+    // Check if already connected
     if (_isConnected) return; // Prevent multiple connections
 
     // Get the socket URL from the environment variables
