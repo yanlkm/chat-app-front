@@ -37,7 +37,7 @@ class UserProfileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // DateFormat to format the updatedAt date
-    DateFormat dateFormat = DateFormat('MMMM dd, yyyy ss:mm');
+    DateFormat dateFormat = DateFormat('MMMM dd, yyyy');
     String updatedAtFormatted = dateFormat.format(user.updatedAt!);
     // set the username in the controller
     usernameController.text = user.username!;
