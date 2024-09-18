@@ -170,6 +170,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // Remove the debug banner
+      debugShowCheckedModeBanner: false,
       // Add the title
       title: 'Chat-app',
       theme: ThemeData(
