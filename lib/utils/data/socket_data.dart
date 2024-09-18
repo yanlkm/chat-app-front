@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -46,15 +45,9 @@ class SocketData {
         // Handle when the connection is done
         onDone: () {
           _controller.close();
-          if (kDebugMode) {
-            print("WebSocket connection closed");
-          }
         },
         cancelOnError: true,
       );
-      if (kDebugMode) {
-        print("Connected to WebSocket: $uri");
-      }
     } catch (e) {
       throw SocketErrorHandler.fromException(e);
     }
@@ -78,7 +71,6 @@ class SocketData {
     try {
       final encodedMessage = json.encode(message);
       _channel!.sink.add(encodedMessage);
-      print("Sent message: $encodedMessage");
     } catch (e) {
       throw SocketErrorHandler.fromException(e);
     }
@@ -91,9 +83,6 @@ class SocketData {
   Future<void> disconnect() async {
     try {
       await _channel?.sink.close(status.normalClosure);
-      if (kDebugMode) {
-        print("Disconnected from WebSocket");
-      }
     } catch (e) {
       throw SocketErrorHandler.fromException(e);
     } finally {

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import '../constants/app_constants.dart';
 
 // DioData : dio data class
@@ -45,6 +46,16 @@ class DioData {
           },
         ),
       );
+    // custom HttpClient that ignores self-signed certificate issues
+    _dio.httpClientAdapter = IOHttpClientAdapter()
+      ..createHttpClient = () {
+        final client = HttpClient()
+          ..badCertificateCallback =
+              (X509Certificate cert, String host, int port) {
+            return true;
+          };
+        return client;
+      };
   }
   /// * GET
   Future<Response<dynamic>> get(

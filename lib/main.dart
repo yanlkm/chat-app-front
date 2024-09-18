@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -5,6 +7,7 @@ import 'package:my_app/presentation/pages/authentication/sign_in/sign_in_page.da
 import 'package:my_app/presentation/pages/authentication/sign_up/sign_up_page.dart';
 import 'package:my_app/presentation/pages/home/home_page.dart';
 import 'package:my_app/presentation/pages/home/welcome/welcome_page.dart';
+import 'package:my_app/utils/data/http_override.dart';
 // Import the required classes for UserUseCases
 import 'data/data_sources/authentication/auth_data_source_impl.dart';
 import 'data/data_sources/chat/db/message_db_data_source_impl.dart';
@@ -126,7 +129,11 @@ Future<void> main() async {
   // Check if a token is present in secureStorage
   String? token = await secureStorage.read(key: 'token');
 
-  runApp(MyApp(
+  // Add the HttpOverrides.global bypassing certificate validation
+  HttpOverrides.global = MyHttpOverrides();
+
+  runApp(
+      MyApp(
       initialRoute: token == null ? '/welcome' : '/home',
       userUseCases: userUseCases,
       roomUsesCases: roomUsesCases,

@@ -115,7 +115,6 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
 
   // _sendMessage method : send a message
   void _sendMessage() {
-    print("token : $_token");
     if (_messageControllerInput.text.isNotEmpty) {
       final message = MessageSocketEntity(
         roomId: widget.room.roomID,
@@ -124,7 +123,6 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
         userId: _userId!,
         token: _token!,
       );
-      print("message : $message");
       context.read<SocketCubit>().sendMessage(message);
       // clear the message controller
       _messageControllerInput.clear();
