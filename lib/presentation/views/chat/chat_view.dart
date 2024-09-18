@@ -74,6 +74,8 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     // listen to messages : if the connection is successful
     if (socketCubit.state) {
       socketCubit.listenToMessages((message) {
+        // check if the context is mounted
+        if (!mounted) return;
         // add the message to the cubit
         context.read<MessageCubit>().addMessage(
           MessageDBEntity(
@@ -107,6 +109,7 @@ class ChatViewState extends State<ChatView> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _messageControllerInput.dispose();
     _scrollController.dispose();
+
     super.dispose();
   }
 

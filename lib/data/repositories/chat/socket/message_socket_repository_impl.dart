@@ -3,13 +3,13 @@ import 'package:my_app/utils/errors/handlers/socket_error_handler.dart';
 
 import '../../../../domain/entities/chat/socket/message_socket_entity.dart';
 import '../../../../domain/repositories/chat/socket/message_socket_repository.dart';
-import '../../../data_sources/chat/socket/message_socket_data_source.dart';
+import '../../../data_sources/chat/socket/message_socket_data_source_impl.dart';
 import '../../../models/chat/socket/message_socket_model.dart';
 
 // Message Socket Repository Implementation
 class MessageSocketRepositoryImpl implements MessageSocketRepository {
   // Message Socket Data Source
-  final MessageSocketDataSource messageSocketDataSource;
+  final MessageSocketDataSourceImpl messageSocketDataSource;
   // Constructor
   MessageSocketRepositoryImpl(this.messageSocketDataSource);
 
