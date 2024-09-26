@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:my_app/domain/entities/users/user_entity.dart';
 import 'package:my_app/domain/use_cases/authentication/auth_usecases.dart';
 import 'package:my_app/presentation/pages/home/base/base_page.dart';
@@ -75,12 +76,19 @@ class ProfileViewState extends State<ProfileView> {
               children: [
                 // bloc listener to profile state using profile cubit
                 BlocListener<ProfileCubit, ProfileState>(
-                  listener: (context, state) {
+                  listener: (context, state) async {
                     // if profile is loaded, then display a message, if error display a red error message
                     if (state is ProfileLoaded) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.message)),
                       );
+                      // load secure storage
+                      const secureStorage = FlutterSecureStorage();
+                      var oldUsername = await secureStorage.read(key: 'username');
+                      // check if user username is the same as the one in the secure storage
+                      if (state.user.username != oldUsername) {
+                        secureStorage.write(key: 'username', value: state.user.username);
+                      }
                       usernameController.clear();
                     }
                     if (state is ProfileError) {
