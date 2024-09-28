@@ -12,8 +12,16 @@ class MessageDBUseCases {
     required this.messageDBRepositoryImpl,
   });
 
-  // Fetch Messages
-  Future<Either<NetworkErrorHandler, List<MessageDBEntity>>> fetchMessages(String roomId) async {
-    return messageDBRepositoryImpl.fetchMessages(roomId);
+  // Fetch Remote Messages
+  Future<Either<NetworkErrorHandler, List<MessageDBEntity>>> fetchRemoteMessages(String roomId) async {
+    return messageDBRepositoryImpl.fetchRemoteMessages(roomId);
+  }
+  //  Fetch Local Messages
+  Future<Either<NetworkErrorHandler, List<MessageDBEntity>>> fetchLocalMessages(String roomId) async {
+    return messageDBRepositoryImpl.fetchLocalMessages(roomId);
+  }
+  // Save Message
+  Future<Either<NetworkErrorHandler, void>> saveMessage(MessageDBEntity message) async {
+    return messageDBRepositoryImpl.saveMessage(message);
   }
 }

@@ -8,12 +8,15 @@ import 'package:my_app/presentation/pages/authentication/sign_up/sign_up_page.da
 import 'package:my_app/presentation/pages/home/home_page.dart';
 import 'package:my_app/presentation/pages/home/welcome/welcome_page.dart';
 import 'package:my_app/utils/data/http_override.dart';
+import 'package:my_app/utils/data/local/object_box_store.dart';
 // Import the required classes for UserUseCases
 import 'data/data_sources/authentication/auth_data_source_impl.dart';
 import 'data/data_sources/chat/db/message_db_data_source_impl.dart';
+import 'data/data_sources/chat/local/message_local_data_source_impl.dart';
 import 'data/data_sources/chat/socket/message_socket_data_source_impl.dart';
 import 'data/data_sources/rooms/rooms_data_source_impl.dart';
 import 'data/data_sources/users/users_data_source_impl.dart';
+import 'data/models/chat/local/message_local_model.dart';
 import 'data/repositories/authentication/auth_repository_impl.dart';
 import 'data/repositories/chat/db/message_db_repository_impl.dart';
 import 'data/repositories/chat/socket/message_socket_repository_impl.dart';
@@ -24,9 +27,13 @@ import 'domain/use_cases/chat/db/message_db_usecases.dart';
 import 'domain/use_cases/chat/socket/message_socket_usescases.dart';
 import 'domain/use_cases/rooms/room_usecases.dart';
 import 'domain/use_cases/users/user_usecases.dart';
+import 'objectbox.g.dart';
 import 'utils/constants/app_constants.dart';
 import 'utils/constants/options_data.dart';
 import 'utils/data/dio_data.dart';
+import 'package:path_provider/path_provider.dart';
+
+late ObjectBox objectbox;
 
 Future<void> main() async {
   // Load env file
@@ -34,6 +41,12 @@ Future<void> main() async {
 
   // Initialize FlutterSecureStorage
   const secureStorage = FlutterSecureStorage();
+
+  // Get the application's document directory
+  final dir = await getApplicationDocumentsDirectory();
+
+  // Define the ObjectBox store using the documents directory
+  final store = Store(getObjectBoxModel(), directory: '${dir.path}/objectbox');
 
   // Initialize dependencies for UseCases
   final OptionsData optionsData = OptionsData(secureStorage);
@@ -93,9 +106,17 @@ Future<void> main() async {
     authRemoteDataSource: authDataSourceImpl,
   );
 
+// Define the Box using MessageLocalModel
+  final Box<MessageLocalModel> messageBox = store.box<MessageLocalModel>();
+
+  // Initialize the messageLocalDataSourceImpl
+  final MessageLocalDataSourceImpl messageLocalDataSourceImpl =
+  MessageLocalDataSourceImpl(messageBox);
+
+
 // Initialize MessageDBRepositoryImpl
   final MessageDBRepositoryImpl messageDBRepositoryImpl =
-      MessageDBRepositoryImpl(messageDBDataSourceImpl);
+      MessageDBRepositoryImpl(messageDBDataSourceImpl, messageLocalDataSourceImpl);
 
 // Initialize MessageSocketRepositoryImpl
   final MessageSocketRepositoryImpl messageSocketRepositoryImpl =
