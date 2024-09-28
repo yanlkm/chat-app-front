@@ -79,9 +79,6 @@ class MessageCubit extends Cubit<List<MessageDBEntity>> {
   bool isSameTime(DateTime time1, DateTime time2) {
     return time1.difference(time2).inSeconds.abs() < 10;
   }
-  MessageDBEntity changeUsername(MessageDBEntity message) {
-    return MessageDBEntity();
-  }
 
   // update messages locally using fetch remote messages
   void updateMessage(String roomId) async {
