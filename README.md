@@ -38,13 +38,15 @@ git clone https://github.com/yanlkm/chat-app-front.git
 cd chat-app-front
 ```
 
-2. Create your own flutter project and copy the lib folder to your project.
+2. Create your own flutter project and copy the lib folder and pubspec.yaml to your project.
 ```bash 
 flutter create chat_app
 cd chat_app
 rm -rf lib
+rm pubspec.yaml
 cd ../chat-app-front
 cp -r lib ../chat_app
+cp pubspec.yaml ../chat_app
 ```
 2. Install dependencies
 ```bash
