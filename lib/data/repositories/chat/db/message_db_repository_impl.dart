@@ -79,6 +79,7 @@ class MessageDBRepositoryImpl implements MessageDBRepository {
 
   }
 
+  // Update Message Locally implementation : Future<Either<NetworkErrorHandler, void>>
   @override
   Future<Either<NetworkErrorHandler, void>> updateMessage(String userId, String newUsername) async {
     try {
