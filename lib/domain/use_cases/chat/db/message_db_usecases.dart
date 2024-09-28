@@ -24,4 +24,8 @@ class MessageDBUseCases {
   Future<Either<NetworkErrorHandler, void>> saveMessage(MessageDBEntity message) async {
     return messageDBRepositoryImpl.saveMessage(message);
   }
+  // Update Message Locally
+  Future<Either<NetworkErrorHandler, void>> updateMessage(String userId, String newUsername) async {
+    return messageDBRepositoryImpl.updateMessage(userId, newUsername);
+  }
 }

@@ -80,8 +80,15 @@ class MessageDBRepositoryImpl implements MessageDBRepository {
   }
 
   @override
-  Future<Either<NetworkErrorHandler, void>> updateMessage(String userId, String newUsername) {
-
-    throw UnimplementedError();
+  Future<Either<NetworkErrorHandler, void>> updateMessage(String userId, String newUsername) async {
+    try {
+      // Update message
+      await messageLocalDataSourceImpl.updateMessage(userId, newUsername);
+      return const Right<NetworkErrorHandler, void>(null);
+    } on NetworkErrorHandler catch(e)
+    {
+      // Catch error if any error occurs
+      return  Left<NetworkErrorHandler, void>(e);
+    }
   }
 }

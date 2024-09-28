@@ -40,6 +40,9 @@ class MessageCubit extends Cubit<List<MessageDBEntity>> {
               for (var message in newMessages) {
                 messageDBUseCases.saveMessage(message);
               }
+              // update messages locally
+              updateMessage(roomId);
+              // Update the state with the new messages
               emit([...state, ...newMessages]);
           },
     );
@@ -78,6 +81,21 @@ class MessageCubit extends Cubit<List<MessageDBEntity>> {
   }
   MessageDBEntity changeUsername(MessageDBEntity message) {
     return MessageDBEntity();
+  }
+
+  // update messages locally using fetch remote messages
+  void updateMessage(String roomId) async {
+    // Fetch remote messages
+    final remoteResult = await messageDBUseCases.fetchRemoteMessages(roomId);
+    remoteResult.fold(
+          (error) => {},
+          (remoteMessages) {
+            // Update messages locally
+        for (var remoteMessage in remoteMessages) {
+          messageDBUseCases.updateMessage(remoteMessage.userId!, remoteMessage.username!);
+        }
+      },
+    );
   }
 }
 
