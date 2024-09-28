@@ -19,16 +19,18 @@ class MessageItemWidget extends StatelessWidget {
   // main build method
   @override
   Widget build(BuildContext context) {
-    // check if the message is from the current user
-    final isCurrentUser = message.userId == currentUserId;
     // format the time
     final formattedTime = DateFormat('HH:mm').format(message.createdAt!);
 
+    // return the Padding widget only if the message is not null
+    if (message.userId == null) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Row(
         mainAxisAlignment:
-        isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        message.userId == currentUserId ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           // ConstrainedBox to limit the width of the message
           ConstrainedBox(
@@ -39,9 +41,9 @@ class MessageItemWidget extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: isCurrentUser ? Colors.blue[100] : Colors.white,
+                color: message.userId == currentUserId ? Colors.blue[100] : Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
-                border: !isCurrentUser ? Border.all(color: Colors.black) : null,
+                border: ! (message.userId == currentUserId) ? Border.all(color: Colors.black) : null,
               ),
               child: Stack(
                 children: [
