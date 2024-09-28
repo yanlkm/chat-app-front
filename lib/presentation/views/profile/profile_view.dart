@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -33,10 +35,40 @@ class ProfileViewState extends State<ProfileView> {
   bool showRooms = false;
   bool showPasswords = false;
   bool isEditingUsername = false;
+  // Timer refreshTimer
+  Timer? _loadingTimer;
+  bool _isLoadingForLong = false; // Flag to control refresh button visibility
+
   // text controllers
   TextEditingController usernameController = TextEditingController();
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
+
+
+  // Start the loading timer when entering loading state
+  void _startLoadingTimer() {
+    _loadingTimer?.cancel(); // Cancel any existing timers
+    _loadingTimer = Timer(const Duration(seconds: 3), () {
+      setState(() {
+        _isLoadingForLong = true; // Show refresh button after 3 seconds
+      });
+    });
+  }
+
+  // Reset the loading timer and hide the button when loading finishes
+  void _resetLoadingState() {
+    _loadingTimer?.cancel();
+    setState(() {
+      _isLoadingForLong = false;
+    });
+  }
+
+  // Refresh the whole page
+  void _refreshPage() {
+    context.read<ProfileCubit>().loadProfile(); // Call to refresh the user data
+    context.read<RoomsCubit>().loadRooms(); // Call to refresh the room data
+    _resetLoadingState(); // Reset the loading state
+  }
 
   // show/hide passwords fields
   void togglePasswords() {
@@ -61,6 +93,16 @@ class ProfileViewState extends State<ProfileView> {
   // main build
   @override
   Widget build(BuildContext context) {
+    // declare profile and room cubits
+    final profileCubit = context.read<ProfileCubit>();
+    final roomCubit = context.read<RoomsCubit>();
+    // if profile or room state is loading or error, then start loading timer
+    if (profileCubit.state is ProfileLoading || roomCubit.state is RoomsLoading || profileCubit.state is ProfileError || roomCubit.state is RoomsError) {
+      _startLoadingTimer();
+    } else {
+      _resetLoadingState();
+    }
+
     return BasePage(
       showFooter: false,
       authUseCases: widget.authUseCases,
@@ -204,6 +246,18 @@ class ProfileViewState extends State<ProfileView> {
                     }
                   },
                 ),
+                // if _isLoadingForLong is true, show refresh button
+                if (_isLoadingForLong)
+                  Positioned(
+                    bottom: 20,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                        child: ElevatedButton(
+                          onPressed: _refreshPage,
+                          child: const Text('Refresh'),
+                        )),
+                  ),
               ],
             ),
           ),

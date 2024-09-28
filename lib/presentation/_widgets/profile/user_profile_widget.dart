@@ -80,56 +80,59 @@ class UserProfileWidget extends StatelessWidget {
                 // if isEditingUsername is true show the TextField to edit the username
                 isEditingUsername
                     ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        width: 250,
-                        child: TextField(
-                          controller: usernameController,
-                          decoration: InputDecoration(
-                            labelText: 'Enter new username',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              width: 250,
+                              child: TextField(
+                                controller: usernameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Enter new username',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon:
-                      const Icon(Icons.check, color: Colors.blueGrey),
-                      onPressed: onSavePressed,
-                    ),
-                  ],
-                )
+                          IconButton(
+                            icon:
+                                const Icon(Icons.check, color: Colors.blueGrey),
+                            onPressed: onSavePressed,
+                          ),
+                        ],
+                      )
                     // else show the username with edit and toggle password buttons
                     : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      user.username!,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            user.username!,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: onEditPressed,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.vpn_key, color: Colors.blue),
+                            onPressed: onTogglePasswords,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 20),
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: onEditPressed,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.vpn_key, color: Colors.blue),
-                      onPressed: onTogglePasswords,
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 10),
+                const Text('Last updated',
+                    style: TextStyle(fontSize: 16)),
+
                 Text(
-                  'Last updated: $updatedAtFormatted',
-                  style: const TextStyle(fontSize: 18),
+                  updatedAtFormatted,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),

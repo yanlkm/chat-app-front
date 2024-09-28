@@ -105,7 +105,7 @@ class UserWidget extends StatelessWidget {
                   child: ListTile(
                     title: Text(
                       user.username ?? 'No Name',
-                      style: const TextStyle(fontSize: 16, color: Colors.black87),
+                      style: const TextStyle(fontSize: 14, color: Colors.black87),
                     ),
                     trailing: IconButton(
                       icon: user.validity=="invalid" ? Icon(Icons.block, color: color) :

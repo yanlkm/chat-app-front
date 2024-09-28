@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,12 +19,14 @@ class AdminView extends StatefulWidget {
 
   // useCase
   final AuthUseCases authUseCases;
+
   // notifiers
   final ValueNotifier<List<RoomEntity>> adminRoomNotifier;
   final ValueNotifier<List<UserEntity>> userNotifier;
   final ValueNotifier<UserEntity> userFoundNotifier;
   final ValueNotifier<UserEntity> selectedUserNotifier;
- // Constructor
+
+  // Constructor
   const AdminView({
     super.key,
     required this.adminRoomNotifier,
@@ -31,6 +35,7 @@ class AdminView extends StatefulWidget {
     required this.userFoundNotifier,
     required this.authUseCases,
   });
+
   // createState method
   @override
   AdminViewState createState() => AdminViewState();
@@ -42,13 +47,18 @@ class AdminViewState extends State<AdminView> {
   final TextEditingController userSearchController = TextEditingController();
   final TextEditingController roomNameController = TextEditingController();
   final TextEditingController roomDescriptionController =
-      TextEditingController();
+  TextEditingController();
   final Map<String, TextEditingController> hashtagControllers = {};
   final Map<String, String?> selectedHashtag = {};
   final TextEditingController codeController = TextEditingController();
+
   // attributes to store the current code
   String currentCode = '';
   bool isCodeCopied = false;
+
+  // Timer refreshTimer
+  Timer? _loadingTimer;
+  bool _isLoadingForLong = false; // Flag to control refresh button visibility
 
   // initState method : initialize the state, controllers and listeners
   @override
@@ -70,6 +80,7 @@ class AdminViewState extends State<AdminView> {
       selectedHashtag[room.roomID] = null;
     }
   }
+
   // initializeHashtagControllersManual method : initialize the hashtag controllers manually
   void _initializeHashtagControllersManual(List<RoomEntity> rooms) {
     for (RoomEntity room in rooms) {
@@ -78,9 +89,33 @@ class AdminViewState extends State<AdminView> {
     }
   }
 
+  // Start the loading timer when entering loading state
+  void _startLoadingTimer() {
+    _loadingTimer?.cancel(); // Cancel any existing timers
+    _loadingTimer = Timer(const Duration(seconds: 3), () {
+      setState(() {
+        _isLoadingForLong = true; // Show refresh button after 3 seconds
+      });
+    });
+  }
+
+  // Reset the loading timer and hide the button when loading finishes
+  void _resetLoadingState() {
+    _loadingTimer?.cancel();
+    setState(() {
+      _isLoadingForLong = false;
+    });
+  }
+
+  // Refresh the whole page
+  void _refreshPage() {
+    context.read<UserCubit>().loadUsers(); // Call to refresh the user data
+    context.read<RoomCubit>().loadRooms(); // Call to refresh the room data
+    _resetLoadingState(); // Reset the loading state
+  }
+
   // performSearch method : perform a search
   void _performSearch(UserCubit userCubit) async {
-
     // get the user unique reference
     String userUniqueReference = userSearchController.text;
     if (userUniqueReference.isNotEmpty) {
@@ -220,7 +255,8 @@ class AdminViewState extends State<AdminView> {
   }
 
   // Method to remove a hashtag from a room
-  void _removeHashtagFromRoom(RoomCubit roomCubit, RoomEntity room, String hashtag) {
+  void _removeHashtagFromRoom(RoomCubit roomCubit, RoomEntity room,
+      String hashtag) {
     // if hashtag selected is the last hashtag, return
     if (room.hashtags?.length == 1) {
       if (mounted) {
@@ -261,7 +297,8 @@ class AdminViewState extends State<AdminView> {
         widget.selectedUserNotifier.value = const UserEntity();
         // if the user to (un)ban is on search result
         if (widget.userFoundNotifier.value.userID == userId) {
-          widget.userFoundNotifier.value= widget.userFoundNotifier.value.copyWith(validity: "invalid");
+          widget.userFoundNotifier.value =
+              widget.userFoundNotifier.value.copyWith(validity: "invalid");
         }
       });
     }).catchError((error) {
@@ -285,7 +322,8 @@ class AdminViewState extends State<AdminView> {
         widget.selectedUserNotifier.value = const UserEntity();
         // if the user to (un)ban is on search result
         if (widget.userFoundNotifier.value.userID == userId) {
-          widget.userFoundNotifier.value = widget.userFoundNotifier.value.copyWith(validity: "valid");
+          widget.userFoundNotifier.value =
+              widget.userFoundNotifier.value.copyWith(validity: "valid");
         }
       });
     }).catchError((error) {
@@ -341,59 +379,78 @@ class AdminViewState extends State<AdminView> {
         });
       }
     }
+    // Start timer if in loading state
+    if (roomCubit.state is RoomLoading || userCubit.state is UserLoading) {
+      _startLoadingTimer();
+    } else {
+      _resetLoadingState();
+    }
+
     // BasePage : base page widget
     return BasePage(
-      showFooter: false,
-      authUseCases: widget.authUseCases,
-      child: Scaffold(
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // BlocListener : listener for UserCubit
-              BlocListener<UserCubit, UserState>(
-                listener: (context, state) {
-                  // if the state is UserError
-                  if (state is UserError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                },
-                child: Container(),
+        showFooter: false,
+        authUseCases: widget.authUseCases,
+        child: Scaffold(
+          body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                  children: [
+                  // BlocListener : listener for UserCubit
+                  BlocListener<UserCubit, UserState > (
+              listener: (context, state) {
+                // if the state is UserError
+                if (state is UserError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: Container(),
               ),
-              BlocListener<RoomCubit, RoomState>(
-                listener: (context, state) {
-                  // if the state is RoomError
-                  if (state is RoomError) {
-                    // show error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    // show load loop for a while
-                    Future.delayed(const Duration(seconds: 2), () {
-                      // call loadRooms to reload rooms
-                      roomCubit.loadRooms();
-                    });
-                  }
-                  if (state is RoomLoaded) {
-                    if (state.hasError) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.message),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: Container(),
+                  BlocListener<RoomCubit, RoomState>(
+                    listener: (context, state) {
+                      // if the state is RoomError
+                      if (state is RoomError) {
+                        // show error message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.message),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        // show load loop for a while
+                        Future.delayed(const Duration(seconds: 2), () {
+                          // call loadRooms to reload rooms
+                          roomCubit.loadRooms();
+                        });
+                      }
+                      if (state is RoomLoaded) {
+                        if (state.hasError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.message),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Container(),
+                  ),
+                  // if _isLoadingForLong is true, show refresh button
+                  if (_isLoadingForLong)
+              Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Center(
+                  child: ElevatedButton(
+                    onPressed: _refreshPage,
+                    child: const Text('Refresh'),
+                  )),
               ),
               // User Widget Section
               UserWidget(
@@ -419,32 +476,34 @@ class AdminViewState extends State<AdminView> {
               // Room Widget Section
               // if the state is RoomLoaded and hashtagControllers is not empty then show RoomWidget
               if (roomCubit.state is RoomLoaded &&
-                  hashtagControllers.isNotEmpty)
-                RoomWidget(
-                  roomNameController: roomNameController,
-                  roomDescriptionController: roomDescriptionController,
-                  hashtagControllers: hashtagControllers,
-                  rooms: (roomCubit.state as RoomLoaded).rooms,
-                  onCreateRoom: (name, description) =>
-                      _createRoom(roomCubit, name, description),
-                  selectedHashtag: selectedHashtag,
-                  onAddHashtagToRoom: (RoomEntity room, String hashtag) =>
-                      _addHashtagToRoom(roomCubit, room, hashtag),
-                  onRemoveHashtagFromRoom: (RoomEntity room, String hashtag) =>
-                      _removeHashtagFromRoom(roomCubit, room, hashtag),
-                  selectHashtag: _selectHashtag, // Pass the callback here
-                )
-                // else : show CircularProgressIndicator
-              else
+          hashtagControllers.isNotEmpty)
+          RoomWidget(
+          roomNameController: roomNameController,
+          roomDescriptionController: roomDescriptionController,
+          hashtagControllers: hashtagControllers,
+          rooms: (roomCubit.state as RoomLoaded).rooms,
+          onCreateRoom: (name, description) =>
+              _createRoom(roomCubit, name, description),
+          selectedHashtag: selectedHashtag,
+          onAddHashtagToRoom: (RoomEntity room, String hashtag) =>
+              _addHashtagToRoom(roomCubit, room, hashtag),
+          onRemoveHashtagFromRoom: (RoomEntity room, String hashtag) =>
+              _removeHashtagFromRoom(roomCubit, room, hashtag),
+          selectHashtag: _selectHashtag, // Pass the callback here
+        )
+        // else : show CircularProgressIndicator
+        else
 
-                const Center(
-                  child: CircularProgressIndicator(),
-                ),
+        const Center(
+        child: CircularProgressIndicator(),
+    ),
 
-            ],
-          ),
-        ),
-      ),
+
+    ],
+
+    ),
+    ),
+    ),
     );
   }
 }
