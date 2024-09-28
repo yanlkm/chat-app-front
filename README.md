@@ -38,6 +38,14 @@ git clone https://github.com/yanlkm/chat-app-front.git
 cd chat-app-front
 ```
 
+2. Create your own flutter project and copy the lib folder to your project.
+```bash 
+flutter create chat_app
+cd chat_app
+rm -rf lib
+cd ../chat-app-front
+cp -r lib ../chat_app
+```
 2. Install dependencies
 ```bash
 flutter pub get
@@ -83,6 +91,7 @@ flutter run
 - [Either](https://pub.dev/packages/dartz)
 - [JWT](https://pub.dev/packages/jwt)
 - [Json Decode](https://pub.dev/packages/json_decode)
+- [ObjectBox](https://pub.dev/packages/objectbox)
 - [Dotenv](https://pub.dev/packages/dotenv)
 - [Flutter Secure Storage](https://pub.dev/packages/flutter_secure_storage)
 

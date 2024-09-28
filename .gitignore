@@ -65,7 +65,6 @@ analysis_options.yaml
 my_app.iml
 
 #flutter
-pubspec.yaml
 pubspec.lock
 
 # linux
