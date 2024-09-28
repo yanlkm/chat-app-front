@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/chat/db/message_db_entity.dart';
 import '../../../domain/use_cases/chat/db/message_db_usecases.dart';
 
-
+// Message Cubit
 class MessageCubit extends Cubit<List<MessageDBEntity>> {
+  // Message DB Use Cases
   final MessageDBUseCases messageDBUseCases;
 
+  // Constructor
   MessageCubit(this.messageDBUseCases) : super([]);
 
   // fetchMessages method to handle both local and remote messages
