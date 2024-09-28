@@ -40,7 +40,7 @@ cd chat-app-front
 
 2. Create your own flutter project and copy the lib folder and pubspec.yaml to your project.
 ```bash 
-flutter create chat_app
+flutter create my_app
 cd chat_app
 rm -rf lib
 rm pubspec.yaml
