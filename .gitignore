@@ -56,6 +56,24 @@ build/
 
 #iOS
 ios/
+macos/
+*.xcuserdatad
+
+#metadata
+*.metadata
+analysis_options.yaml
+my_app.iml
+
+#flutter
+pubspec.yaml
+pubspec.lock
+
+# linux
+linux
+test
+web
+windows
+
 
 
 
